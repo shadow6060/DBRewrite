@@ -1,7 +1,10 @@
+
 [![Patreon](https://img.shields.io/badge/Patreon-F96854?style=for-the-badge&logo=patreon&logoColor=white)](https://www.patreon.com/drunkbartender)
 [![Discord](https://img.shields.io/badge/Discord-5865F2?style=for-the-badge&logo=discord&logoColor=white)](https://discord.com/invite/pY6hNVs)
 [![Github](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/shadow6060/DBRewrite)
 [![Typescript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Website](https://img.shields.io/badge/-Website-orange&?style=for-the-badge&logo=)](https://drunk-bartender.org)
+
 
 <p align="center">
   <img src="https://media.discordapp.net/attachments/983404765889318932/1041200355310047343/updated.png?width=663&height=663" style="width:10em; height: 10em; position: absolute; top: 500px;"></img>
@@ -54,7 +57,73 @@ And we are always open to hearing suggestions from the community about new featu
 | /brew    | Brew's an order.     | Staff 🛠  |
 | /delete    | Delete's a order.     | Staff 🛠  |
 
-<br>
+
+&nbsp;
+&nbsp;
+<h4 align="left"> ℹ️ Installation </h4>
+
+Make sure you got Node.js
+And the following packages.
+
+ - @discordjs/builders
+ - @discordjs/rest
+ - @prisma/client
+ - cross-env
+ - discord-api-types
+ - discord.js
+ - fast-glob
+ - got
+ - hjson
+ - nekos.life
+ - pincolors
+ - pino
+ - pretty-ms
+ - source-map-support
+ - typescript
+ - typescript-memoize
+ - yarn
+ - zod
+ - ts-toolbelt
+ - prisma
+ - eslint
+ 
+ Once you got all these then you can finally start with setting up your database.
+ It has to be with postgres unless you want to switch it to another type.
+ But keep in mind then we can't provide you with support.
+
+You will have to make the postgres database yourself and connect the bot to it.
+The tables will be made by the bot.
+
+
+If you do not know how to create a bot.
+Then follow these steps.
+
+ 1. Go to https://discord.com/developers/applications
+ 2. Click on New Application
+ 3. And create a name for the Application
+ 4. Then click on "Bot"
+ 5. And click on "Add Bot"
+ 6. Then click on "Reset Token"
+ 7. Copy the token and place it into the config.hjson in the config folder.
+ 
+ 
+Then you want to open a terminal and run tsc.
+And then proceed to open the dist folder and start the bot by running
+
+    node index.js
+   
+   then if that brings you some errors then
+   you can always contact us for support.
+   But if you got the database up and running.
+   Then this should work if you follow these steps.
+   But make sure you change the configs for roles, and channels.
+   So you can use it in your server!
+   and experience all the fun with your friends.
+But some of the channel configs are in the employee commands.
+##
+
+
+
 <h4 align="left"> 🔗 Links <h4>
 
 - [GitHub](https://github.com/shadow6060/DBRewrite)
