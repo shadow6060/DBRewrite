@@ -179,6 +179,7 @@ const configSchema = z
 			employee: snowflake,
 			duty: snowflake,
 			moderator: snowflake,
+			dutyd: snowflake,
 		}),
 		channels: z.object({
 			brewery: snowflake,
