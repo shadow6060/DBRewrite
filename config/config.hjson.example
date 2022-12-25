@@ -12,6 +12,7 @@
 		employee: ""
 		moderator: ""
 		duty: ""
+		dutyd: ""
 	}
 	channels: {
 		brewery: "" 
