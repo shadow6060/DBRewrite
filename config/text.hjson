@@ -149,6 +149,11 @@
 				You decided to go to the corner shop and rob them you got {}.
 				You robbed an atm and got {}.
 				You robbed Tofu and got {}.
+				a kid spat on you, you got {} for selling it to child predators.
+				You burnt down someones mansion you got {}.
+				You kiddnapped someones dog they needed to pay you {} to get the dog back.
+				You stole someones jewerly you sold it for {}.
+
 			]
 			failure: [
 				You tried to steal from Drunk Bartender and lost {}.
@@ -156,6 +161,7 @@
 				You tried to rob the corner shop and lost {}.
 				You tried robbing an atm and ended up being scammed for {}.
 				You attempted to rob Tofu but ended up being robbed by Tofu for {}.
+				You stole someones purse when they were walking their dog , and the dog started chasing you so you runned from fear. but you dropped her purse and your {} dollars.
 			]
 		}
 		daily: {
