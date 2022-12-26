@@ -69,7 +69,7 @@
 		brew: {
 			invalidUrl: "[no] Please specify a valid URL."
 			success: "[yes] The order is now brewing."
-			ready:  <@&ROLEID>The order{} {} {} finished brewing and {} now available for delivery. 
+			ready:  <@&ROLEID>The order{} {} {} finished brewing and {} now available for delivery.
 		}
 		deliver: {
 			noMessage: ⚠️ You do not have a delivery message set, and the default message was used. Make to set one with `/deliverymessage`!
@@ -182,6 +182,16 @@
 				success: "[yes] The ID has been successfully unblacklisted."
 				existing: "[no] The ID is not blacklisted."
 			}
+		}
+		drinkingr: {
+				drinks: [
+				"`Vodka`{}"
+				"`Whiskey`{}"
+				"`Beer`{}"
+				"`Rum`{}"
+				"`Gin`{}"
+				"`Tequila`{}"
+			]
 		}
 	}
 	errors: {

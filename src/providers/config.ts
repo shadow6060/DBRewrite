@@ -150,6 +150,9 @@ const textSchema = z
 				success: z.string(),
 				dm: pFormattable(2),
 			}),
+			drinkingr: z.object({
+				drinks: z.array(pFormattable()),
+			}),
 			blacklist: z.object({
 				success: z.string(),
 				existing: z.string(),
