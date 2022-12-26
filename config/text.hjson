@@ -142,6 +142,22 @@
 				You attempt to summon a demon, but all that appears are piles of cash. You got {}.
 			]
 		}
+		crime: {
+			sucess: [
+				You stole from Drunk Bartender and got {}.
+				You fought an old lady and got {}.
+				You decided to go to the corner shop and rob them you got {}.
+				You robbed an atm and got {}.
+				You robbed Tofu and got {}.
+			]
+			failure: [
+				You tried to steal from Drunk Bartender and lost {}.
+				You tried to fight an old lady and lost then got robbed for {}.
+				You tried to rob the corner shop and lost {}.
+				You tried robbing an atm and ended up being scammed for {}.
+				You attempted to rob Tofu but ended up being robbed by Tofu for {}.
+			]
+		}
 		daily: {
 			responses: [
 				You just got yourself the magical {} amount today.

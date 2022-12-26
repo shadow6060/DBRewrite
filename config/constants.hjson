@@ -17,6 +17,12 @@
 			100
 		]
 		cooldownMs: 86400000 // 24 hours
-
+	}
+	crime: {
+		amountRange: [
+			50
+			100
+		]
+		cooldownMs: 600000 // 10 minutes
 	}
 }
