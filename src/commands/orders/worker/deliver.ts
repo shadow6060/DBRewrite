@@ -1,3 +1,14 @@
+// 1: Fix the "Getstring" Line
+// 2: Fix the "".isText" line
+// 3: Fix the "channel.send" Line
+// 4: Keep All the code the way it is But, Update to discord.js v14.71 
+// 5: No attachments needed 
+// 6: Written in Typescript
+// 7: Make sure the JavaScript version Gets the "Command option"
+// 8: Make the Code look good And clean.
+// 9: Make sure Everything is configured correctly 
+// 10: Make comments on what does what  
+
 import { OrderStatus } from "@prisma/client";
 import { CategoryChannel, GuildChannel } from "discord.js";
 import { db } from "../../../database/database";
@@ -10,11 +21,14 @@ import { permissions } from "../../../providers/permissions";
 import { Command } from "../../../structures/Command";
 import { format } from "../../../utils/string";
 
-export const command = new Command("deliver", "Delivers an order.")
+export const command = new Command(
+	"deliver",
+	"Delivers an order."
+)
 	.addPermission(permissions.employee)
 	.addOption("string", o => o.setRequired(true).setName("order").setDescription("The order to deliver."))
 	.setExecutor(async int => {
-		const match = int.options.getString("order", true); 
+		const match = int.options.getString("order", true);
 		const order = await matchOrderStatus(match, OrderStatus.PendingDelivery);
 		if (order === null) {
 			await int.reply(text.common.invalidOrderId);
@@ -33,7 +47,15 @@ export const command = new Command("deliver", "Delivers an order.")
 				deliveries: { increment: 1 },
 			},
 		});
-		await db.order.update({ where: { id: order.id }, data: { status: OrderStatus.Delivered, deliverer: int.user.id } });
+		await db.order.update({
+			where: {
+				id: order.id,
+			},
+			data: {
+				status: OrderStatus.Delivered,
+				deliverer: int.user.id
+			},
+		});
 		const channel = client.channels.cache.get(order.channel) ?? await client.channels.fetch(order.channel).catch(() => null) ?? client.users.cache.get(order.user);
 		if (!channel || (channel instanceof GuildChannel && !channel.isText())) {
 			await int.reply(text.commands.deliver.noChannel);

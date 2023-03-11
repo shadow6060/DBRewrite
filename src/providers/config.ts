@@ -10,7 +10,7 @@ import { arraysSimilar } from "../utils/array";
 import { IllegalStateError } from "../utils/error";
 import { OrderStatus } from "@prisma/client";
 
-export const snowflake = z.string().length(18).regex(/^\d+$/);
+export const snowflake = z.string().length(19).regex(/^\d+$/);
 const pFormattable = <T extends number = 1>(n: T = 1 as T) =>
 	z.string().refine(x => x.split("{}").length - 1 === n, {
 		message: `Formattable must contain ${n} placeholders`,

@@ -35,7 +35,7 @@ client.on("interactionCreate", async int => {
 		}
 	} catch (e) {
 		if (!(e instanceof StopCommandExecution)) {
-			if (int.isApplicationCommand()) int.reply({ content: text.errors.exception, ephemeral: true }).catch();
+			if (int.isCommand()) int.reply({ content: text.errors.exception, ephemeral: true }).catch();
 			console.error(e);
 		}
 	}
