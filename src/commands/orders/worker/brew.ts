@@ -1,5 +1,3 @@
-//Switch the urls to attachment please thanks
-//TypeScript
 import { OrderStatus } from "@prisma/client";
 import { db } from "../../../database/database";
 import { generateOrderId, getClaimedOrder, hasActiveOrder, matchActiveOrder, matchOrderStatus } from "../../../database/order";
@@ -29,6 +27,17 @@ export const command = new Command(
 					.setRequired(true)
 			)
 	)
+	.addSubCommand((subcommand) =>
+		subcommand
+			.setName("url")
+			.setDescription("Attach an image to your order by URL.")
+			.addStringOption((option) =>
+				option
+					.setName("url")
+					.setDescription("The URL of the image to attach to the order.")
+					.setRequired(true)
+			)
+	)
 	.addPermission(permissions.employee)
 	.setExecutor(async (int: CommandInteraction) => {
 		const order = await getClaimedOrder(int.user);
@@ -36,10 +45,18 @@ export const command = new Command(
 			await int.reply({ content: text.common.noClaimedOrder });
 			return;
 		}
-		const attachment = int.options.get("attachment", true)?.attachment;
-		if (!attachment) {
-			await int.reply({ content: "Attachment is missing or not valid." });
-			return;
+		const subcommand = int.options.getSubcommand(true);
+		let imageUrl: string | undefined;
+		if (subcommand === "attach") {
+			const attachment = int.options.get("attachment", true)?.attachment;
+			if (!attachment) {
+				await int.reply({ content: "Attachment is missing or not valid." });
+				return;
+			}
+			imageUrl = attachment.url;
+		} else if (subcommand === "url") {
+			const url = int.options.getString("url", true);
+			imageUrl = url;
 		}
 		const time = randRange(...constants.brewTimeRangeMs);
 		await db.order.update({
@@ -48,7 +65,7 @@ export const command = new Command(
 			},
 			data: {
 				status: OrderStatus.Brewing,
-				image: attachment.url ?? "default.png",
+				image: imageUrl ?? "default.png",
 				timeout: new Date(Date.now() + time),
 			},
 		});
@@ -63,6 +80,6 @@ export const command = new Command(
 		});
 		await int.reply({
 			content: text.commands.brew.success,
-			files: [attachment],
+			files: imageUrl ? [{ attachment: imageUrl }] : undefined,
 		});
 	});
