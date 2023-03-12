@@ -12,7 +12,7 @@ export class CallbackContext<T extends MessageActionRowComponent> {
 	constructor(
 		public readonly interaction: InteractionByType<T>,
 		public readonly component: T,
-	) {}
+	) { }
 	get int() { return this.interaction; }
 	get cmp() { return this.component; }
 
@@ -33,7 +33,7 @@ export class CallbackContext<T extends MessageActionRowComponent> {
 	}
 	async #walkComponents(map: (cmp: MessageActionRowComponent) => void) {
 		this.int.message.components.forEach(x => x.components.forEach(map));
-		
+
 		return this.int.update({ components: this.int.message.components });
 	}
 }
