@@ -1,3 +1,5 @@
+//Switch the urls to attachment please thanks
+//TypeScript
 import { OrderStatus } from "@prisma/client";
 import { db } from "../../../database/database";
 import { generateOrderId, getClaimedOrder, hasActiveOrder, matchActiveOrder, matchOrderStatus } from "../../../database/order";
@@ -10,18 +12,33 @@ import { Command } from "../../../structures/Command";
 import { format } from "../../../utils/string";
 import { randRange } from "../../../utils/utils";
 
-export const command = new Command("brew", "Brews your claimed order.")
+import type { CommandInteraction } from "discord.js";
+
+export const command = new Command(
+	"brew",
+	"Brews your claimed order."
+)
+	.addSubCommand((subcommand) =>
+		subcommand
+			.setName("attach")
+			.setDescription("Attach an image to your order.")
+			.addAttachmentOption((option) =>
+				option
+					.setName("attachment")
+					.setDescription("The image to attach to the order.")
+					.setRequired(true)
+			)
+	)
 	.addPermission(permissions.employee)
-	.addOption("string", o => o.setRequired(true).setName("image").setDescription("The image to attach."))
-	.setExecutor(async int => {
+	.setExecutor(async (int: CommandInteraction) => {
 		const order = await getClaimedOrder(int.user);
 		if (!order) {
-			await int.reply(text.common.noClaimedOrder);
+			await int.reply({ content: text.common.noClaimedOrder });
 			return;
 		}
-		const image = int.options.getString("image", true);
-		if (!/https?:\/\//.test(image)) {
-			await int.reply(text.commands.brew.invalidUrl);
+		const attachment = int.options.get("attachment", true)?.attachment;
+		if (!attachment) {
+			await int.reply({ content: "Attachment is missing or not valid." });
 			return;
 		}
 		const time = randRange(...constants.brewTimeRangeMs);
@@ -31,7 +48,7 @@ export const command = new Command("brew", "Brews your claimed order.")
 			},
 			data: {
 				status: OrderStatus.Brewing,
-				image,
+				image: attachment.url ?? "default.png",
 				timeout: new Date(Date.now() + time),
 			},
 		});
@@ -44,5 +61,8 @@ export const command = new Command("brew", "Brews your claimed order.")
 				preparations: { increment: 1 },
 			},
 		});
-		await int.reply(text.commands.brew.success);
+		await int.reply({
+			content: text.commands.brew.success,
+			files: [attachment],
+		});
 	});

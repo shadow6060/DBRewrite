@@ -1,4 +1,4 @@
-import { MessageEmbed } from "discord.js";
+import { EmbedBuilder } from "discord.js";
 import { text } from "../../providers/config";
 import { mainChannels } from "../../providers/discord";
 import { Command } from "../../structures/Command";
@@ -14,7 +14,7 @@ export const command = new Command("goose", "See cute gooseeeeeeeeee")
 		const tcfe = text.commands.feedback.embed;
 		await int.reply({
 			embeds: [
-				new MessageEmbed()
+				new EmbedBuilder()
 					.setTitle("Hoooonk")
 					.setImage(yeeeee.url)
 					.setDescription(`${goose} got honked at by ${int.user.tag}`)

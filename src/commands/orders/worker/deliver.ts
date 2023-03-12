@@ -1,5 +1,5 @@
 import { OrderStatus } from "@prisma/client";
-import { CategoryChannel, GuildChannel } from "discord.js";
+import { CategoryChannel, ChannelType, GuildChannel, TextChannel } from "discord.js";
 import { db } from "../../../database/database";
 import { generateOrderId, getClaimedOrder, hasActiveOrder, matchActiveOrder, matchOrderStatus, orderPlaceholders } from "../../../database/order";
 import { getWorkerInfo, upsertWorkerInfo } from "../../../database/workerInfo";
@@ -10,11 +10,14 @@ import { permissions } from "../../../providers/permissions";
 import { Command } from "../../../structures/Command";
 import { format } from "../../../utils/string";
 
-export const command = new Command("deliver", "Delivers an order.")
+export const command = new Command(
+	"deliver",
+	"Delivers an order."
+)
 	.addPermission(permissions.employee)
 	.addOption("string", o => o.setRequired(true).setName("order").setDescription("The order to deliver."))
 	.setExecutor(async int => {
-		const match = int.options.getString("order", true); 
+		const match = int.options.getString("order", true);
 		const order = await matchOrderStatus(match, OrderStatus.PendingDelivery);
 		if (order === null) {
 			await int.reply(text.common.invalidOrderId);
@@ -33,9 +36,17 @@ export const command = new Command("deliver", "Delivers an order.")
 				deliveries: { increment: 1 },
 			},
 		});
-		await db.order.update({ where: { id: order.id }, data: { status: OrderStatus.Delivered, deliverer: int.user.id } });
+		await db.order.update({
+			where: {
+				id: order.id,
+			},
+			data: {
+				status: OrderStatus.Delivered,
+				deliverer: int.user.id
+			},
+		});
 		const channel = client.channels.cache.get(order.channel) ?? await client.channels.fetch(order.channel).catch(() => null) ?? client.users.cache.get(order.user);
-		if (!channel || (channel instanceof GuildChannel && !channel.isText())) {
+		if (!channel || (channel instanceof GuildChannel && channel.type !== ChannelType.GuildText)) {
 			await int.reply(text.commands.deliver.noChannel);
 			return;
 		}

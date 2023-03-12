@@ -1,5 +1,5 @@
 import got from "got";
-import { MessageEmbed } from "discord.js";
+import { EmbedBuilder } from "discord.js";
 import { text } from "../../providers/config";
 import { mainChannels } from "../../providers/discord";
 import { Command } from "../../structures/Command";
@@ -19,7 +19,7 @@ export const command = new Command("memes", "memes!")
         const memeNumComments = post.data.num_comments;
         int.reply({
           embeds: [
-            new MessageEmbed()
+            new EmbedBuilder()
               .setImage(memeImage)
               .setDescription(`${int.user.tag} Has summoned a meme!`)
               .setFooter({ text: memeUrl, memeUpvotes, }),
