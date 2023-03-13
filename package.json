@@ -41,7 +41,7 @@
 		"@prisma/client": "latest",
 		"@sapphire/shapeshift": "^3.8.1",
 		"cross-env": "^7.0.3",
-		"discord.js": "^14.7.1",
+		"discord.js": "^14.8.0",
 		"fast-glob": "^3.2.11",
 		"got": "^11.8.3",
 		"hjson": "^3.2.2",
