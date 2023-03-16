@@ -10,11 +10,10 @@ import { arraysSimilar } from "../utils/array";
 import { IllegalStateError } from "../utils/error";
 import { OrderStatus } from "@prisma/client";
 
-export const snowflake = z.string().refine((value) => {
-	const isValidLength = value.length === 18 || value.length === 19;
-	const isValidRegex = /^\d+$/.test(value);
-	return isValidLength && isValidRegex;
-}, "Invalid snowflake value");
+export const snowflake = z.union([
+	z.string().length(18).regex(/^\d+$/),
+	z.string().length(19).regex(/^\d+$/),
+]);
 
 const pFormattable = <T extends number = 1>(n: T = 1 as T) =>
 	z.string().refine(x => x.split("{}").length - 1 === n, {
@@ -23,21 +22,18 @@ const pFormattable = <T extends number = 1>(n: T = 1 as T) =>
 
 const nFormattable = <T extends string[]>(...keys: T) =>
 	z.string().refine(
-		x =>
-			arraysSimilar(
-				[...x.matchAll(/\{(\w+)\}/g)].map(x => x[1]),
-				keys
-			),
+		x => {
+			for (const key of keys) {
+				if (!x.includes(`{${key}}`)) {
+					return false;
+				}
+			}
+			return true;
+		},
 		{
-			message: `Formattable must contain the placeholders ${keys.join(", ")}`,
-		}
-	) as z.ZodType<NamedFormattable<T>>;
-
-export { snowflakee, pFormattable, nFormattable };
-
-
-
-
+			message: `Formattable must contain ${keys.join(", ")}`,
+		},
+	) as z.ZodType<NamedFormattable<T>>;;
 
 const textSchema = z
 	.object({
