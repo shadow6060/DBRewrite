@@ -12,7 +12,7 @@ export const client = new Client({
 	intents: [
 		GatewayIntentBits.Guilds,
 		GatewayIntentBits.GuildMessages,
-		GatewayIntentBits.MessageContent,
+		//GatewayIntentBits.MessageContent,
 		GatewayIntentBits.GuildMembers,
 	],
 	partials: [Partials.User, Partials.Channel, Partials.GuildMember, Partials.Message]
