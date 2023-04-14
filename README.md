@@ -54,8 +54,7 @@ And we are always open to hearing suggestions from the community about new featu
 | /deliverymessage placeholders    |  Gets your delivery message placeholders.     | Staff 🛠  |
 | /brew    | Brew's an order.     | Staff 🛠  |
 | /delete    | Delete's a order.     | Staff 🛠  |
-&nbsp;
-&nbsp;
+
 <h4 align="left"> ℹ️ Installation </h4>
 
 Make sure you got Node.js
