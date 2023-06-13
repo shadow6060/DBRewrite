@@ -22,13 +22,13 @@ export const applicationCommandRegistry = new Collection<string, ApplicationComm
 export let applicationCommandManager:
 	| GuildApplicationCommandManager
 	| ApplicationCommandManager<
-			ApplicationCommand<{
-				guild: GuildResolvable;
-			}>,
-			{
-				guild: GuildResolvable;
-			},
-			null
+		ApplicationCommand<{
+			guild: GuildResolvable;
+		}>,
+		{
+			guild: GuildResolvable;
+		},
+		null
 	> = notInitialized("applicationCommandManager");
 
 const registerCommands = async (commands: Command[]) => {

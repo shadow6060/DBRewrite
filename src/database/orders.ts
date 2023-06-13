@@ -1,5 +1,5 @@
-import type { Order, } from "@prisma/client";
-import { CafeStatus, CafeOrders, PrismaClient } from "@prisma/client";
+
+import { OrderStatus, Orders, PrismaClient } from "@prisma/client";
 import type { Client, User, UserResolvable, Channel } from "discord.js";
 import { EmbedBuilder, GuildChannel } from "discord.js";
 import { client } from "../providers/client";
@@ -7,35 +7,34 @@ import { text } from "../providers/config";
 import { resolveUserId } from "../utils/id";
 import { format } from "../utils/string";
 import { db } from "./database";
-import type { EmbedField } from "discord.js";
 const prisma = new PrismaClient();
-export const activeCafeStatus = [
-	CafeStatus.Unprepared,
-	CafeStatus.Preparing,
-	CafeStatus.Brewing,
-	CafeStatus.Fermenting,
-	CafeStatus.PendingDelivery,
-	CafeStatus.Delivering,
+export const activeOrderStatus = [
+	OrderStatus.Unprepared,
+	OrderStatus.Preparing,
+	OrderStatus.Brewing,
+	OrderStatus.Fermenting,
+	OrderStatus.PendingDelivery,
+	OrderStatus.Delivering,
 ];
 
 export const hasActiveOrder = async (user: UserResolvable) =>
-	(await db.cafeOrders.count({
+	(await db.orders.count({
 		where: {
 			user: resolveUserId(user),
-			status: { in: activeCafeStatus },
+			status: { in: activeOrderStatus },
 		},
 	})) > 0;
 
 export const getUserActiveOrder = async (user: UserResolvable) =>
-	await db.cafeOrders.findFirst({
+	await db.orders.findFirst({
 		where: {
 			user: resolveUserId(user),
-			status: { in: activeCafeStatus },
+			status: { in: activeOrderStatus },
 		},
 	});
 
 export const orderExists = async (id: string) =>
-	(await db.cafeOrders.count({
+	(await db.orders.count({
 		where: {
 			id,
 		},
@@ -69,27 +68,27 @@ const dishExists = async (id: string) =>
 	})) > 0;
 
 
-export const getAllActiveOrders = async () => db.cafeOrders.findMany({ where: { status: { in: activeCafeStatus } } });
+export const getAllActiveOrders = async () => db.orders.findMany({ where: { status: { in: activeOrderStatus } } });
 
-export const matchCafeStatus = async (id: string, status: CafeStatus) =>
-	db.cafeOrders.findFirst({ where: { id: { startsWith: id }, status } });
+export const matchOrderStatus = async (id: string, status: OrderStatus) =>
+	db.orders.findFirst({ where: { id: { startsWith: id }, status } });
 
 export const matchActiveOrder = async (id: string) =>
-	db.cafeOrders.findFirst({ where: { id: { startsWith: id.toLowerCase() }, status: { in: activeCafeStatus } } });
+	db.orders.findFirst({ where: { id: { startsWith: id.toLowerCase() }, status: { in: activeOrderStatus } } });
 
 export const getClaimedOrder = async (user: UserResolvable) =>
-	db.cafeOrders.findFirst({ where: { claimer: resolveUserId(user), status: CafeStatus.Preparing } });
+	db.orders.findFirst({ where: { claimer: resolveUserId(user), status: OrderStatus.Preparing } });
 
 export const getOrder = async (id: string) =>
-	db.cafeOrders.findFirst({ where: { id } });
+	db.orders.findFirst({ where: { id } });
 
 export const getLatestOrder = async (user: UserResolvable) =>
-	db.cafeOrders.findFirst({ where: { user: resolveUserId(user), status: CafeStatus.Delivered }, orderBy: { createdAt: "desc" } });
+	db.orders.findFirst({ where: { user: resolveUserId(user), status: OrderStatus.Delivered }, orderBy: { createdAt: "desc" } });
 
 const embedText = text.common.orderEmbed;
 const embedFields = text.common.orderEmbed.fields;
 
-const rawOrderEmbed = (order: Order) =>
+const rawOrderEmbed = (order: Orders) =>
 	new EmbedBuilder()
 		.setTitle(format(embedText.title, order.id))
 		.setDescription(format(embedText.description, order.id))
@@ -113,7 +112,7 @@ const formatChannel = (channel: Channel | string) =>
 				: channel.id
 	);
 
-export const orderEmbedSync = async (order: CafeOrders, client: Client) => {
+export const orderEmbedSync = async (order: Orders, client: Client) => {
 	const embed = rawOrderEmbed(order)
 		.addFields({ name: embedFields.customer, value: formatUser((await client.users.fetch(order.user).catch(() => null)) ?? order.user), inline: true })
 		.addFields({ name: embedFields.channel, value: formatChannel((await client.channels.fetch(order.channel).catch(() => null)) ?? order.channel), inline: true })
@@ -125,7 +124,7 @@ export const orderEmbedSync = async (order: CafeOrders, client: Client) => {
 
 const nulli = () => null;
 
-export const orderEmbedAsync = async (order: CafeOrders, client: Client<boolean>): Promise<EmbedBuilder> => {
+export const orderEmbedAsync = async (order: Orders, client: Client<boolean>): Promise<EmbedBuilder> => {
 	const user = await client.users.fetch(order.user).catch(() => null);
 	const channel = await client.channels.fetch(order.channel).catch(() => null);
 	const guild = await client.guilds.fetch(order.guild).catch(() => null);
@@ -154,7 +153,7 @@ export const orderEmbedAsync = async (order: CafeOrders, client: Client<boolean>
 };
 export const requiredOrderPlaceholders = ["mention", "image"];
 
-export const orderPlaceholders = async (order: CafeOrders) => Object.assign(Object.create(null), {
+export const orderPlaceholders = async (order: Orders) => Object.assign(Object.create(null), {
 	preparer: order.claimer ? formatUser((await client.users.fetch(order.claimer).catch(nulli)) ?? order.claimer) : "Unknown",
 	deliverer: order.deliverer ? formatUser((await client.users.fetch(order.deliverer).catch(nulli)) ?? order.deliverer) : "Unknown",
 	id: order.id,
@@ -170,4 +169,4 @@ export const OrderFlags = {
 	Rated: 0b100,
 };
 
-export { CafeStatus };
+export { OrderStatus };

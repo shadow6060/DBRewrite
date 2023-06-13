@@ -1,23 +1,7 @@
-import { OrderStatus } from "@prisma/client";
 import { db } from "../../database/database";
-import {
-	generateOrderId,
-	getClaimedOrder,
-	getUserActiveOrder,
-	hasActiveOrder,
-	matchActiveOrder,
-	matchOrderStatus,
-	orderEmbedAsync,
-} from "../../database/order";
-import { getUserInfo, upsertUserInfo } from "../../database/userInfo";
-import { client } from "../../providers/client";
-import { config, constants, text } from "../../providers/config";
-import { mainGuild } from "../../providers/discord";
+import { text } from "../../providers/config";
 import { permissions } from "../../providers/permissions";
 import { Command } from "../../structures/Command";
-import { format } from "../../utils/string";
-import pms from "pretty-ms";
-import { randRange, sampleArray } from "../../utils/utils";
 import { blacklist, createBlacklist } from "../../database/blacklist";
 
 export const command = new Command("blacklist", "Blacklists a user, server, or channel.")

@@ -1,7 +1,8 @@
-import type { ApplicationCommandPermissionData, CommandInteraction } from "discord.js";
 import { SlashCommandBuilder } from "@discordjs/builders";
-import { capitalize } from "../utils/string";
+import type { CommandInteraction } from "discord.js";
+import { Attachment } from "discord.js";
 import type { Permission } from "../providers/permissions";
+import { capitalize } from "../utils/string";
 
 export type CommandExecutor = (interaction: CommandInteraction<"cached">) => void | Promise<void>;
 
@@ -19,10 +20,12 @@ export class Command {
 	executor: CommandExecutor = i => i.reply("No executor was specified.");
 	permissions: Permission[] = [];
 	local = false;
+	aliases: string[] = [];
+	shortcuts: string[] = [];
+	syntax: { name: string; type: CommandOptionType; require: boolean }[] = [];
 
 	constructor(public readonly name: string, public readonly description = "") {
 		this.#slash.setName(this.name).setDescription(this.description).setDefaultPermission(true);
-
 	}
 
 	setAccessible(accessible: boolean) {
@@ -37,6 +40,12 @@ export class Command {
 	}
 
 	addOption<T extends CommandOptionType>(type: T, ...args: CommandOptionArgs<T>) {
+		const fn = this.#slash[`add${capitalize(type)}Option`].bind(this.#slash) as (...a: typeof args) => void;
+		fn(...args);
+		return this;
+	}
+
+	addAttachment<T extends CommandOptionType>(type: T, ...args: CommandOptionArgs<T>) {
 		const fn = this.#slash[`add${capitalize(type)}Option`].bind(this.#slash) as (...a: typeof args) => void;
 		fn(...args);
 		return this;
@@ -62,5 +71,27 @@ export class Command {
 		return this;
 	}
 
-	readonly toJSON: SlashCommandBuilder["toJSON"] = this.#slash.toJSON.bind(this.#slash);
+	addShortcuts(...args: string[]) {
+		this.shortcuts = this.shortcuts.concat(args);
+		return this;
+	}
+
+	addAlias(alias: string) {
+		this.aliases.push(alias);
+		return this;
+	}
+
+	addAliases(...args: string[]) {
+		this.aliases = this.aliases.concat(args);
+		return this;
+	}
+
+	addSyntax(name: string, type: CommandOptionType, require = false) {
+		this.syntax.push({ name, type, require });
+		return this;
+	}
+
+	toJSON() {
+		return this.#slash.toJSON();
+	}
 }

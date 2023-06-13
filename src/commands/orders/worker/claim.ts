@@ -1,35 +1,101 @@
-import { OrderStatus } from "@prisma/client";
-import { db } from "../../../database/database";
-import { generateOrderId, getClaimedOrder, hasActiveOrder, matchActiveOrder, matchOrderStatus } from "../../../database/order";
-import { client } from "../../../providers/client";
-import { config, text } from "../../../providers/config";
-import { mainGuild } from "../../../providers/discord";
-import { permissions } from "../../../providers/permissions";
+/* eslint-disable indent */
+import { StringSelectMenuBuilder, CommandInteraction, ComponentType, EmbedBuilder } from "discord.js"; //DON'T CHANGE THE IMPORTS!
 import { Command } from "../../../structures/Command";
-import { format } from "../../../utils/string";
+import { permissions } from "../../../providers/permissions";
+import { OrderStatus, getClaimedOrder, } from "../../../database/orders";
+import { db } from "../../../database/database";
+import { text } from "../../../providers/config";
+import { client } from "../../../providers/client";
 
 export const command = new Command("claim", "Claims an order.")
-	.addPermission(permissions.employee)
-	.addOption("string", o => o.setRequired(true).setName("order").setDescription("The order to claim."))
-	.setExecutor(async int => {
-		if (await getClaimedOrder(int.user)) {
-			await int.reply(text.commands.claim.existing);
-			return;
-		}
-		//if (await getClaimedOrder(int.user) !== int.user.id)
-		//return int.reply("Sorry you may not claim ur own order.")
-		
-		const match = int.options.getString("order", true); 
-		const order = await matchOrderStatus(match, OrderStatus.Unprepared);
-		if (order === null) {
-			await int.reply(text.common.invalidOrderId);
-			return;
-		}
-		if (order.user === int.user.id && !permissions.developer.hasPermission(int.user)) {
-			await int.reply(text.common.interactOwn);
-			return;
-		}
-		await db.order.update({ where: { id: order.id }, data: { claimer: int.user.id, status: OrderStatus.Preparing } });
-		await int.reply(text.commands.claim.success);
-		
-	});
+    .addPermission(permissions.employee)
+    .setExecutor(async (int: CommandInteraction) => {
+        if (await getClaimedOrder(int.user)) {
+            await int.reply({ content: text.commands.claim.existing, ephemeral: false });
+            return;
+        }
+
+        const orders = await db.orders.findMany({
+            where: {
+                status: OrderStatus.Unprepared
+            },
+            select: {
+                id: true,
+                user: true,
+                details: true // Include the 'details' property
+            }
+        });
+
+        if (orders.length === 0) {
+            await int.reply({ content: "There are no available orders to claim.", ephemeral: true });
+            return;
+        }
+
+        const options = orders.map(order => ({
+            label: order.id,
+            description: `Details: ${order.details}\nUser: ${order.user}`, // Include the 'details' property in the description
+            value: order.id,
+            details: order.details
+        }));
+
+        const selectMenu = new StringSelectMenuBuilder()
+            .setCustomId("claim_order")
+            .setPlaceholder("Select an order to claim")
+            .addOptions(options);
+
+        const actionRow = {
+            type: ComponentType.ActionRow,
+            components: [selectMenu]
+        };
+
+        const embed = new EmbedBuilder()
+            .setDescription("Please select an order to claim.")
+            .setColor("#00FF00");
+
+        await int.reply({
+            embeds: [embed],
+            components: [actionRow],
+            ephemeral: true
+        });
+    });
+
+// Interaction Create Event (for handling select menu interaction)
+client.on("interactionCreate", async (interaction) => {
+    if (!interaction.isStringSelectMenu()) return;
+
+    const componentId = interaction.customId;
+    if (componentId === "claim_order") {
+        const orderId = interaction.values[0];
+
+        const order = await db.orders.findUnique({
+            where: {
+                id: orderId
+            },
+            select: {
+                id: true,
+                user: true,
+                details: true
+            }
+        });
+
+        if (!order) {
+            await interaction.reply({ content: "Invalid order selected.", ephemeral: true });
+            return;
+        }
+
+        if (order.user === interaction.user.id && !permissions.developer.hasPermission(interaction.user)) {
+            await interaction.reply({ content: text.common.interactOwn, ephemeral: true });
+            return;
+        }
+
+        await db.orders.update({
+            where: { id: orderId },
+            data: { claimer: interaction.user.id, status: OrderStatus.Preparing }
+        });
+
+        await interaction.reply({
+            content: `${text.commands.claim.success.replace("{id}", order.id)}`,
+            ephemeral: false
+        });
+    }
+});

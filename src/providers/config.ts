@@ -1,31 +1,36 @@
 import HJSON from "hjson";
 import fs from "fs";
 import path from "path";
-import type { ZodRawShape } from "zod";
 import { z } from "zod";
 import type { NamedFormattable, PositionalFormattable } from "../utils/string";
 import { formatZodError } from "../utils/zod";
 import pc from "picocolors";
-import { arraysSimilar } from "../utils/array";
 import { IllegalStateError } from "../utils/error";
 import { OrderStatus } from "@prisma/client";
+export const snowflake = z.union([
+	z.string().length(18).regex(/^\d+$/),
+	z.string().length(19).regex(/^\d+$/),
+]);
 
-export const snowflake = z.string().length(18).regex(/^\d+$/);
 const pFormattable = <T extends number = 1>(n: T = 1 as T) =>
 	z.string().refine(x => x.split("{}").length - 1 === n, {
 		message: `Formattable must contain ${n} placeholders`,
 	}) as z.ZodType<PositionalFormattable<T>>;
+
 const nFormattable = <T extends string[]>(...keys: T) =>
 	z.string().refine(
-		x =>
-			arraysSimilar(
-				[...x.matchAll(/\{(\w+)\}/g)].map(x => x[1]),
-				keys
-			),
+		x => {
+			for (const key of keys) {
+				if (!x.includes(`{${key}}`)) {
+					return false;
+				}
+			}
+			return true;
+		},
 		{
-			message: `Formattable must contain the placeholders ${keys.join(", ")}`,
-		}
-	) as z.ZodType<NamedFormattable<T>>;
+			message: `Formattable must contain ${keys.join(", ")}`,
+		},
+	) as z.ZodType<NamedFormattable<T>>;;
 
 const textSchema = z
 	.object({
@@ -66,9 +71,11 @@ const textSchema = z
 		}),
 		commands: z.object({
 			order: z.object({
-				success: nFormattable("details", "id"),
 				exists: z.string(),
+				success: nFormattable("details", "id"),
 				created: nFormattable("details", "duty", "id", "tag"),
+				success1: nFormattable("details", "id"),
+				success_tab: nFormattable("details", "id"),
 			}),
 			list: z.object({
 				title: z.string(),
@@ -84,10 +91,11 @@ const textSchema = z
 			}),
 			claim: z.object({
 				existing: z.string(),
-				success: z.string(),
+				success: nFormattable("id"),
 			}),
 			unclaim: z.object({
-				success: z.string(),
+				success: nFormattable("id"),
+				notClaimed: z.string(), // Add this line for the error message
 			}),
 			cancel: z.object({
 				success: z.string(),
@@ -118,6 +126,7 @@ const textSchema = z
 			}),
 			balance: z.object({
 				success: pFormattable(),
+				success1: pFormattable(),
 			}),
 			work: z.object({
 				responses: z.array(pFormattable()),
@@ -136,6 +145,7 @@ const textSchema = z
 					title: pFormattable(),
 					footer: pFormattable(),
 				}),
+
 			}),
 			tip: z.object({
 				success: pFormattable(2),
@@ -152,8 +162,18 @@ const textSchema = z
 			}),
 			delete: z.object({
 				success: z.string(),
-				dm: pFormattable(2),
+				dm: z.string(),
+				userDmDisabled: z.string(),
+				dmFailed: z.string(),
+				userNotFound: z.string(),
 			}),
+
+			rate: z.object({
+				success: z.string(),
+				alreadyRated: z.string(),
+				invalidRating: z.string(),
+			}).passthrough(),
+
 			drinkingr: z.object({
 				drinks: z.array(pFormattable()),
 			}),
@@ -187,6 +207,7 @@ const configSchema = z
 			duty: snowflake,
 			moderator: snowflake,
 			dutyd: snowflake,
+			admin: snowflake,
 		}),
 		channels: z.object({
 			brewery: snowflake,
@@ -200,6 +221,7 @@ const configSchema = z
 const constantsSchema = z
 	.object({
 		interactionExpiryTimeMs: z.number(),
+		bakeTimeRangeMs: z.tuple([z.number(), z.number()]),
 		brewTimeRangeMs: z.tuple([z.number(), z.number()]),
 		work: z.object({
 			amountRange: z.tuple([z.number(), z.number()]),

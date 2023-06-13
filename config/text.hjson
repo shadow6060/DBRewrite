@@ -15,7 +15,7 @@
 		noActiveOrder: "[no] You do not have an active order. Order one with `/order`!"
 		noClaimedOrder: "[no] You do not have an order claimed currently."
 		noOrders: "[no] You have not any orders yet."
-		identified: **{name}** (`{id}`)
+		identified: **{name}** (`{id}`) 
 		orderEmbed: {
 			title: Order Information for `{}`
 			description: Information about the order `{}`.
@@ -37,10 +37,11 @@
 	}
 	commands: {
 		order: {
-			success: "[yes] Your order for **{details}** has been placed! The order ID is `{id}`."
-			exists: "[no] You already have an active order."
-			created: "{duty} An order with the id `{id}` for **{details}** has been placed by {tag}."
-		}
+  		success: "[yes] Your order for **{details}** has been placed! The order ID is `{id}`.",
+  		exists: "[no] You already have an active order.",
+  		created: "{duty} An order with the id `{id}` for **{details}** has been placed by {tag}.",
+  		success1: "[yes] Your order for **{details}** has been placed! The price is `{price}`. The order ID is `{id}`.",
+		success_tab: "Your tab order has been placed. Order ID: {id}, Details: {details}."}
 		list: {
 			title: **__Current Orders__**
 			empty: *There are currently no active orders.*
@@ -55,12 +56,12 @@
 		}
 		claim: {
 			existing: "[no] You already have an order claimed."
-			success: "[yes] You have successfully claimed the order."
+			success: "[yes] You have successfully claimed the order `{id}`."
 		}
 		unclaim: {
-			success: "[yes] You have successfully unclaimed the order."
-
-		}
+    		success: "[yes] You have successfully unclaimed the order `{id}` . ",
+   			notClaimed: "[no] You haven't claimed any order.", // Add this line for the error message
+		},
 		cancel: {
 			success: "[yes] Your order has been successfully cancelled."
 			canned: "An order with the id `{id}` was cancelled!\n Order desc `{details}`\nPlaced by {tag}."
@@ -69,7 +70,7 @@
 		brew: {
 			invalidUrl: "[no] Please specify a valid URL."
 			success: "[yes] The order is now brewing."
-			ready:  <@&ROLEID>The order{} {} {} finished brewing and {} now available for delivery.
+			ready:  <@&1053887156701118485>he order{} {} {} finished brewing and {} now available for delivery.
 		}
 		deliver: {
 			noMessage: ⚠️ You do not have a delivery message set, and the default message was used. Make to set one with `/deliverymessage`!
@@ -116,7 +117,8 @@
 			}
 		}
 		balance: {
-			success: You currently have `${}`.
+			success: You currently have `${}` Balance!.
+			success1: You currently have `${}` Donuts!.
 		}
 		work: {
 			responses: [
@@ -180,6 +182,12 @@
 				footer: By {}
 			}
 		}
+		rate: {
+  		success: "[yes] You have successfully rated the bake/prep/delivery process of your last order.",
+  		alreadyRated: "[no] You have already rated the bake/prep/delivery process of your previous order. Try ordering another.",
+  		invalidRating: "[no] Invalid rating. Please provide a rating between 1 and 5 for each process."
+		}
+
 		tip: {
 			success: "[yes] You have successfully tipped `${}` on your order of `{}`."
 			alreadyTipped: "[no] You have already tipped your previous order. Try ordering another."
@@ -196,7 +204,11 @@
 		delete: {
 			success: "[yes] The order was successfully deleted with the provided reason."
 			dm: "[no] Your order of `{}` was deleted for `{}`. If you feel that this was a mistake, please contact us."
+			userDmDisabled: "[no] Unable to send a direct message to the user. Their DMs are disabled.",
+         	dmFailed: "[no] Failed to send a direct message to the user. Please try again later.",
+			"userNotFound": "[no] User not found. Please try again.",
 		}
+
 		blacklist: {
 			success: "[yes] The ID has been successfully blacklisted."
 			existing: "[no] The ID is already blacklisted."
@@ -222,4 +234,11 @@
 		cooldown: ⏰ Please wait `{}` before using this command again.
 		blacklisted: "[no] Either you or the server has been blacklisted from using this bot."
 	}
+	//tab: //{
+    	 //createConfirmation: "Tab creation confirmation message",
+    	 //createMaxLimit: "Tab creation maximum limit reached message",
+    	 //createCancelled: "Tab creation cancelled message",
+    	 //payConfirmation: "Tab payment confirmation message",
+    	 //payMaxLimit: "Tab payment maximum limit reached message",
+  		//}
 }

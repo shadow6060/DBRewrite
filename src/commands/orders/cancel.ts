@@ -1,10 +1,9 @@
-import { OrderStatus } from "@prisma/client";
+import { CafeStatus, OrderStatus } from "@prisma/client";
 import { db } from "../../database/database";
 import { mainChannels } from "../../providers/discord";
-import { generateOrderId, getUserActiveOrder, hasActiveOrder } from "../../database/order";
+import { getUserActiveOrder } from "../../database/orders";
 import { text } from "../../providers/config";
 import { Command } from "../../structures/Command";
-import { format } from "../../utils/string";
 
 export const command = new Command("cancel", "Cancels your active order.")
 	.setExecutor(async int => {
@@ -13,7 +12,7 @@ export const command = new Command("cancel", "Cancels your active order.")
 			await int.reply(text.common.noActiveOrder);
 			return;
 		}
-		await db.order.update({
+		await db.orders.update({
 			where: {
 				id: order.id
 			},

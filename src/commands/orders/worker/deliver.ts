@@ -1,44 +1,146 @@
-import { OrderStatus } from "@prisma/client";
-import { CategoryChannel, GuildChannel } from "discord.js";
+// Main code
+import { v4 as uuidv4 } from 'uuid';
+import { CafeStatus, OrderStatus } from "@prisma/client";
+import { ChannelType, GuildChannel, StringSelectMenuBuilder, CommandInteraction, ComponentType, EmbedBuilder } from "discord.js";
 import { db } from "../../../database/database";
-import { generateOrderId, getClaimedOrder, hasActiveOrder, matchActiveOrder, matchOrderStatus, orderPlaceholders } from "../../../database/order";
-import { getWorkerInfo, upsertWorkerInfo } from "../../../database/workerInfo";
+import { orderPlaceholders, generateOrderId, generateDishId, } from "../../../database/orders";
+import { upsertWorkerInfo } from "../../../database/workerInfo";
 import { client } from "../../../providers/client";
-import { config, text } from "../../../providers/config";
-import { mainGuild } from "../../../providers/discord";
+import { text } from "../../../providers/config";
 import { permissions } from "../../../providers/permissions";
 import { Command } from "../../../structures/Command";
 import { format } from "../../../utils/string";
+import { PrismaClient } from '@prisma/client';
 
-export const command = new Command("deliver", "Delivers an order.")
+const prisma = new PrismaClient();
+export const command = new Command(
+	"deliver",
+	"Delivers an order."
+)
 	.addPermission(permissions.employee)
-	.addOption("string", o => o.setRequired(true).setName("order").setDescription("The order to deliver."))
-	.setExecutor(async int => {
-		const match = int.options.getString("order", true); 
-		const order = await matchOrderStatus(match, OrderStatus.PendingDelivery);
-		if (order === null) {
-			await int.reply(text.common.invalidOrderId);
+	.setExecutor(async (int: CommandInteraction) => {
+		const selectMenu = new StringSelectMenuBuilder()
+			.setCustomId("deliver_order")
+			.setPlaceholder("Select an order to deliver");
+
+		const orders = await db.orders.findMany({
+			where: {
+				status: OrderStatus.PendingDelivery,
+			},
+			select: {
+				id: true,
+				user: true,
+			},
+		});
+
+		if (orders.length === 0) {
+			await int.reply({ content: "No orders available for delivery.", ephemeral: false });
 			return;
 		}
-		if (order.user === int.user.id && !permissions.developer.hasPermission(int.user)) {
-			await int.reply(text.common.interactOwn);
+
+		if (orders.length > 25) {
+			orders.splice(25); // Limit the number of orders to 25
+		}
+
+		for (const order of orders) {
+			selectMenu.addOptions({
+				label: order.id,
+				description: `User: ${order.user}`,
+				value: order.id,
+			});
+		}
+
+		const actionRow = {
+			type: ComponentType.ActionRow,
+			components: [selectMenu],
+		};
+
+		const embed = new EmbedBuilder()
+			.setDescription("Please select an order to deliver.")
+			.setColor("#00FF00");
+
+		await int.reply({
+			embeds: [embed],
+			components: [actionRow],
+			ephemeral: true, // Set ephemeral to true by default
+		});
+	});
+
+// Interaction Create Event (for handling select menu interaction)
+// Interaction Create Event (for handling select menu interaction)
+client.on("interactionCreate", async (interaction) => {
+	if (!interaction.isStringSelectMenu()) return;
+
+	const componentId = interaction.customId;
+	if (componentId === "deliver_order") {
+		const orderId = interaction.values[0];
+
+		const order = await db.orders.findUnique({
+			where: {
+				id: orderId,
+			},
+		});
+
+		if (!order) {
+			await interaction.reply({ content: "Invalid order selected.", ephemeral: true });
 			return;
 		}
-		const info = await upsertWorkerInfo(int.user);
+
+		if (order.user === interaction.user.id && !permissions.developer.hasPermission(interaction.user)) {
+			await interaction.reply({ content: text.common.interactOwn, ephemeral: false });
+			return;
+		}
+
+		const info = await upsertWorkerInfo(interaction.user);
 		await db.workerInfo.update({
 			where: {
-				id: int.user.id,
+				id: interaction.user.id,
 			},
 			data: {
 				deliveries: { increment: 1 },
 			},
 		});
-		await db.order.update({ where: { id: order.id }, data: { status: OrderStatus.Delivered, deliverer: int.user.id } });
+		await db.orders.update({
+			where: {
+				id: orderId,
+			},
+			data: {
+				status: OrderStatus.Delivered,
+				deliverer: interaction.user.id,
+			},
+		});
+
+		// Create a new dish in the database each time an order is delivered
+		const statuses = ['Filthy', 'Smells Weird', 'Literally Ancient', 'Mildly Dirty'];
+		let uniqueId;
+		do {
+			uniqueId = await generateOrderId(); // Generate a unique ID for the dish
+			const existingDish = await prisma.dishes.findUnique({
+				where: {
+					id: uniqueId
+				}
+			});
+			if (!existingDish) break; // If there's no existing dish with this ID, we can use it
+		} while (true);
+
+		await prisma.dishes.create({
+			data: {
+				id: uniqueId,
+				status: Math.floor(Math.random() * statuses.length),
+				createdAt: new Date(),
+				updatedAt: new Date(),
+			},
+		});
+
+
+
 		const channel = client.channels.cache.get(order.channel) ?? await client.channels.fetch(order.channel).catch(() => null) ?? client.users.cache.get(order.user);
-		if (!channel || (channel instanceof GuildChannel && !channel.isText())) {
-			await int.reply(text.commands.deliver.noChannel);
+		if (!channel || (channel instanceof GuildChannel && channel.type !== ChannelType.GuildText)) {
+			await interaction.reply({ content: text.commands.deliver.noChannel, ephemeral: true }); // Set ephemeral to true
 			return;
 		}
-		await int.reply(`${text.commands.deliver.success}${info?.deliveryMessage ? "" : `\n${text.commands.deliver.noMessage}`}`);
-		await channel.send(format(info?.deliveryMessage ?? text.commands.deliver.default, await orderPlaceholders(order)));
-	});
+
+		await interaction.reply({ content: `${text.commands.deliver.success}${info?.deliveryMessage ? "" : `\n${text.commands.deliver.noMessage}`}`, ephemeral: false });
+		await channel.send(format(info?.deliveryMessage || text.commands.deliver.default, await orderPlaceholders(order)));
+	}
+});

@@ -28,4 +28,9 @@
 			moderator: true
 		}
 	}
-}
+	admin: {
+		roles: {
+			admin: true
+		}
+	}
+} 
