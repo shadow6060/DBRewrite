@@ -28,15 +28,6 @@ model UserInfo {
 }
  
 
-model Tree {
-  id     String   @id
-  age    Int
-  water  DateTime
-  maxAge Int
-
-  @@map(name: "trees")
-}
-
 model ServerInfo {
   id        String   @id @db.VarChar(30)
   createdAt DateTime @default(now())
