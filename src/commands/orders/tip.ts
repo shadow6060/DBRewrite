@@ -41,7 +41,7 @@ export const command = new Command("tip", "Tip your last order.")
 					.setFooter({ text: format(tcte.footer, int.user.tag), iconURL: int.user.displayAvatarURL() }),
 			],
 		});
-		await db.cafeOrders.update({
+		await db.orders.update({
 			where: { id: lastOrder.id },
 			data: { flags: lastOrder.flags | OrderFlags.Tipped },
 		});
