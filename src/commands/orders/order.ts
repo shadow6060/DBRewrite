@@ -25,6 +25,14 @@ export const command = new Command("order", "Orders a drink.")
 		}
 
 		const drink = int.options.getString("drink", true);
+
+		// Check the length of the drink description
+		const maxDescriptionLength = 100; // Adjust this value as needed
+		if (drink.length > maxDescriptionLength) {
+			await int.reply(`Your order details are too long. Please limit them to ${maxDescriptionLength} characters.`);
+			return;
+		}
+
 		const order = await db.orders.create({
 			data: {
 				id: await generateOrderId(),
