@@ -31,13 +31,17 @@ export const command = new Command("claim", "Claims an order.")
             return;
         }
 
-        const options = orders.map(order => ({
-            label: order.id,
-            description: `Details: ${order.details}\nUser: ${order.user}`, // Include the 'details' property in the description
-            value: order.id,
-            details: order.details
-        }));
+        const options = orders.map(order => {
+            const details = order.details.length > 50 ? order.details.substring(0, 47) + "..." : order.details;
+            const user = order.user.length > 50 ? order.user.substring(0, 47) + "..." : order.user;
 
+            return {
+                label: order.id,
+                description: `Details: ${details}\nUser: ${user}`,
+                value: order.id,
+                details: order.details
+            };
+        });
         const selectMenu = new StringSelectMenuBuilder()
             .setCustomId("claim_order")
             .setPlaceholder("Select an order to claim")

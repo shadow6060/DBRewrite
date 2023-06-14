@@ -31,6 +31,8 @@ export const command = new Command("unclaim", "Allows you to unclaim an order.")
 			await int.reply({ content: "Invalid order selected.", ephemeral: true });
 			return;
 		}
+		const details = order.details.length > 50 ? order.details.substring(0, 47) + "..." : order.details;
+		const user = order.user.length > 50 ? order.user.substring(0, 47) + "..." : order.user;
 
 		const selectMenu = new StringSelectMenuBuilder()
 			.setCustomId("unclaim_order")
@@ -38,11 +40,10 @@ export const command = new Command("unclaim", "Allows you to unclaim an order.")
 			.addOptions([
 				{
 					label: order.id,
-					description: `Details: ${order.details}\nUser: ${order.user}}`, // Include the 'details' property
+					description: `Details: ${details}\nUser: ${user}`,
 					value: order.id,
 				},
 			]);
-
 		const actionRow = {
 			type: ComponentType.ActionRow,
 			components: [selectMenu],
