@@ -9,35 +9,32 @@ datasource db {
 }
 
 model WorkerInfo {
-  id              String    @id @db.VarChar(20)
-  createdAt       DateTime  @default(now())
-  preparations    Int       @default(0)
-  deliveries      Int       @default(0)
+  id              String   @id @db.VarChar(20)
+  createdAt       DateTime @default(now())
+  preparations    Int      @default(0)
+  deliveries      Int      @default(0)
   deliveryMessage String?
 }
 
 model UserInfo {
-  id         String   @id @db.VarChar(30)
-  createdAt  DateTime @default(now())
-  balance    Int      @default(0)
-  newBalance Int?
-  tabLimit   Float    @default(0)
-  guildsxp   Json     @default("{}")
-  tab        Tab?
-  donuts     Int      @default(0)
-}
- 
-
-model ServerInfo {
-  id        String   @id @db.VarChar(30)
-  createdAt DateTime @default(now())
-  data      Json
+  id           String     @id @db.VarChar(30)
+  createdAt    DateTime   @default(now())
+  balance      Int        @default(0)
+  newBalance   Int?
+  tabLimit     Float      @default(0)
+  tab          Tab?
+  donuts       Int        @default(0)
+  guildsxp     Json       @default("{}")
+  guildsxpData GuildsXP[]
 }
 
-model ServerConfig {
-  id                         String  @id @db.VarChar(30)
-  xpEnabledChannels          Json    @default("[]")
-  levelNotificationChannelId String?
+model Tree {
+  id     String   @id
+  age    Int
+  water  DateTime
+  maxAge Int
+
+  @@map(name: "trees")
 }
 
 model Tab {
@@ -79,26 +76,28 @@ model CafeOrders {
   putOnTab       Boolean?
   amount         Float?
 }
- model Orders {
-  id             String     @id @db.VarChar(10)
-  createdAt      DateTime   @default(now())
-  user           String     @db.VarChar(20)
+
+model Orders {
+  id             String      @id @db.VarChar(10)
+  createdAt      DateTime    @default(now())
+  user           String      @db.VarChar(20)
   details        String
   status         OrderStatus @default(Unprepared)
-  channel        String     @db.VarChar(20)
-  guild          String     @db.VarChar(20)
-  claimer        String?    @db.VarChar(20)
-  deliverer      String?    @db.VarChar(20)
+  channel        String      @db.VarChar(20)
+  guild          String      @db.VarChar(20)
+  claimer        String?     @db.VarChar(20)
+  deliverer      String?     @db.VarChar(20)
   image          String?
   timeout        DateTime?
   deleteReason   String?
   bakeRating     Int?
   prepRating     Int?
   deliveryRating Int?
-  flags          Int        @default(0)
+  flags          Int         @default(0)
   putOnTab       Boolean?
   amount         Float?
 }
+
 model dishes {
   id        String   @id @db.VarChar(1234)
   status    Int
@@ -124,7 +123,7 @@ model CustomDrink {
   updatedAt DateTime @updatedAt
 }
 
-enum CafeStatus { //Cafe Status used to be OrderStatus.
+enum CafeStatus {
   Unprepared
   Preparing
   Brewing
@@ -148,4 +147,15 @@ enum OrderStatus {
   Cancelled
   Deleted
   Failed
+}
+
+model GuildsXP {
+  userId  String
+  guildId String
+  userName String   // Add the userName field
+  level   Int      @default(0)
+  exp     Int      @default(0)
+  user    UserInfo @relation(fields: [userId], references: [id])
+
+  @@unique([userId, guildId])
 }
