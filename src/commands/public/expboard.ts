@@ -1,3 +1,6 @@
+//expboard
+/* eslint-disable quotes */
+/* eslint-disable indent */
 import { CommandInteraction, EmbedBuilder } from "discord.js";
 import { Command } from "../../structures/Command";
 import { PrismaClient } from "@prisma/client";
@@ -13,27 +16,21 @@ export const command = new Command("expboard", "Shows the leaderboard.")
         }
 
         // Get all users in the guild
-        const users = await prisma.userInfo.findMany();
-
-        // Parse the guildsxp field and add the level and exp for the current guild to the user objects
-        const usersWithLevels = users.map(user => {
-            const guildsxp = typeof user.guildsxp === 'string' ? JSON.parse(user.guildsxp) : {};
-            return {
-                ...user,
-                level: guildsxp[int.guild.id]?.level ?? 0,
-                exp: guildsxp[int.guild.id]?.exp ?? 0
-            };
+        const users = await prisma.guildsXP.findMany({
+            where: {
+                guildId: int.guild.id,
+            },
         });
 
         // Sort the users by level and exp
-        usersWithLevels.sort((a, b) => b.level - a.level || b.exp - a.exp);
+        users.sort((a, b) => b.level - a.level || b.exp - a.exp);
 
         // Take the top 10 users
-        const leaderboard = usersWithLevels.slice(0, 10);
+        const leaderboard = users.slice(0, 10);
 
         // Format the leaderboard into a string
         let leaderboardString = leaderboard.map((user, index) => {
-            return `${index + 1}. <@${user.id}> - Level ${user.level}`;
+            return `${index + 1}. <@${user.userId}> - Level ${user.level}`;
         }).join('\n');
 
         // Check if the leaderboard is empty

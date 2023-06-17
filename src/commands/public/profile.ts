@@ -1,3 +1,6 @@
+//profile.ts
+/* eslint-disable quotes */
+/* eslint-disable indent */
 import { CommandInteraction, EmbedBuilder } from "discord.js";
 import { Command } from "../../structures/Command";
 import { PrismaClient } from "@prisma/client";
@@ -13,23 +16,20 @@ export const command = new Command("profile", "Shows your profile.")
         }
 
         try {
-            const userData = await prisma.userInfo.findUnique({
+            const userGuildData = await prisma.guildsXP.findUnique({
                 where: {
-                    id: int.user.id,
+                    userId_guildId: {
+                        userId: int.user.id,
+                        guildId: int.guild.id,
+                    },
                 },
             });
 
-            if (!userData) {
+            if (!userGuildData) {
                 await int.reply("You don't have a profile yet.");
                 return;
             }
 
-            let guildsxp: Record<string, { xp: number; level: number }> = {};
-            if (typeof userData.guildsxp === 'string') {
-                guildsxp = JSON.parse(userData.guildsxp);
-            }
-
-            const userGuildData = guildsxp[int.guild.id] || { xp: 0, level: 1 };
             const nextLevelExp = userGuildData.level * 100;
             const level = userGuildData.level;
 
@@ -38,7 +38,7 @@ export const command = new Command("profile", "Shows your profile.")
                 .setTitle(`${int.user.username}'s Profile`)
                 .setThumbnail(int.user.displayAvatarURL())
                 .addFields(
-                    { name: "Experience", value: `${userGuildData.xp}/${nextLevelExp}`, inline: true },
+                    { name: "Experience", value: `${userGuildData.exp}/${nextLevelExp}`, inline: true },
                     { name: "Level", value: `${level}`, inline: true }
                 )
                 .setColor("#0099ff");
