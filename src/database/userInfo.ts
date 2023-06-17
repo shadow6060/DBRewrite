@@ -1,5 +1,6 @@
+/* eslint-disable quotes */
 import { PrismaClient, UserInfo } from '@prisma/client';
-import type { UserResolvable } from 'discord.js';
+import type { User, UserResolvable } from 'discord.js';
 import { resolveUserId } from '../utils/id';
 
 const prisma = new PrismaClient();
@@ -7,15 +8,33 @@ const prisma = new PrismaClient();
 export const getUserInfo = async (user: UserResolvable) =>
 	prisma.userInfo.findFirst({ where: { id: resolveUserId(user) } });
 
-export const upsertUserInfo = async (user: UserResolvable) =>
-	prisma.userInfo.upsert({
-		where: { id: resolveUserId(user) },
-		create: {
+export const upsertUserInfo = async (user: User, guildId: string): Promise<UserInfo> => {
+	const existingUserInfo = await prisma.userInfo.findUnique({
+		where: {
 			id: resolveUserId(user),
-			guildsxp: '0', // Provide a default value for guildsxp
 		},
-		update: {},
 	});
+
+	if (existingUserInfo) {
+		return existingUserInfo;
+	}
+
+	const createdUserInfo = await prisma.userInfo.create({
+		data: {
+			id: resolveUserId(user),
+			userId: user.id,
+			userName: user.username,
+			guildId: guildId,
+		},
+	});
+
+	return createdUserInfo;
+};
+
+
+
+
+
 
 export const getUserBalance = async (user: UserResolvable): Promise<{ balance: number; donuts: number }> => {
 	const userInfo = await prisma.userInfo.findUnique({
@@ -54,5 +73,3 @@ export const updateBalance = async (
 
 	return updatedUserInfo;
 };
-export { resolveUserId };
-
