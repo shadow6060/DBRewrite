@@ -1,3 +1,6 @@
+//ExpCreate.ts
+/* eslint-disable quotes */
+/* eslint-disable indent */
 import { PrismaClient } from "@prisma/client";
 import { client } from "../providers/client";
 
@@ -31,48 +34,47 @@ client.on('messageCreate', async (message) => {
 
     try {
         // Create or retrieve the user's data from the database
-        let userData = await prisma.userInfo.findUnique({
+        const guildsXPData = await prisma.guildsXP.upsert({
             where: {
-                id: userId,
-            },
-        });
-        if (!userData) {
-            // If the user doesn't exist in the database, create a new entry
-            userData = await prisma.userInfo.create({
-                data: {
-                    id: userId,
-                    guildsxp: JSON.stringify({}),
+                userId_guildId: {
+                    userId: userId,
+                    guildId: guildId,
                 },
-            });
-        }
+            },
+            create: {
+                userId: userId,
+                guildId: guildId,
+                userName: message.author.username,
+                level: 0,
+                exp: 0,
+            },
+            update: {},
+        });
 
-        let guildsxp: Record<string, { xp: number; level: number }> = {};
-        if (typeof userData.guildsxp === 'string') {
-            guildsxp = JSON.parse(userData.guildsxp);
-        }
+        // Increase their XP
+        guildsXPData.exp += Math.floor(Math.random() * 20) + 1;
 
-        if (!guildsxp[guildId]) {
-            // If they don't, initialize it
-            guildsxp[guildId] = { xp: Math.floor(Math.random() * 20) + 1, level: 1 };
-        } else {
-            // Increase their XP
-            guildsxp[guildId].xp += Math.floor(Math.random() * 20) + 1;
-            // Check if the user has enough XP to level up
-            if (guildsxp[guildId].xp >= guildsxp[guildId].level * 100) {
-                // If they do, increase their level and reset their XP
-                guildsxp[guildId].level += 1;
-                guildsxp[guildId].xp = 0;
-                // Send a message to the user to notify them of the level up
-                message.reply(`Congratulations! You have leveled up to level ${guildsxp[guildId].level}!`);
-            }
+        // Check if the user has enough XP to level up
+        if (guildsXPData.exp >= guildsXPData.level * 100) {
+            // If they do, increase their level and reset their XP
+            guildsXPData.level += 1;
+            guildsXPData.exp = 0;
+            // Send a message to the user to notify them of the level up
+            message.reply(`Congratulations! You have leveled up to level ${guildsXPData.level}!`);
         }
 
         // Update the user's data in the database
-        await prisma.userInfo.update({
+        await prisma.guildsXP.update({
             where: {
-                id: userId,
+                userId_guildId: {
+                    userId: userId,
+                    guildId: guildId,
+                },
             },
-            data: { guildsxp: JSON.stringify(guildsxp) },
+            data: {
+                level: guildsXPData.level,
+                exp: guildsXPData.exp,
+            },
         });
     } catch (error) {
         console.error('Error handling user data:', error);
