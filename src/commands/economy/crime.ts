@@ -1,3 +1,4 @@
+//crime.ts
 import { db } from "../../database/database";
 import { upsertUserInfo } from "../../database/userInfo";
 import { constants, text } from "../../providers/config";
@@ -21,16 +22,16 @@ export const command = new Command("crime", "Try your chances on doing crime!")
 		const result = [
 			"Succesful",
 			"Failure"
-		]
-		let awnser = result[Math.floor(Math.random() * result.length)];
+		];
+		const awnser = result[Math.floor(Math.random() * result.length)];
 		if (awnser === "Failure") {
-			const info = await upsertUserInfo(int.user);
+			const info = await upsertUserInfo(int.user, int.guild?.id || '');
 			const obtained = randRange(...constants.crime.amountRange);
 			cooldowns[int.user.id] = Date.now() + constants.crime.cooldownMs;
-			await db.userInfo.update({ where: { id: info.id }, data: { balance: { increment: -obtained } } });
+			await db.userInfo.update({ where: { id: info.id }, data: { balance: { decrement: obtained } } });
 			await int.reply(format(sampleArray(text.commands.crime.failure), `\`$${-obtained}\``));
 		} else {
-			const info = await upsertUserInfo(int.user);
+			const info = await upsertUserInfo(int.user, int.guild?.id || '');
 			const obtained = randRange(...constants.crime.amountRange);
 			cooldowns[int.user.id] = Date.now() + constants.crime.cooldownMs;
 			await db.userInfo.update({ where: { id: info.id }, data: { balance: { increment: obtained } } });

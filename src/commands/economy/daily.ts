@@ -1,3 +1,4 @@
+//daily.ts
 import { db } from "../../database/database";
 import { upsertUserInfo } from "../../database/userInfo";
 import { constants, text } from "../../providers/config";
@@ -18,7 +19,7 @@ export const command = new Command("daily", "Get your daily income!.")
 			);
 			return;
 		}
-		const info = await upsertUserInfo(int.user);
+		const info = await upsertUserInfo(int.user, int.guild?.id || '');
 		const obtained = randRange(...constants.daily.amountRange);
 		cooldowns[int.user.id] = Date.now() + constants.daily.cooldownMs;
 		await db.userInfo.update({ where: { id: info.id }, data: { balance: { increment: obtained } } });

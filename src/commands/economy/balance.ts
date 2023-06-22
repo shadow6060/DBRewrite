@@ -1,3 +1,4 @@
+/* eslint-disable linebreak-style */
 import { getUserInfo } from "../../database/userInfo";
 import { text } from "../../providers/config";
 import { Command } from "../../structures/Command";
@@ -8,7 +9,7 @@ export const command = new Command("balance", "Checks your balance.")
 		const info = await getUserInfo(int.user);
 		const balance = info?.balance ?? 0;
 		//const donuts = info?.donuts ?? 0;
-		const replyMessage = format(text.commands.balance.success, balance) //+ "\n" +
+		const replyMessage = format(text.commands.balance.success, balance); //+ "\n" +
 		//format(text.commands.balance.success1, donuts);
 		await int.reply(replyMessage);
 	});

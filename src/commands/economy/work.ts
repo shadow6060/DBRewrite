@@ -1,3 +1,6 @@
+/* eslint-disable quotes */
+/* eslint-disable linebreak-style */
+//work.ts
 import { db } from "../../database/database";
 import { upsertUserInfo } from "../../database/userInfo";
 import { constants, text } from "../../providers/config";
@@ -18,7 +21,7 @@ export const command = new Command("work", "Gets you some money.")
 			);
 			return;
 		}
-		const info = await upsertUserInfo(int.user);
+		const info = await upsertUserInfo(int.user, int.guild?.id || '');
 		const obtained = randRange(...constants.work.amountRange);
 		cooldowns[int.user.id] = Date.now() + constants.work.cooldownMs;
 		await db.userInfo.update({ where: { id: info.id }, data: { balance: { increment: obtained } } });

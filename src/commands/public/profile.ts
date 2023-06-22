@@ -1,4 +1,3 @@
-//profile.ts
 /* eslint-disable quotes */
 /* eslint-disable indent */
 import { CommandInteraction, EmbedBuilder } from "discord.js";
@@ -16,18 +15,44 @@ export const command = new Command("profile", "Shows your profile.")
         }
 
         try {
-            const userGuildData = await prisma.guildsXP.findUnique({
+            const userId = int.user.id;
+            const guildId = int.guild.id;
+
+            // Check if the user's guildsXP data exists in the database
+            let userGuildData = await prisma.guildsXP.findUnique({
                 where: {
                     userId_guildId: {
-                        userId: int.user.id,
-                        guildId: int.guild.id,
+                        userId: userId,
+                        guildId: guildId,
                     },
                 },
             });
 
             if (!userGuildData) {
-                await int.reply("You don't have a profile yet.");
-                return;
+                // If the data doesn't exist, create it in the database
+                userGuildData = await prisma.guildsXP.create({
+                    data: {
+                        userId: userId,
+                        guildId: guildId,
+                        userName: int.user.username,
+                        level: 0,
+                        exp: 0,
+                        user: { connect: { id: userId } }, // Connect the guildsXP to the UserInfo
+                    },
+                });
+            } else if (!userGuildData.userName) {
+                // If the userName is blank, update it with the user's username
+                userGuildData = await prisma.guildsXP.update({
+                    where: {
+                        userId_guildId: {
+                            userId: userId,
+                            guildId: guildId,
+                        },
+                    },
+                    data: {
+                        userName: int.user.username,
+                    },
+                });
             }
 
             const nextLevelExp = userGuildData.level * 100;

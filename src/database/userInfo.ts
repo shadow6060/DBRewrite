@@ -32,10 +32,6 @@ export const upsertUserInfo = async (user: User, guildId: string): Promise<UserI
 };
 
 
-
-
-
-
 export const getUserBalance = async (user: UserResolvable): Promise<{ balance: number; donuts: number }> => {
 	const userInfo = await prisma.userInfo.findUnique({
 		where: {

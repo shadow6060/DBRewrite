@@ -1,3 +1,4 @@
+/* eslint-disable quotes */
 // Main code
 import { v4 as uuidv4 } from 'uuid';
 import { CafeStatus, OrderStatus } from "@prisma/client";
@@ -66,7 +67,6 @@ export const command = new Command(
 		});
 	});
 
-// Interaction Create Event (for handling select menu interaction)
 // Interaction Create Event (for handling select menu interaction)
 client.on("interactionCreate", async (interaction) => {
 	if (!interaction.isStringSelectMenu()) return;

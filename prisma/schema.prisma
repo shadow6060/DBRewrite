@@ -17,15 +17,16 @@ model WorkerInfo {
 }
 
 model UserInfo {
-  id           String     @id @db.VarChar(30)
-  createdAt    DateTime   @default(now())
-  balance      Int        @default(0)
-  newBalance   Int?
-  tabLimit     Float      @default(0)
-  tab          Tab?
-  donuts       Int        @default(0)
-  guildsxp     Json       @default("{}")
-  guildsxpData GuildsXP[]
+  id                    String     @id @db.VarChar(30)
+  createdAt             DateTime   @default(now())
+  balance               Int        @default(0)
+  newBalance            Int?
+  tabLimit              Float      @default(0)
+  tab                   Tab?
+  donuts                Int        @default(0)
+  guildsxp              Json       @default("{}")
+  guildsxpData          GuildsXP[]
+
 }
 
 model Tree {
@@ -150,12 +151,12 @@ enum OrderStatus {
 }
 
 model GuildsXP {
-  userId  String
-  guildId String
-  userName String   // Add the userName field
-  level   Int      @default(0)
-  exp     Int      @default(0)
-  user    UserInfo @relation(fields: [userId], references: [id])
-
+  userId   String
+  guildId  String
+  userName String // Add the userName field
+  level    Int      @default(0)
+  exp      Int      @default(0)
+  user     UserInfo @relation(fields: [userId], references: [id])
+  notificationChannelId String? // New field for notification channel ID
   @@unique([userId, guildId])
 }

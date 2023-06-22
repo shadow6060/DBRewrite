@@ -59,8 +59,19 @@ client.on('messageCreate', async (message) => {
             // If they do, increase their level and reset their XP
             guildsXPData.level += 1;
             guildsXPData.exp = 0;
-            // Send a message to the user to notify them of the level up
-            message.reply(`Congratulations! You have leveled up to level ${guildsXPData.level}!`);
+
+            // Get the ID of the notification channel from the database
+            const notificationChannelId = guildsXPData.notificationChannelId;
+            if (notificationChannelId) {
+                // Get the channel from the client
+                const notificationChannel = client.channels.cache.get(notificationChannelId);
+
+                // Check if the channel exists and is a text channel
+                if (notificationChannel && notificationChannel.isTextBased()) {
+                    // Send a notification to the channel
+                    notificationChannel.send(`${message.author.username} has leveled up to level ${guildsXPData.level}!`);
+                }
+            }
         }
 
         // Update the user's data in the database
