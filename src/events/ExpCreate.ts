@@ -1,4 +1,3 @@
-//ExpCreate.ts
 /* eslint-disable quotes */
 /* eslint-disable indent */
 import { PrismaClient } from "@prisma/client";
@@ -33,6 +32,18 @@ client.on('messageCreate', async (message) => {
     }, 60000); // 60000 milliseconds = 60 seconds
 
     try {
+        // Check if the user exists in the userInfo table
+        const userInfo = await prisma.userInfo.findUnique({
+            where: {
+                id: userId,
+            },
+        });
+
+        if (!userInfo) {
+            console.log(`User with ID ${userId} does not exist in the userInfo table.`);
+            return;
+        }
+
         // Create or retrieve the user's data from the database
         const guildsXPData = await prisma.guildsXP.upsert({
             where: {

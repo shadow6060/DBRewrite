@@ -21,7 +21,7 @@ export const client = new Client({
 client.on("ready", () => {
 	console.log(`Logged in as ${client.user?.tag}!`);
 	client.user?.setPresence({
-		activities: [{ name: "with Discord.js" }],
+		activities: [{ name: "We are online! Use slash cmds to order /order <description> & You get money through /work" }],
 		status: "online", // Online , idle , dnd (Do Not Disturb), invisible , offline
 	});
 });

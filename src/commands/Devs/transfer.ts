@@ -13,23 +13,23 @@ export const command = new Command("transfer", "Transfers data from the old sche
             // Retrieve all the existing user data
             const usersData = await prisma.userInfo.findMany();
 
-            console.log(`Total user data count: ${usersData.length}`);
+            //console.log(`Total user data count: ${usersData.length}`);
 
             // Transfer the data to the new schema
             for (const data of usersData) {
                 const userId = data.id;
                 const guildsXPData = data.guildsxp;
 
-                console.log(`Transferring data for user with ID: ${userId}`);
+                //console.log(`Transferring data for user with ID: ${userId}`);
 
                 const guildsXPDataObject = parseGuildsXPData(guildsXPData);
 
-                console.log(`GuildsXPDataObject: ${JSON.stringify(guildsXPDataObject)}`);
+                //console.log(`GuildsXPDataObject: ${JSON.stringify(guildsXPDataObject)}`);
 
                 for (const guildId in guildsXPDataObject) {
                     const { id } = guildsXPDataObject[guildId];
 
-                    console.log(`Transferring data for guild with ID: ${guildId}`);
+                    // console.log(`Transferring data for guild with ID: ${guildId}`);
 
                     // Create or update the guildsXP data in the new schema
                     await prisma.guildsXP.upsert({
@@ -48,7 +48,7 @@ export const command = new Command("transfer", "Transfers data from the old sche
                         },
                     });
 
-                    console.log(`Data transferred for guild with ID: ${guildId}`);
+                    // console.log(`Data transferred for guild with ID: ${guildId}`);
                 }
 
                 // Update the guildsxp field to be empty
@@ -57,7 +57,7 @@ export const command = new Command("transfer", "Transfers data from the old sche
                     data: { guildsxp: "{}" },
                 });
 
-                console.log(`Data transferred for user with ID: ${userId}`);
+                //console.log(`Data transferred for user with ID: ${userId}`);
             }
 
             await int.reply("Data transfer completed successfully.");

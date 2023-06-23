@@ -1,3 +1,4 @@
+/* eslint-disable indent */
 import { permissions } from "../../../providers/permissions";
 import { CommandInteraction, EmbedBuilder, Message } from "discord.js";
 import { ButtonBuilder, ButtonStyle, ActionRowBuilder } from "discord.js";
