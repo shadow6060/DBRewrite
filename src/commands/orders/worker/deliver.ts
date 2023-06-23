@@ -1,19 +1,17 @@
+/* eslint-disable no-constant-condition */
 /* eslint-disable quotes */
 // Main code
-import { v4 as uuidv4 } from 'uuid';
 import { CafeStatus, OrderStatus } from "@prisma/client";
 import { ChannelType, GuildChannel, StringSelectMenuBuilder, CommandInteraction, ComponentType, EmbedBuilder } from "discord.js";
 import { db } from "../../../database/database";
-import { orderPlaceholders, generateOrderId, generateDishId, } from "../../../database/orders";
+import { orderPlaceholders, generateOrderId } from "../../../database/orders";
 import { upsertWorkerInfo } from "../../../database/workerInfo";
 import { client } from "../../../providers/client";
 import { text } from "../../../providers/config";
 import { permissions } from "../../../providers/permissions";
 import { Command } from "../../../structures/Command";
 import { format } from "../../../utils/string";
-import { PrismaClient } from '@prisma/client';
 
-const prisma = new PrismaClient();
 export const command = new Command(
 	"deliver",
 	"Delivers an order."
@@ -109,30 +107,6 @@ client.on("interactionCreate", async (interaction) => {
 				deliverer: interaction.user.id,
 			},
 		});
-
-		// Create a new dish in the database each time an order is delivered
-		const statuses = ['Filthy', 'Smells Weird', 'Literally Ancient', 'Mildly Dirty'];
-		let uniqueId;
-		do {
-			uniqueId = await generateOrderId(); // Generate a unique ID for the dish
-			const existingDish = await prisma.dishes.findUnique({
-				where: {
-					id: uniqueId
-				}
-			});
-			if (!existingDish) break; // If there's no existing dish with this ID, we can use it
-		} while (true);
-
-		await prisma.dishes.create({
-			data: {
-				id: uniqueId,
-				status: Math.floor(Math.random() * statuses.length),
-				createdAt: new Date(),
-				updatedAt: new Date(),
-			},
-		});
-
-
 
 		const channel = client.channels.cache.get(order.channel) ?? await client.channels.fetch(order.channel).catch(() => null) ?? client.users.cache.get(order.user);
 		if (!channel || (channel instanceof GuildChannel && channel.type !== ChannelType.GuildText)) {

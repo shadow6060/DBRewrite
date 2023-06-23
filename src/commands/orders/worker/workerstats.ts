@@ -1,3 +1,5 @@
+/* eslint-disable quotes */
+/* eslint-disable indent */
 import { CommandInteraction, EmbedBuilder } from "discord.js";
 import { permissions } from "../../../providers/permissions";
 import { Command } from "../../../structures/Command";

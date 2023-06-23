@@ -30,9 +30,8 @@ export const command = new Command("delete", "Deletes an order.")
 		try {
 			await user.send(format(text.commands.delete.dm, order.details, reason));
 		} catch (error) {
-			// Failed to send DM to the user
-			await int.reply(text.commands.delete.dmFailed);
-			return;
+			// Failed to send DM to the user, continue deletion process anyway
+			//await int.reply(text.commands.delete.dmFailed);
 		}
 
 		await db.orders.update({
@@ -42,3 +41,4 @@ export const command = new Command("delete", "Deletes an order.")
 
 		await int.reply(text.commands.delete.success);
 	});
+
