@@ -1,7 +1,7 @@
 /* eslint-disable indent */
 import { CommandInteraction, User } from "discord.js";
-import { permissions } from "../../providers/permissions";
-import { Command } from "../../structures/Command";
+import { permissions } from "../../../providers/permissions";
+import { Command } from "../../../structures/Command";
 import { PrismaClient, CafeStatus, OrderStatus } from "@prisma/client";
 
 const prisma = new PrismaClient();
