@@ -157,6 +157,7 @@ model GuildsXP {
   level    Int      @default(0)
   exp      Int      @default(0)
   user     UserInfo @relation(fields: [userId], references: [id])
+  location              String?
   notificationChannelId String? // New field for notification channel ID
   @@unique([userId, guildId])
 }
