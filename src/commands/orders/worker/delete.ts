@@ -27,11 +27,12 @@ export const command = new Command("delete", "Deletes an order.")
 			return;
 		}
 
+		let messageSent = false;
 		try {
 			await user.send(format(text.commands.delete.dm, order.details, reason));
+			messageSent = true;
 		} catch (error) {
 			// Failed to send DM to the user, continue deletion process anyway
-			//await int.reply(text.commands.delete.dmFailed);
 		}
 
 		await db.orders.update({
@@ -39,6 +40,9 @@ export const command = new Command("delete", "Deletes an order.")
 			data: { claimer: int.user.id, status: OrderStatus.Deleted, deleteReason: reason },
 		});
 
-		await int.reply(text.commands.delete.success);
+		if (messageSent) {
+			await int.reply(text.commands.delete.success);
+		} else {
+			await int.reply(text.commands.delete.successNoDm);
+		}
 	});
-
