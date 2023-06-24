@@ -166,6 +166,7 @@ const textSchema = z
 				userDmDisabled: z.string(),
 				dmFailed: z.string(),
 				userNotFound: z.string(),
+				successNoDm: z.string(),
 			}),
 
 			rate: z.object({
