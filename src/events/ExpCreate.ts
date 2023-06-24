@@ -33,15 +33,23 @@ client.on('messageCreate', async (message) => {
 
     try {
         // Check if the user exists in the userInfo table
-        const userInfo = await prisma.userInfo.findUnique({
+        let userInfo = await prisma.userInfo.findUnique({
             where: {
                 id: userId,
             },
         });
 
         if (!userInfo) {
-            console.log(`User with ID ${userId} does not exist in the userInfo table.`);
-            return;
+            // If user does not exist, create a new userInfo record
+            userInfo = await prisma.userInfo.create({
+                data: {
+                    id: userId,
+                    balance: 0,
+                    tabLimit: 0.0,
+                    donuts: 0,
+                    guildsxp: "{}",
+                },
+            });
         }
 
         // Create or retrieve the user's data from the database
@@ -103,6 +111,7 @@ client.on('messageCreate', async (message) => {
         return;
     }
 });
+
 
 // Close the Prisma connection when the script is exiting
 process.on('beforeExit', () => {
