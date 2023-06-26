@@ -13,8 +13,8 @@
 	common: {
 		invalidOrderId: "[no] No order was found by that ID. Try checking your capitalization and numbers."
 		noActiveOrder: "[no] You do not have an active order. Order one with `/order`!"
-		noClaimedOrder: "[no] You do not have an order claimed currently."
-		noOrders: "[no] You have not any orders yet."
+		noClaimedOrder: "[no] You do not have an order claimed at the moment."
+		noOrders: "[no] You don't have any orders yet."
 		identified: **{name}** (`{id}`) 
 		orderEmbed: {
 			title: Order Information for `{}`
@@ -30,7 +30,7 @@
 				orderedAt: ⏰ Ordered At
 			}
 		}
-		invalidNatural: "[no] Invalid number provided. The number must be an integer greater than 0."
+		invalidNatural: "[no] Invalid number provided; the number must be an integer greater than 0."
 		notEnoughBalance: "[no] You do not have enough money."
 		interactOwn: "[no] You cannot interact with your own orders."
 		mainGuildOnly: "[no] This command can only be used in the main server."
@@ -145,25 +145,25 @@
 			]
 		}
 		crime: {
+
 			sucess: [
 				You stole from Drunk Bartender and got {}.
 				You fought an old lady and got {}.
-				You decided to go to the corner shop and rob them you got {}.
-				You robbed an atm and got {}.
+				You decided to go to the corner shop and rob them. You got {}.
+				You robbed an ATM and got {}.
 				You robbed Tofu and got {}.
-				a kid spat on you, you got {} for selling it to child predators.
-				You burnt down someones mansion you got {}.
-				You kiddnapped someones dog they needed to pay you {} to get the dog back.
-				You stole someones jewerly you sold it for {}.
-
+				A kid spat on you, you got {} for selling it to child predators.
+				You burnt down someones mansion and got {}.
+				You kiddnapped someones dog. They paid you {} to get the dog back.
+				You stole someones jewelry and sold it for {}.
 			]
 			failure: [
 				You tried to steal from Drunk Bartender and lost {}.
-				You tried to fight an old lady and lost then got robbed for {}.
+				You tried to fight an old lady, lost, then got robbed for {}.
 				You tried to rob the corner shop and lost {}.
-				You tried robbing an atm and ended up being scammed for {}.
+				You tried robbing an ATM and ended up being scammed for {}.
 				You attempted to rob Tofu but ended up being robbed by Tofu for {}.
-				You stole someones purse when they were walking their dog , and the dog started chasing you so you runned from fear. but you dropped her purse and your {} dollars.
+				You stole someones purse when they were walking their dog and the dog started chasing you. You dropped her purse and an extra {} while running away.
 			]
 		}
 		daily: {
