@@ -1,9 +1,8 @@
-import { OrderStatus } from "@prisma/client";
+import { CafeStatus, OrderStatus } from "@prisma/client";
 import { db } from "../../../database/database";
-import { generateOrderId, getClaimedOrder, hasActiveOrder, matchActiveOrder, matchOrderStatus } from "../../../database/order";
+import { matchActiveOrder } from "../../../database/orders";
 import { client } from "../../../providers/client";
-import { config, text } from "../../../providers/config";
-import { mainGuild } from "../../../providers/discord";
+import { text } from "../../../providers/config";
 import { permissions } from "../../../providers/permissions";
 import { Command } from "../../../structures/Command";
 import { format } from "../../../utils/string";
@@ -20,10 +19,30 @@ export const command = new Command("delete", "Deletes an order.")
 			await int.reply(text.common.invalidOrderId);
 			return;
 		}
-		await (await client.users.fetch(order.user)).send(format(text.commands.delete.dm, order.details, reason));
-		await db.order.update({
+
+		const user = await client.users.fetch(order.user);
+		if (!user) {
+			// User not found
+			await int.reply(text.commands.delete.userNotFound);
+			return;
+		}
+
+		let messageSent = false;
+		try {
+			await user.send(format(text.commands.delete.dm, order.details, reason));
+			messageSent = true;
+		} catch (error) {
+			// Failed to send DM to the user, continue deletion process anyway
+		}
+
+		await db.orders.update({
 			where: { id: order.id },
 			data: { claimer: int.user.id, status: OrderStatus.Deleted, deleteReason: reason },
 		});
-		await int.reply(text.commands.delete.success);
+
+		if (messageSent) {
+			await int.reply(text.commands.delete.success);
+		} else {
+			await int.reply(text.commands.delete.successNoDm);
+		}
 	});

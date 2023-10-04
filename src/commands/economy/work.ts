@@ -1,19 +1,9 @@
-import { OrderStatus } from "@prisma/client";
+/* eslint-disable quotes */
+/* eslint-disable linebreak-style */
+//work.ts
 import { db } from "../../database/database";
-import {
-	generateOrderId,
-	getClaimedOrder,
-	getUserActiveOrder,
-	hasActiveOrder,
-	matchActiveOrder,
-	matchOrderStatus,
-	orderEmbedAsync,
-} from "../../database/order";
-import { getUserInfo, upsertUserInfo } from "../../database/userInfo";
-import { client } from "../../providers/client";
-import { config, constants, text } from "../../providers/config";
-import { mainGuild } from "../../providers/discord";
-import { permissions } from "../../providers/permissions";
+import { upsertUserInfo } from "../../database/userInfo";
+import { constants, text } from "../../providers/config";
 import { Command } from "../../structures/Command";
 import { format } from "../../utils/string";
 import pms from "pretty-ms";
@@ -31,7 +21,7 @@ export const command = new Command("work", "Gets you some money.")
 			);
 			return;
 		}
-		const info = await upsertUserInfo(int.user);
+		const info = await upsertUserInfo(int.user, int.guild?.id || '');
 		const obtained = randRange(...constants.work.amountRange);
 		cooldowns[int.user.id] = Date.now() + constants.work.cooldownMs;
 		await db.userInfo.update({ where: { id: info.id }, data: { balance: { increment: obtained } } });

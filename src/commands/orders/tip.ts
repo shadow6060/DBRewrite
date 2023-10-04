@@ -1,6 +1,6 @@
-import { MessageEmbed } from "discord.js";
+import { EmbedBuilder } from "discord.js";
 import { db } from "../../database/database";
-import { generateOrderId, getLatestOrder, hasActiveOrder, OrderFlags } from "../../database/order";
+import { getLatestOrder, OrderFlags } from "../../database/orders";
 import { getUserInfo } from "../../database/userInfo";
 import { text } from "../../providers/config";
 import { mainChannels } from "../../providers/discord";
@@ -33,7 +33,7 @@ export const command = new Command("tip", "Tip your last order.")
 		const tcte = text.commands.tip.embed;
 		await mainChannels.tips.send({
 			embeds: [
-				new MessageEmbed()
+				new EmbedBuilder()
 					.setTitle(tcte.title)
 					.setDescription(
 						format(tcte.description, lastOrder.id, tip, `<@${lastOrder.claimer}>`, `<@${lastOrder.deliverer}>`)
@@ -41,7 +41,7 @@ export const command = new Command("tip", "Tip your last order.")
 					.setFooter({ text: format(tcte.footer, int.user.tag), iconURL: int.user.displayAvatarURL() }),
 			],
 		});
-		await db.order.update({
+		await db.orders.update({
 			where: { id: lastOrder.id },
 			data: { flags: lastOrder.flags | OrderFlags.Tipped },
 		});

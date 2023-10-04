@@ -1,6 +1,5 @@
-import { MessageEmbed } from "discord.js";
+import { EmbedBuilder } from "discord.js";
 import { text } from "../../providers/config";
-import { mainChannels } from "../../providers/discord";
 import { Command } from "../../structures/Command";
 import { format } from "../../utils/string";
 import Client from "nekos.life";
@@ -12,7 +11,7 @@ export const command = new Command("meow", "Cute kittens.")
 		const tcfe = text.commands.feedback.embed;
 		await int.reply({
 			embeds: [
-				new MessageEmbed()
+				new EmbedBuilder()
 					.setTitle("You Summoned a kitten!")
 					.setImage(yeeeee.url)
 					.setDescription(`${int.user.tag} Has summoned an kitten!`)

@@ -1,19 +1,7 @@
-import { OrderStatus } from "@prisma/client";
+//crime.ts
 import { db } from "../../database/database";
-import {
-	generateOrderId,
-	getClaimedOrder,
-	getUserActiveOrder,
-	hasActiveOrder,
-	matchActiveOrder,
-	matchOrderStatus,
-	orderEmbedAsync,
-} from "../../database/order";
-import { getUserInfo, upsertUserInfo } from "../../database/userInfo";
-import { client } from "../../providers/client";
-import { config, constants, text } from "../../providers/config";
-import { mainGuild } from "../../providers/discord";
-import { permissions } from "../../providers/permissions";
+import { upsertUserInfo } from "../../database/userInfo";
+import { constants, text } from "../../providers/config";
 import { Command } from "../../structures/Command";
 import { format } from "../../utils/string";
 import pms from "pretty-ms";
@@ -31,22 +19,22 @@ export const command = new Command("crime", "Try your chances on doing crime!")
 			);
 			return;
 		}
-        const result = [
-            "Succesful",
-            "Failure"
-          ] 
-        let awnser = result[Math.floor(Math.random() * result.length)];
-        if (awnser === "Failure") {
-        const info = await upsertUserInfo(int.user);
-        const obtained = randRange(...constants.crime.amountRange);
-        cooldowns[int.user.id] = Date.now() + constants.crime.cooldownMs;
-        await db.userInfo.update({ where: { id: info.id }, data: { balance: { increment: -obtained } } });
-        await int.reply(format(sampleArray(text.commands.crime.failure), `\`$${-obtained}\``));
-        } else {
-		const info = await upsertUserInfo(int.user);
-		const obtained = randRange(...constants.crime.amountRange);
-		cooldowns[int.user.id] = Date.now() + constants.crime.cooldownMs;
-		await db.userInfo.update({ where: { id: info.id }, data: { balance: { increment: obtained } } });
-		await int.reply(format(sampleArray(text.commands.crime.sucess), `\`$${obtained}\``));
-        }
+		const result = [
+			"Succesful",
+			"Failure"
+		];
+		const awnser = result[Math.floor(Math.random() * result.length)];
+		if (awnser === "Failure") {
+			const info = await upsertUserInfo(int.user, int.guild?.id || '');
+			const obtained = randRange(...constants.crime.amountRange);
+			cooldowns[int.user.id] = Date.now() + constants.crime.cooldownMs;
+			await db.userInfo.update({ where: { id: info.id }, data: { balance: { decrement: obtained } } });
+			await int.reply(format(sampleArray(text.commands.crime.failure), `\`$${-obtained}\``));
+		} else {
+			const info = await upsertUserInfo(int.user, int.guild?.id || '');
+			const obtained = randRange(...constants.crime.amountRange);
+			cooldowns[int.user.id] = Date.now() + constants.crime.cooldownMs;
+			await db.userInfo.update({ where: { id: info.id }, data: { balance: { increment: obtained } } });
+			await int.reply(format(sampleArray(text.commands.crime.sucess), `\`$${obtained}\``));
+		}
 	});

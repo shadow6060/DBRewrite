@@ -1,10 +1,11 @@
 import type { L, A, N, S } from "ts-toolbelt";
 import { mainEmojis } from "../providers/discord";
 
-export const capitalize = <T extends string>(str: T) => (str[0].toUpperCase() + str.slice(1)) as Capitalize<T>;
+export const capitalize = <T extends string>(str?: T) => str ? (str.charAt(0).toUpperCase() + str.slice(1)) as Capitalize<T> : str;
+
 
 export type PositionalFormattable<T extends number = 1> = `${string}${S.Join<L.Repeat<"{}", T>, string>}${string}`;
-export type NamedFormattable<T extends string[]> = `${string}${S.Join<{ [k in keyof T]: T[k] extends string ? `{${T[k]}}` : never}, string>}${string}`;
+export type NamedFormattable<T extends string[]> = `${string}${S.Join<{ [k in keyof T]: T[k] extends string ? `{${T[k]}}` : never }, string>}${string}`;
 
 type ExtractPlaceholders<T extends string, A extends string[] = []> = T extends ""
 	? A

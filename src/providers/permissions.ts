@@ -20,6 +20,7 @@ const permissionsSchema = z
 		developer: permissionSchema,
 		employee: permissionSchema,
 		moderator: permissionSchema,
+		admin: permissionSchema,
 	})
 	.strict();
 
@@ -30,7 +31,7 @@ export class Permission {
 	readonly children: readonly Permission[] = [];
 	readonly roles: Record<string, boolean> = {};
 	readonly users: Record<string, boolean> = {};
-	constructor(public name: string) {}
+	constructor(public name: string) { }
 	addParent(permission: Permission) {
 		(this.parents as Permission[]).push(permission);
 		if (!permission.children.includes(this)) permission.addChild(this);

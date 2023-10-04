@@ -1,6 +1,5 @@
-import { MessageEmbed } from "discord.js";
+import { EmbedBuilder } from "discord.js";
 import { text } from "../../providers/config";
-import { mainChannels } from "../../providers/discord";
 import { Command } from "../../structures/Command";
 import { format } from "../../utils/string";
 import Client from "nekos.life";
@@ -14,7 +13,7 @@ export const command = new Command("tickle", "Give your friends a good tickle.")
         const tcfe = text.commands.feedback.embed;
         await int.reply({
             embeds: [
-                new MessageEmbed()
+                new EmbedBuilder()
                     .setTitle("Bam someone got tickled")
                     .setImage(yeeeee.url)
                     .setDescription(`${tickled} got tickled by ${int.user.tag}`)

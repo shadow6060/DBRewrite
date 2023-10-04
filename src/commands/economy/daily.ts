@@ -1,19 +1,7 @@
-import { OrderStatus } from "@prisma/client";
+//daily.ts
 import { db } from "../../database/database";
-import {
-	generateOrderId,
-	getClaimedOrder,
-	getUserActiveOrder,
-	hasActiveOrder,
-	matchActiveOrder,
-	matchOrderStatus,
-	orderEmbedAsync,
-} from "../../database/order";
-import { getUserInfo, upsertUserInfo } from "../../database/userInfo";
-import { client } from "../../providers/client";
-import { config, constants, text } from "../../providers/config";
-import { mainGuild } from "../../providers/discord";
-import { permissions } from "../../providers/permissions";
+import { upsertUserInfo } from "../../database/userInfo";
+import { constants, text } from "../../providers/config";
 import { Command } from "../../structures/Command";
 import { format } from "../../utils/string";
 import pms from "pretty-ms";
@@ -31,7 +19,7 @@ export const command = new Command("daily", "Get your daily income!.")
 			);
 			return;
 		}
-		const info = await upsertUserInfo(int.user);
+		const info = await upsertUserInfo(int.user, int.guild?.id || '');
 		const obtained = randRange(...constants.daily.amountRange);
 		cooldowns[int.user.id] = Date.now() + constants.daily.cooldownMs;
 		await db.userInfo.update({ where: { id: info.id }, data: { balance: { increment: obtained } } });

@@ -1,32 +1,19 @@
-import { OrderStatus } from "@prisma/client";
 import { db } from "../../database/database";
-import {
-	generateOrderId,
-	getClaimedOrder,
-	getUserActiveOrder,
-	hasActiveOrder,
-	matchActiveOrder,
-	matchOrderStatus,
-	orderEmbedAsync,
-} from "../../database/order";
-import { getUserInfo, upsertUserInfo } from "../../database/userInfo";
-import { client } from "../../providers/client";
-import { config, constants, text } from "../../providers/config";
-import { mainGuild, mainChannels, mainRoles } from "../../providers/discord";
-import { permissions, mainChannels, mainRoles } from "../../providers/permissions";
+import { generateOrderId, hasActiveOrder, } from "../../database/orders";
+import { text } from "../../providers/config";
+import { mainChannels, mainRoles } from "../../providers/discord";
 import { Command } from "../../structures/Command";
 import { format } from "../../utils/string";
-import pms from "pretty-ms";
-import { randRange, sampleArray } from "../../utils/utils";
+import { sampleArray } from "../../utils/utils";
 
 export const command = new Command("drinkroullete", "Get a random drink ordered!")
 	.setExecutor(async int => {
-        if (await hasActiveOrder(int.user)) {
+		if (await hasActiveOrder(int.user)) {
 			await int.reply(text.commands.order.exists);
-			return; 
+			return;
 		}
 		const drink = format(sampleArray(text.commands.drinkingr.drinks));
-		const order = await db.order.create({
+		const order = await db.orders.create({
 			data: {
 				id: await generateOrderId(),
 				user: int.user.id,
