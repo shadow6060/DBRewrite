@@ -3,7 +3,6 @@
 [![Github](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/shadow6060/DBRewrite)
 [![Typescript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Website](https://img.shields.io/badge/-Website-blueviolet?logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAAfSC3RAAAACXBIWXMAAAsTAAALEwEAmpwYAAAGF2lUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSJXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQiPz4gPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iQWRvYmUgWE1QIENvcmUgNi4wLWMwMDIgNzkuMTY0NDg4LCAyMDIwLzA3LzEwLTIyOjA2OjUzICAgICAgICAiPiA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPiA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtbG5zOmRjPSJodHRwOi8vcHVybC5vcmcvZGMvZWxlbWVudHMvMS4xLyIgeG1sbnM6cGhvdG9zaG9wPSJodHRwOi8vbnMuYWRvYmUuY29tL3Bob3Rvc2hvcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RFdnQ9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZUV2ZW50IyIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgMjIuMCAoV2luZG93cykiIHhtcDpDcmVhdGVEYXRlPSIyMDIyLTEyLTI1VDEyOjU1OjE1WiIgeG1wOk1vZGlmeURhdGU9IjIwMjItMTItMjVUMTM6MDE6NDJaIiB4bXA6TWV0YWRhdGFEYXRlPSIyMDIyLTEyLTI1VDEzOjAxOjQyWiIgZGM6Zm9ybWF0PSJpbWFnZS9wbmciIHBob3Rvc2hvcDpDb2xvck1vZGU9IjMiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6Yjc2ODI5ZTQtY2RhMC0zZjQxLThlNWItMzNkY2Q5Nzc3NmJiIiB4bXBNTTpEb2N1bWVudElEPSJhZG9iZTpkb2NpZDpwaG90b3Nob3A6ZTU4Nzc3ODAtZTE5ZS1kZDRiLWIwYjItY2VkN2UyYjVlN2NiIiB4bXBNTTpPcmlnaW5hbERvY3VtZW50SUQ9InhtcC5kaWQ6N2FhMjBmYmItNzEwNy05NTQ4LTgxZmUtODFjZTMxZGY2M2M5Ij4gPHhtcE1NOkhpc3Rvcnk+IDxyZGY6U2VxPiA8cmRmOmxpIHN0RXZ0OmFjdGlvbj0iY3JlYXRlZCIgc3RFdnQ6aW5zdGFuY2VJRD0ieG1wLmlpZDo3YWEyMGZiYi03MTA3LTk1NDgtODFmZS04MWNlMzFkZjYzYzkiIHN0RXZ0OndoZW49IjIwMjItMTItMjVUMTI6NTU6MTVaIiBzdEV2dDpzb2Z0d2FyZUFnZW50PSJBZG9iZSBQaG90b3Nob3AgMjIuMCAoV2luZG93cykiLz4gPHJkZjpsaSBzdEV2dDphY3Rpb249ImNvbnZlcnRlZCIgc3RFdnQ6cGFyYW1ldGVycz0iZnJvbSBhcHBsaWNhdGlvbi92bmQuYWRvYmUucGhvdG9zaG9wIHRvIGltYWdlL3BuZyIvPiA8cmRmOmxpIHN0RXZ0OmFjdGlvbj0ic2F2ZWQiIHN0RXZ0Omluc3RhbmNlSUQ9InhtcC5paWQ6Yjc2ODI5ZTQtY2RhMC0zZjQxLThlNWItMzNkY2Q5Nzc3NmJiIiBzdEV2dDp3aGVuPSIyMDIyLTEyLTI1VDEzOjAxOjQyWiIgc3RFdnQ6c29mdHdhcmVBZ2VudD0iQWRvYmUgUGhvdG9zaG9wIDIyLjAgKFdpbmRvd3MpIiBzdEV2dDpjaGFuZ2VkPSIvIi8+IDwvcmRmOlNlcT4gPC94bXBNTTpIaXN0b3J5PiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/Pnios6IAAAJaSURBVCiRndLLS5RRHIfx7++cd5x3HGfSGUZR8zqFlWZONyy7aEHRIozAIiJaGeiiIDAoENqE4C4QKkgoyS4QKegiWmWIl02hpQaZMU5iMZrXmffMO+85p//BZ//ZPaS1xlYy+gbev7ZFShLnNoHWRkaHx3qfPe/P8rnFiZOn6hsbL7YKkXIYY8SYTk18nR6dGP/0wvBHRy5nMAmPocDNTOTn27ecqkB318ep5vq9c+HSxHSTcNLI8rrA3S6U7/NdT05tRmj2boYW5KTGZtVcIIjM/UUoycr1oOGBOBwp08UPW9xvF5a41f7E6Skv5NtuN+JS3EKChXc4WLTUQss7XGjuxdmMEBaDxQKFQUQMH1R2hYMUTyW+RO32pLQ6XQXWmj/PMo20zcDcTJWF5HpdISwuKKFtDoM5blIA1gmlpTz70X16U2SqYGg75bx6jGF286XqiC9rd10pzDtnGBOCEZEC4xoiwYE0wFJkVISNhkAuq4bDULmb3Gzou773dEi2xFYQ7/oshTY0wDWkQ+BcAT6F6JJaq71mHz/XJmtnfshfp4/hkDF4A0fTxOOWS9cMR7HT61MhmMDqphZFYQCrBHtDqivnDefIHpJcpiVIwwhlsw9pglYuUGsFeZnJEJvXzkxMjh+MYBf8DNWVyCnIZ/3BXJZpBrhvZd6BIYi8iaSG6SesWkz9/I2Nth7Z+S+BSW6wmuW/JFNCwfQ4eRubLsRhWB3doo+aDqBDatLEoW3JnNkl9W1mXg+aHljlBVRVXYKryXXA7SOtGcOfFR0bn5QDtNVX2ZYUgP/eWQ654oa7+gAAAABJRU5ErkJggg==)](https://drunk-bartender.org)
-
 <p align="center">
   <img src="https://media.discordapp.net/attachments/983404765889318932/1041200355310047343/updated.png?width=663&height=663" style="width:10em; height: 10em; position: absolute; top: 500px;"></img>
 </p>
@@ -54,100 +53,8 @@ And we are always open to hearing suggestions from the community about new featu
 | /deliverymessage placeholders    |  Gets your delivery message placeholders.     | Staff 🛠  |
 | /brew    | Brew's an order.     | Staff 🛠  |
 | /delete    | Delete's a order.     | Staff 🛠  |
-&nbsp;
-&nbsp;
-<h4 align="left"> ℹ️ Installation </h4>
 
-Make sure you got Node.js
-And the following packages.
-
- - @discordjs/builders
- - @discordjs/rest
- - @prisma/client
- - cross-env
- - discord-api-types
- - discord.js
- - fast-glob
- - got
- - hjson
- - nekos.life
- - pincolors
- - pino
- - pretty-ms
- - source-map-support
- - typescript
- - typescript-memoize
- - yarn
- - zod
- - ts-toolbelt
- - prisma
- - eslint
- 
- Once you got all these then you can finally start with setting up your database.
- It has to be with postgres unless you want to switch it to another type.
- But keep in mind then we can't provide you with support.
-
-You will have to make the postgres database yourself and connect the bot to it.
-The tables will be made by the bot.
-
-
-If you do not know how to create a bot.
-Then follow these steps.
-
- 1. Go to https://discord.com/developers/applications
- 2. Click on New Application
- 3. And create a name for the Application
- 4. Then click on "Bot"
- 5. And click on "Add Bot"
- 6. Then click on "Reset Token"
- 7. Copy the token and place it into the config.hjson in the config folder.
- 
- 
-Then you want to open a terminal and run tsc.
-And then proceed to open the dist folder and start the bot by running
-
-    node index.js
-   
-   then if that brings you some errors then
-   you can always contact us for support.
-   But if you got the database up and running.
-   Then this should work if you follow these steps.
-   But make sure you change the configs for roles, and channels.
-   So you can use it in your server!
-   and experience all the fun with your friends.
-But some of the channel configs are in the employee commands.
-
-You may have a get an error like this one
-
-    Issue(s) found when scanning config config.hjson.
-    9 issue(s) found.
-    Error at mainServer: String must contain at most 18 character(s)
-    Error at roles.employee: String must contain at most 18 character(s)
-    Error at roles.duty: String must contain at most 18 character(s)
-    Error at roles.moderator: String must contain at most 18 character(s)
-    Error at roles.dutyd: String must contain at most 18 character(s)
-    Error at channels.brewery: String must contain at most 18 character(s)
-    Error at channels.delivery: String must contain at most 18 character(s)
-    Error at channels.feedback: String must contain at most 18 character(s)
-    Error at channels.tips: String must contain at most 18 character(s)
-    C:\Users\desktop\db\dist\providers\config.js:202
-    throw new error_1.IllegalStateError(`${file} is invalid.`);
-    ^
-
-To solve it go to
-src/providers/config.ts
-and go to
-
-    export  const  snowflake  = z.string().length(18).regex(/^\d+$/);
-   and change it from 18 to 19
-   then run tsc and it should be fixed.
-  
-##
-<h4 align="left"> Contributors ✨<h4>
-<img src="https://contributors-img.web.app/image?repo=shadow6060/DBRewrite">
-  
-##
-  
+<br>
 <h4 align="left"> 🔗 Links <h4>
 
 - [GitHub](https://github.com/shadow6060/DBRewrite)
