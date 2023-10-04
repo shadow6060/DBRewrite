@@ -13,9 +13,9 @@
 	common: {
 		invalidOrderId: "[no] No order was found by that ID. Try checking your capitalization and numbers."
 		noActiveOrder: "[no] You do not have an active order. Order one with `/order`!"
-		noClaimedOrder: "[no] You do not have an order claimed currently."
-		noOrders: "[no] You have not any orders yet."
-		identified: **{name}** (`{id}`)
+		noClaimedOrder: "[no] You do not have an order claimed at the moment."
+		noOrders: "[no] You don't have any orders yet."
+		identified: **{name}** (`{id}`) 
 		orderEmbed: {
 			title: Order Information for `{}`
 			description: Information about the order `{}`.
@@ -30,16 +30,18 @@
 				orderedAt: ⏰ Ordered At
 			}
 		}
-		invalidNatural: "[no] Invalid number provided. The number must be an integer greater than 0."
+		invalidNatural: "[no] Invalid number provided; the number must be an integer greater than 0."
 		notEnoughBalance: "[no] You do not have enough money."
 		interactOwn: "[no] You cannot interact with your own orders."
 		mainGuildOnly: "[no] This command can only be used in the main server."
 	}
 	commands: {
 		order: {
-			success: "[yes] Your order for **{details}** has been placed! The order ID is `{id}`."
-			exists: "[no] You already have an active order."
-			created: "{duty} An order with the id `{id}` for **{details}** has been placed by {tag}."
+  		success: "[yes] Your order for **{details}** has been placed! The order ID is `{id}`."
+  		exists: "[no] You already have an active order.",
+  		created: "{duty} An order with the id `{id}` for **{details}** has been placed by {tag}."
+  		success1: "[yes] Your order for **{details}** has been placed! The price is `{price}`. The order ID is `{id}`."
+		success_tab: "Your tab order has been placed. Order ID: {id}, Details: {details}."
 		}
 		list: {
 			title: **__Current Orders__**
@@ -55,12 +57,12 @@
 		}
 		claim: {
 			existing: "[no] You already have an order claimed."
-			success: "[yes] You have successfully claimed the order."
+			success: "[yes] You have successfully claimed the order `{id}`."
 		}
 		unclaim: {
-			success: "[yes] You have successfully unclaimed the order."
-
-		}
+    		success: "[yes] You have successfully unclaimed the order `{id}` . ",
+   			notClaimed: "[no] You haven't claimed any order.", // Add this line for the error message
+		},
 		cancel: {
 			success: "[yes] Your order has been successfully cancelled."
 			canned: "An order with the id `{id}` was cancelled!\n Order desc `{details}`\nPlaced by {tag}."
@@ -69,12 +71,13 @@
 		brew: {
 			invalidUrl: "[no] Please specify a valid URL."
 			success: "[yes] The order is now brewing."
-			ready:  <@&ROLEID>The order{} {} {} finished brewing and {} now available for delivery.
+			ready:  <@&1053887156701118485>he order{} {} {} finished brewing and {} now available for delivery.
 		}
 		deliver: {
 			noMessage: ⚠️ You do not have a delivery message set, and the default message was used. Make to set one with `/deliverymessage`!
 			noChannel: "[no] I wasn't able to access the channel for the order, and the order failed to deliver."
 			success: "[yes] The order has been successfully delivered."
+			multiSuccess: "Successfully delivered {count} orders."
 			default:
 				'''
 				Hi, {mention}! Here is your {details}, delivered by {preparer}. Make sure to give feedback with `/feedback` and tip with `/tip`!
@@ -116,7 +119,8 @@
 			}
 		}
 		balance: {
-			success: You currently have `${}`.
+			success: You currently have `${}` Balance!.
+			success1: You currently have `${}` Donuts!.
 		}
 		work: {
 			responses: [
@@ -146,22 +150,22 @@
 			sucess: [
 				You stole from Drunk Bartender and got {}.
 				You fought an old lady and got {}.
-				You decided to go to the corner shop and rob them you got {}.
-				You robbed an atm and got {}.
+				You decided to go to the corner shop and rob them. You got {}.
+				You robbed an ATM and got {}.
 				You robbed Tofu and got {}.
-				a kid spat on you, you got {} for selling it to child predators.
-				You burnt down someones mansion you got {}.
-				You kiddnapped someones dog they needed to pay you {} to get the dog back.
-				You stole someones jewerly you sold it for {}.
-
+				A kid spat on you, you got {} for selling it to child predators.
+				You burnt down someones mansion and got {}.
+				You kiddnapped someones dog. They paid you {} to get the dog back.
+				You stole someones jewelry and sold it for {}.
+				
 			]
 			failure: [
 				You tried to steal from Drunk Bartender and lost {}.
-				You tried to fight an old lady and lost then got robbed for {}.
+				You tried to fight an old lady, lost, then got robbed for {}.
 				You tried to rob the corner shop and lost {}.
-				You tried robbing an atm and ended up being scammed for {}.
+				You tried robbing an ATM and ended up being scammed for {}.
 				You attempted to rob Tofu but ended up being robbed by Tofu for {}.
-				You stole someones purse when they were walking their dog , and the dog started chasing you so you runned from fear. but you dropped her purse and your {} dollars.
+				You stole someones purse when they were walking their dog and the dog started chasing you. You dropped her purse and an extra {} while running away.
 			]
 		}
 		daily: {
@@ -180,6 +184,12 @@
 				footer: By {}
 			}
 		}
+		rate: {
+  		success: "[yes] You have successfully rated the bake/prep/delivery process of your last order.",
+  		alreadyRated: "[no] You have already rated the bake/prep/delivery process of your previous order. Try ordering another.",
+  		invalidRating: "[no] Invalid rating. Please provide a rating between 1 and 5 for each process."
+		}
+
 		tip: {
 			success: "[yes] You have successfully tipped `${}` on your order of `{}`."
 			alreadyTipped: "[no] You have already tipped your previous order. Try ordering another."
@@ -196,7 +206,12 @@
 		delete: {
 			success: "[yes] The order was successfully deleted with the provided reason."
 			dm: "[no] Your order of `{}` was deleted for `{}`. If you feel that this was a mistake, please contact us."
+			userDmDisabled: "[no] Unable to send a direct message to the user. Their DMs are disabled.",
+         	dmFailed: "[no] Failed to send a direct message to the user. Please try again later.",
+			"userNotFound": "[no] User not found. Please try again.",
+			successNoDm: "[yes] The order was successfully deleted, but we couldn't send a DM to the user because their DMs are off.",
 		}
+  
 		blacklist: {
 			success: "[yes] The ID has been successfully blacklisted."
 			existing: "[no] The ID is already blacklisted."
@@ -222,4 +237,11 @@
 		cooldown: ⏰ Please wait `{}` before using this command again.
 		blacklisted: "[no] Either you or the server has been blacklisted from using this bot."
 	}
+	//tab: //{
+    	 //createConfirmation: "Tab creation confirmation message",
+    	 //createMaxLimit: "Tab creation maximum limit reached message",
+    	 //createCancelled: "Tab creation cancelled message",
+    	 //payConfirmation: "Tab payment confirmation message",
+    	 //payMaxLimit: "Tab payment maximum limit reached message",
+  		//}
 }
