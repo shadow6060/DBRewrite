@@ -1,68 +1,168 @@
 generator client {
-    provider      = "prisma-client-js"
-    binaryTargets = ["native"]
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "windows"]
 }
 
 datasource db {
-    provider = "postgresql"
-    url      = env("DATABASE_URL")
-}
-
-model Order {
-    id        String      @id @db.VarChar(10)
-    createdAt DateTime    @default(now())
-    user      String      @db.VarChar(20)
-    details   String
-    status    OrderStatus @default(Unprepared)
-    channel   String      @db.VarChar(20)
-    guild     String      @db.VarChar(20)
-
-    claimer   String?   @db.VarChar(20)
-    deliverer String?   @db.VarChar(20)
-    image     String?
-    timeout   DateTime?
-
-    deleteReason String?
-
-    // 0bAB
-    // A - Feedback Given
-    // B - Tipped
-    flags Int @default(0)
-}
-
-enum OrderStatus {
-    Unprepared
-    Preparing
-    Brewing
-    Fermenting // Unused
-    PendingDelivery
-    Delivering
-    Delivered
-    Cancelled
-    Deleted
-    Failed
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 model WorkerInfo {
-    id        String   @id @db.VarChar(20)
-    createdAt DateTime @default(now())
-
-    preparations Int @default(0)
-    deliveries   Int @default(0)
-
-    deliveryMessage String?
+  id                    String   @id @db.VarChar(20)
+  createdAt             DateTime @default(now())
+  preparations          Int      @default(0)
+  deliveries            Int      @default(0)
+  deliveryMessage       String?
+  lastCommandUsage      DateTime?  // New field to track the last command usage time
+  commandUsageCount     Int      // New field to track the command usage count
+  lastCommandName       String?    // New field to track the last command name
+  claimUsageCount       Int @default(0)   // Usage count for "claim" command
+  brewUsageCount        Int @default(0)    // Usage count for "brew" command
 }
 
 model UserInfo {
-    id        String   @id @db.VarChar(20)
-    createdAt DateTime @default(now())
+  id                    String     @id @db.VarChar(30)
+  createdAt             DateTime   @default(now())
+  balance               Int        @default(0)
+  newBalance            Int?
+  tabLimit              Float      @default(0)
+  tab                   Tab?
+  donuts                Int        @default(0)
+  guildsxp              Json       @default("{}")
+  guildsxpData          GuildsXP[]
 
-    balance Int @default(0)
+}
+
+model Tree {
+  id     String   @id
+  age    Int
+  water  DateTime
+  maxAge Int
+
+  @@map(name: "trees")
+}
+
+model Tab {
+  id              Int       @id @default(autoincrement())
+  userId          String    @unique @db.VarChar(20)
+  createdAt       DateTime  @default(now())
+  paidAt          DateTime?
+  amount          Float
+  tabLimit        Float     @default(0)
+  amountNeeded    Float     @default(0)
+  amountRemaining Float     @default(0)
+  user            UserInfo  @relation(fields: [userId], references: [id])
 }
 
 model Blacklist {
-    id          String   @id @db.VarChar(20)
-    createdAt   DateTime @default(now())
-    reason      String
-    blacklister String   @db.VarChar(20)
+  id          String   @id @db.VarChar(20)
+  createdAt   DateTime @default(now())
+  reason      String
+  blacklister String   @db.VarChar(20)
+}
+
+model CafeOrders {
+  id             String     @id @db.VarChar(10)
+  createdAt      DateTime   @default(now())
+  user           String     @db.VarChar(20)
+  details        String
+  status         CafeStatus @default(Unprepared)
+  channel        String     @db.VarChar(20)
+  guild          String     @db.VarChar(20)
+  claimer        String?    @db.VarChar(20)
+  deliverer      String?    @db.VarChar(20)
+  image          String?
+  timeout        DateTime?
+  deleteReason   String?
+  bakeRating     Int?
+  prepRating     Int?
+  deliveryRating Int?
+  flags          Int        @default(0)
+  putOnTab       Boolean?
+  amount         Float?
+}
+
+model Orders {
+  id             String      @id @db.VarChar(10)
+  createdAt      DateTime    @default(now())
+  user           String      @db.VarChar(20)
+  details        String
+  status         OrderStatus @default(Unprepared)
+  channel        String      @db.VarChar(20)
+  guild          String      @db.VarChar(20)
+  claimer        String?     @db.VarChar(20)
+  deliverer      String?     @db.VarChar(20)
+  image          String?
+  timeout        DateTime?
+  deleteReason   String?
+  bakeRating     Int?
+  prepRating     Int?
+  deliveryRating Int?
+  flags          Int         @default(0)
+  putOnTab       Boolean?
+  amount         Float?
+}
+
+model dishes {
+  id        String   @id @db.VarChar(1234)
+  status    Int
+  createdAt DateTime @db.Timestamp(6)
+  updatedAt DateTime @db.Timestamp(6)
+}
+
+model Drink {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  type      String
+  price     Float
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model CustomDrink {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  type      String
+  price     Float
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum CafeStatus {
+  Unprepared
+  Preparing
+  Brewing
+  Fermenting
+  PendingDelivery
+  Delivering
+  Delivered
+  Cancelled
+  Deleted
+  Failed
+}
+
+enum OrderStatus {
+  Unprepared
+  Preparing
+  Brewing
+  Fermenting
+  PendingDelivery
+  Delivering
+  Delivered
+  Cancelled
+  Deleted
+  Failed
+}
+
+model GuildsXP {
+  userId   String
+  guildId  String
+  userName String // Add the userName field
+  level    Int      @default(0)
+  exp      Int      @default(0)
+  user     UserInfo @relation(fields: [userId], references: [id])
+  location              String?
+  notificationChannelId String? // New field for notification channel ID
+  @@unique([userId, guildId])
 }
