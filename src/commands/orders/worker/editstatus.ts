@@ -1,11 +1,10 @@
 /* eslint-disable indent */
-import { OrderStatus } from "@prisma/client";
-import { db } from "../../../database/database";
-import { getClaimedOrder } from "../../../database/orders";
+import { OrderStatus, matchActiveOrder } from "../../../database/orders";
 import { text } from "../../../providers/config";
 import { permissions } from "../../../providers/permissions";
 import { Command } from "../../../structures/Command";
 import { CommandInteraction } from "discord.js";
+import { db } from "../../../database/database";
 
 export const command = new Command(
     "editstatus",
@@ -26,8 +25,7 @@ export const command = new Command(
             .addChoices(
                 { name: "Preparing", value: OrderStatus.Preparing },
                 { name: "Unprepared", value: OrderStatus.Unprepared },
-                { name: "PendingDelivery", value: OrderStatus.PendingDelivery },
-
+                { name: "PendingDelivery", value: OrderStatus.PendingDelivery }
                 // Add other choices here if needed
             )
     )
@@ -35,7 +33,7 @@ export const command = new Command(
         const orderId = int.options.getString("order_id", true);
         const newStatus = int.options.getString("status", true);
 
-        const order = await getClaimedOrder(orderId);
+        const order = await matchActiveOrder(orderId);
         if (!order) {
             await int.reply({ content: "Order not found for the specified ID." });
             return;
@@ -50,7 +48,9 @@ export const command = new Command(
             },
         });
 
-        await int.reply({ content: `Order status for order (${orderId}) has been updated to ${newStatus}.` });
+        await int.reply({
+            content: `Order status for order (${orderId}) has been updated to ${newStatus}.`,
+        });
     });
 
 module.exports = { command };
