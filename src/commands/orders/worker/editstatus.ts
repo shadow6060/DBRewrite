@@ -25,7 +25,7 @@ export const command = new Command(
             .addChoices(
                 { name: "Preparing", value: OrderStatus.Preparing },
                 { name: "Unprepared", value: OrderStatus.Unprepared },
-                { name: "PendingDelivery", value: OrderStatus.PendingDelivery }
+                { name: "PendingDelivery", value: OrderStatus.PendingDelivery },
                 { name: "Deleted", value: OrderStatus.Deleted },
                 // Add other choices here if needed
             )
