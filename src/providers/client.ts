@@ -8,6 +8,9 @@ import { GatewayIntentBits } from "discord.js";
 if (globalThis._$clientLoaded) throw new Error("The client was loaded twice. This should never happen.");
 globalThis._$clientLoaded = true;
 
+/**
+ * The client instance.
+ */
 export const client = new Client({
 	intents: [
 		GatewayIntentBits.Guilds,
@@ -26,6 +29,10 @@ client.on("ready", () => {
 	});
 });
 
+/**
+ * Discord's REST API.
+ * @see https://discord.js.org/docs/packages/rest/main
+ */
 export const rest = new REST({ version: "9" }).setToken(config.token);
 
 client.login(config.token);

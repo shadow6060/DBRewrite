@@ -1,8 +1,15 @@
 import { client } from "../providers/client";
 import { commandRegistry } from "../providers/commandManager";
-import { text } from "../providers/config";
+import {constants, text} from "../providers/config";
 import { blacklist } from "../database/blacklist";
 import { StopCommandExecution } from "../utils/error";
+import {LifetimeMap} from "../structures/LifetimeMap";
+import type {InteractionByType} from "../utils/components";
+import type {Awaitable} from "discord.js";
+
+export const componentCallbacks = new LifetimeMap<string, (int: InteractionByType) => Awaitable<void>>(
+	constants.interactionExpiryTimeMs
+);
 
 client.on("interactionCreate", async (int) => {
 	try {

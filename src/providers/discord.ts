@@ -3,6 +3,9 @@ import { notInitialized, typedEntries, typedFromEntries } from "../utils/utils";
 import { client } from "./client";
 import { config } from "./config";
 
+/**
+ * The guild's main guild.
+ */
 export let mainGuild = client.guilds.cache.get(config.mainServer) ?? notInitialized("mainGuild");
 
 export const setMainGuild = (guild: Guild) => (mainGuild = guild);
