@@ -1,3 +1,4 @@
+// TODO: discord has updated their typings, so this file is now broken, go cry about it
 import type { ButtonInteraction, Constructable, MessageActionRowComponent, MessageComponentInteraction, SelectMenuInteraction } from "discord.js";
 import { MessageActionRow, MessageButton, MessageSelectMenu } from "discord.js";
 import { componentCallbacks } from "../events/interactionCreate";
