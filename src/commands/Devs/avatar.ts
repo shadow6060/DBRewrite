@@ -6,7 +6,7 @@ import { Command } from "../../structures/Command";
 import { CommandInteraction, EmbedBuilder } from "discord.js";
 
 export const command = new Command("avatar", "Some info.")
-    .addPermission(permissions.employee) // AnyRank
+    .addPermission(permissions.developer) // AnyRank
     .addSubCommand((subcommand) =>
         subcommand
             .setName("attach")
