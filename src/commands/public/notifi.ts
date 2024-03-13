@@ -8,7 +8,7 @@ const prisma = new PrismaClient();
 
 export const command = new Command("notifi",
     "Sets the channel for notifications.")
-    .addPermission(permissions.employee)
+    //.addPermission(permissions.employee)
     .addOption("channel", (o) =>
         o.setName("channel").setDescription("The channel to set for notifications.").setRequired(true)
     )
