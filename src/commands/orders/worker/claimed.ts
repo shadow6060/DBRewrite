@@ -16,4 +16,4 @@ export const command = new Command("claimed", "Checks your claimed order.")
 		await int.reply({
 			embeds: [embed]
 		});
-	});
+	}); 

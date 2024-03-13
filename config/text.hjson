@@ -37,11 +37,12 @@
 	}
 	commands: {
 		order: {
-  		success: "[yes] Your order for **{details}** has been placed! The order ID is `{id}`.",
+  		success: "[yes] Your order for **{details}** has been placed! The order ID is `{id}`."
   		exists: "[no] You already have an active order.",
-  		created: "{duty} An order with the id `{id}` for **{details}** has been placed by {tag}.",
-  		success1: "[yes] Your order for **{details}** has been placed! The price is `{price}`. The order ID is `{id}`.",
-		success_tab: "Your tab order has been placed. Order ID: {id}, Details: {details}."}
+  		created: "{duty} An order with the id `{id}` for **{details}** has been placed by {tag}."
+  		success1: "[yes] Your order for **{details}** has been placed! The price is `{price}`. The order ID is `{id}`."
+		success_tab: "Your tab order has been placed. Order ID: {id}, Details: {details}."
+		}
 		list: {
 			title: **__Current Orders__**
 			empty: *There are currently no active orders.*
@@ -76,6 +77,7 @@
 			noMessage: ⚠️ You do not have a delivery message set, and the default message was used. Make to set one with `/deliverymessage`!
 			noChannel: "[no] I wasn't able to access the channel for the order, and the order failed to deliver."
 			success: "[yes] The order has been successfully delivered."
+			multiSuccess: "Successfully delivered {count} orders."
 			default:
 				'''
 				Hi, {mention}! Here is your {details}, delivered by {preparer}. Make sure to give feedback with `/feedback` and tip with `/tip`!
@@ -145,7 +147,6 @@
 			]
 		}
 		crime: {
-
 			sucess: [
 				You stole from Drunk Bartender and got {}.
 				You fought an old lady and got {}.
@@ -156,6 +157,7 @@
 				You burnt down someones mansion and got {}.
 				You kiddnapped someones dog. They paid you {} to get the dog back.
 				You stole someones jewelry and sold it for {}.
+				
 			]
 			failure: [
 				You tried to steal from Drunk Bartender and lost {}.

@@ -1,3 +1,4 @@
+/* eslint-disable indent */
 import { db } from "../../database/database";
 import { Command } from "../../structures/Command";
 

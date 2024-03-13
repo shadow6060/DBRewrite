@@ -9,11 +9,16 @@ datasource db {
 }
 
 model WorkerInfo {
-  id              String   @id @db.VarChar(20)
-  createdAt       DateTime @default(now())
-  preparations    Int      @default(0)
-  deliveries      Int      @default(0)
-  deliveryMessage String?
+  id                    String   @id @db.VarChar(20)
+  createdAt             DateTime @default(now())
+  preparations          Int      @default(0)
+  deliveries            Int      @default(0)
+  deliveryMessage       String?
+  lastCommandUsage      DateTime?  // New field to track the last command usage time
+  commandUsageCount     Int      // New field to track the command usage count
+  lastCommandName       String?    // New field to track the last command name
+  claimUsageCount       Int @default(0)   // Usage count for "claim" command
+  brewUsageCount        Int @default(0)    // Usage count for "brew" command
 }
 
 model UserInfo {
@@ -135,6 +140,7 @@ enum CafeStatus {
   Cancelled
   Deleted
   Failed
+  Claimed
 }
 
 enum OrderStatus {
@@ -148,6 +154,7 @@ enum OrderStatus {
   Cancelled
   Deleted
   Failed
+  Claimed
 }
 
 model GuildsXP {
@@ -160,4 +167,12 @@ model GuildsXP {
   location              String?
   notificationChannelId String? // New field for notification channel ID
   @@unique([userId, guildId])
+}
+
+model WorkerStats {
+  id String @id
+  ordersBrewed Int
+  ordersDelivered Int
+  lastUsed DateTime
+  lastCommand String?
 }

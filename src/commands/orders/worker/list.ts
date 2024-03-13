@@ -7,8 +7,17 @@ import { Command } from "../../../structures/Command";
 import { format } from "../../../utils/string";
 import pms from "pretty-ms";
 import { CafeStatus, OrderStatus } from "@prisma/client";
+import { ExtendedCommand } from "../../../structures/extendedCommand";
 
-export const command = new Command("list", "Lists active orders.")
+// Define the command options
+interface CommandOptions {
+	name: string; // Ensure that 'name' is explicitly defined as a string
+	description?: string;
+	// Other properties as needed
+}
+
+// Create the command using ExtendedCommand class
+export const command = new ExtendedCommand({ name: "list", description: "Lists active orders.", local: true })
 	.addPermission(permissions.employee)
 	.setExecutor(async int => {
 		const orders = await getAllActiveOrders();

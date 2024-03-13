@@ -9,7 +9,8 @@ export const upsertWorkerInfo = async (user: UserResolvable) =>
 	db.workerInfo.upsert({
 		where: { id: resolveUserId(user) },
 		create: {
-			id: resolveUserId(user)
+			id: resolveUserId(user),
+			commandUsageCount: 0, // Set a default value or adjust as needed
 		},
 		update: {}
 	});

@@ -1,3 +1,4 @@
+/* eslint-disable indent */
 import { CommandInteraction, EmbedBuilder } from "discord.js";
 import os from "os";
 import { client } from "../../providers/client";

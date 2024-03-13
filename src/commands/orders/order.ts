@@ -15,15 +15,6 @@ export const command = new Command("order", "Orders a drink.")
 			return;
 		}
 
-		// Check the number of existing orders
-		const orderCount = await db.cafeOrders.count();
-		const maxOrderLimit = 25;
-
-		if (orderCount >= maxOrderLimit) {
-			await int.reply(`The maximum order limit of ${maxOrderLimit} has been reached. Try again later.`);
-			return;
-		}
-
 		const drink = int.options.getString("drink", true);
 
 		// Check the length of the drink description
@@ -54,7 +45,7 @@ export const command = new Command("order", "Orders a drink.")
 				details: drink,
 				duty: mainRoles.duty.toString(),
 				id: order.id,
-				tag: int.user.tag,
+				tag: int.user.username,
 			})
 		);
 	});

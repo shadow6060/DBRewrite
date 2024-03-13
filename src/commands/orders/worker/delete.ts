@@ -46,3 +46,4 @@ export const command = new Command("delete", "Deletes an order.")
 			await int.reply(text.commands.delete.successNoDm);
 		}
 	});
+ 

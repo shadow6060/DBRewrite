@@ -15,6 +15,7 @@ export const activeOrderStatus = [
 	OrderStatus.Fermenting,
 	OrderStatus.PendingDelivery,
 	OrderStatus.Delivering,
+	OrderStatus.Claimed
 ];
 
 export const hasActiveOrder = async (user: UserResolvable) =>

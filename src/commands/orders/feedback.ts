@@ -27,7 +27,7 @@ export const command = new Command("feedback", "Give feedback on your last order
 				new EmbedBuilder()
 					.setTitle(format(tcfe.title, lastOrder.id))
 					.setDescription(feedback)
-					.setFooter({ text: format(tcfe.footer, int.user.tag), iconURL: int.user.displayAvatarURL() }),
+					.setFooter({ text: format(tcfe.footer, int.user.username), iconURL: int.user.displayAvatarURL() }),
 			],
 		});
 		await db.orders.update({

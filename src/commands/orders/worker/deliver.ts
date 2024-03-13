@@ -11,6 +11,7 @@ import { text } from "../../../providers/config";
 import { permissions } from "../../../providers/permissions";
 import { Command } from "../../../structures/Command";
 import { format } from "../../../utils/string";
+import { upsertWorkerStats } from "../../../database/workerstats";
 
 export const command = new Command(
 	"deliver",
@@ -58,6 +59,9 @@ export const command = new Command(
 			.setDescription("Please select an order to deliver.")
 			.setColor("#00FF00");
 
+		// Set last command to "deliver" when preparing to deliver
+		await upsertWorkerStats(int.user, { lastCommand: "deliver" });
+
 		await int.reply({
 			embeds: [embed],
 			components: [actionRow],
@@ -98,6 +102,9 @@ client.on("interactionCreate", async (interaction) => {
 				deliveries: { increment: 1 },
 			},
 		});
+		// Update worker stats for delivered orders
+		await upsertWorkerStats(interaction.user, { ordersDelivered: 1, lastCommand: "deliver" });
+
 		await db.orders.update({
 			where: {
 				id: orderId,

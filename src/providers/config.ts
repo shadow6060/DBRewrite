@@ -76,6 +76,7 @@ const textSchema = z
 				created: nFormattable("details", "duty", "id", "tag"),
 				success1: nFormattable("details", "id"),
 				success_tab: nFormattable("details", "id"),
+
 			}),
 			list: z.object({
 				title: z.string(),
@@ -110,6 +111,8 @@ const textSchema = z
 				noChannel: z.string(),
 				success: z.string(),
 				default: z.string(),
+				multiSuccess: z.string(),
+
 			}),
 			deliverymessage: z.object({
 				get: z.string(),

@@ -1,3 +1,4 @@
+/* eslint-disable quotes */
 /* eslint-disable indent */
 import { CommandInteraction, User } from "discord.js";
 import { permissions } from "../../../providers/permissions";
@@ -7,7 +8,7 @@ import { PrismaClient, CafeStatus, OrderStatus } from "@prisma/client";
 const prisma = new PrismaClient();
 
 export const command = new Command("workerinfo",
-    "Tracks the number of orders an employee has delivered.")
+    "Tracks the number of orders an employee has prepared and delivered.")
     .addPermission(permissions.employee)
     .addOption("user", (o) =>
         o.setName("employee")
@@ -23,8 +24,18 @@ export const command = new Command("workerinfo",
             employeeId = employeeOption.id;
         }
 
-        // Get the number of orders the employee has delivered
-        const deliveredOrders = await prisma.orders.count({
+        // Get the total number of orders the employee has prepared
+        const totalPreparations = await prisma.orders.count({
+            where: {
+                claimer: employeeId,
+                status: {
+                    not: OrderStatus.Unprepared
+                },
+            },
+        });
+
+        // Get the total number of orders the employee has delivered
+        const totalDeliveries = await prisma.orders.count({
             where: {
                 deliverer: employeeId,
                 status: OrderStatus.Delivered,
@@ -34,5 +45,5 @@ export const command = new Command("workerinfo",
         // Get the user's username for the reply
         const username = employeeOption ? employeeOption.username : int.user.username;
 
-        await int.reply(`${username} has delivered ${deliveredOrders} orders.`);
+        await int.reply(`${username} has prepared ${totalPreparations} orders and delivered ${totalDeliveries} orders.`);
     });
