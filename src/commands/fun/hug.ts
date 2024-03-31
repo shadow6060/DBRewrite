@@ -1,7 +1,7 @@
-import {EmbedBuilder} from "discord.js";
-import {text} from "../../providers/config";
-import {Command} from "../../structures/Command";
-import {format} from "../../utils/string";
+import { EmbedBuilder } from "discord.js";
+import { text } from "../../providers/config";
+import { Command } from "../../structures/Command";
+import { format } from "../../utils/string";
 import Client from "nekos.life";
 
 export const command = new Command("hug", "Give your friends a good hug.")
@@ -9,7 +9,7 @@ export const command = new Command("hug", "Give your friends a good hug.")
 	.setExecutor(async int => {
 		const nekos = new Client();
 		const yeeeee = await nekos.hug();
-		const slapped = int.options.get("hug", true).value as string;
+		const slapped = int.options.getUser("hug", true);
 		const tcfe = text.commands.feedback.embed;
 		await int.reply({
 			embeds: [
@@ -17,7 +17,7 @@ export const command = new Command("hug", "Give your friends a good hug.")
 					.setTitle("Bam someone got hugged")
 					.setImage(yeeeee.url)
 					.setDescription(`${slapped} got hugged by ${int.user.tag}`)
-					.setFooter({text: format(tcfe.footer, int.user.tag), iconURL: int.user.displayAvatarURL()}),
+					.setFooter({ text: format(tcfe.footer, int.user.tag), iconURL: int.user.displayAvatarURL() }),
 
 			],
 		});

@@ -1,24 +1,17 @@
 /* eslint-disable no-constant-condition */
 /* eslint-disable quotes */
 // Main code
-import {OrderStatus} from "@prisma/client";
-import {
-	ChannelType,
-	CommandInteraction,
-	ComponentType,
-	EmbedBuilder,
-	GuildChannel,
-	PartialGroupDMChannel,
-	StringSelectMenuBuilder
-} from "discord.js";
-import {db} from "../../../database/database";
-import {orderPlaceholders} from "../../../database/orders";
-import {upsertWorkerInfo} from "../../../database/workerInfo";
-import {client} from "../../../providers/client";
-import {text} from "../../../providers/config";
-import {permissions} from "../../../providers/permissions";
-import {Command} from "../../../structures/Command";
-import {format} from "../../../utils/string";
+import { CafeStatus, OrderStatus } from "@prisma/client";
+import { ChannelType, GuildChannel, StringSelectMenuBuilder, CommandInteraction, ComponentType, EmbedBuilder } from "discord.js";
+import { db } from "../../../database/database";
+import { orderPlaceholders, generateOrderId } from "../../../database/orders";
+import { upsertWorkerInfo } from "../../../database/workerInfo";
+import { client } from "../../../providers/client";
+import { text } from "../../../providers/config";
+import { permissions } from "../../../providers/permissions";
+import { Command } from "../../../structures/Command";
+import { format } from "../../../utils/string";
+import { upsertWorkerStats } from "../../../database/workerstats";
 
 export const command = new Command(
 	"deliver",
@@ -41,7 +34,7 @@ export const command = new Command(
 		});
 
 		if (orders.length === 0) {
-			await int.reply({content: "No orders available for delivery.", ephemeral: false});
+			await int.reply({ content: "No orders available for delivery.", ephemeral: false });
 			return;
 		}
 
@@ -66,6 +59,9 @@ export const command = new Command(
 			.setDescription("Please select an order to deliver.")
 			.setColor("#00FF00");
 
+		// Set last command to "deliver" when preparing to deliver
+		await upsertWorkerStats(int.user, { lastCommand: "deliver" });
+
 		await int.reply({
 			embeds: [embed],
 			components: [actionRow],
@@ -88,12 +84,12 @@ client.on("interactionCreate", async (interaction) => {
 		});
 
 		if (!order) {
-			await interaction.reply({content: "Invalid order selected.", ephemeral: true});
+			await interaction.reply({ content: "Invalid order selected.", ephemeral: true });
 			return;
 		}
 
 		if (order.user === interaction.user.id && !permissions.developer.hasPermission(interaction.user)) {
-			await interaction.reply({content: text.common.interactOwn, ephemeral: false});
+			await interaction.reply({ content: text.common.interactOwn, ephemeral: false });
 			return;
 		}
 
@@ -103,9 +99,12 @@ client.on("interactionCreate", async (interaction) => {
 				id: interaction.user.id,
 			},
 			data: {
-				deliveries: {increment: 1},
+				deliveries: { increment: 1 },
 			},
 		});
+		// Update worker stats for delivered orders
+		await upsertWorkerStats(interaction.user, { ordersDelivered: 1, lastCommand: "deliver" });
+
 		await db.orders.update({
 			where: {
 				id: orderId,
@@ -118,12 +117,11 @@ client.on("interactionCreate", async (interaction) => {
 
 		const channel = client.channels.cache.get(order.channel) ?? await client.channels.fetch(order.channel).catch(() => null) ?? client.users.cache.get(order.user);
 		if (!channel || (channel instanceof GuildChannel && channel.type !== ChannelType.GuildText)) {
-			await interaction.reply({content: text.commands.deliver.noChannel, ephemeral: true}); // Set ephemeral to true
+			await interaction.reply({ content: text.commands.deliver.noChannel, ephemeral: true }); // Set ephemeral to true
 			return;
 		}
 
-		await interaction.reply({content: `${text.commands.deliver.success}${info?.deliveryMessage ? "" : `\n${text.commands.deliver.noMessage}`}`, ephemeral: false});
-		// unable to send to partial group dm channel, workaround by checking if the channel is a partial group dm channel
-		if (!(channel instanceof PartialGroupDMChannel)) channel.send(format(info?.deliveryMessage || text.commands.deliver.default, await orderPlaceholders(order)));
+		await interaction.reply({ content: `${text.commands.deliver.success}${info?.deliveryMessage ? "" : `\n${text.commands.deliver.noMessage}`}`, ephemeral: false });
+		await channel.send(format(info?.deliveryMessage || text.commands.deliver.default, await orderPlaceholders(order)));
 	}
 });

@@ -6,7 +6,7 @@
 			"tsconfig": "tsconfig.json",
 			"problemMatcher": ["$tsc"],
 			"group": "build",
-			"label": "tsc: build - tsconfig.json"
+			"label": "tsc: build - tsconfig.json",
 
 		}
 	]

@@ -22,6 +22,9 @@ export const upsertUserInfo = async (user: User, guildId: string): Promise<UserI
 	const createdUserInfo = await prisma.userInfo.create({
 		data: {
 			id: resolveUserId(user),
+			userId: user.id,
+			userName: user.username,
+			guildId: guildId,
 		},
 	});
 

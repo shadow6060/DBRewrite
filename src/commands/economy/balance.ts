@@ -1,8 +1,8 @@
 /* eslint-disable linebreak-style */
-import {getUserInfo} from "../../database/userInfo";
-import {text} from "../../providers/config";
-import {Command} from "../../structures/Command";
-import {format} from "../../utils/string";
+import { getUserInfo } from "../../database/userInfo";
+import { text } from "../../providers/config";
+import { Command } from "../../structures/Command";
+import { format } from "../../utils/string";
 
 export const command = new Command("balance", "Checks your balance.")
 	.setExecutor(async int => {
