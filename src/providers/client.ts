@@ -1,3 +1,4 @@
+// client.ts
 import { REST } from "@discordjs/rest";
 import { Client, Partials } from "discord.js";
 import { config } from "./config";

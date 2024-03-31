@@ -1,6 +1,12 @@
-import {permissions} from "../../providers/permissions";
-import {Command} from "../../structures/Command";
-import {EmbedBuilder, StringSelectMenuBuilder} from "discord.js";
+import { development } from "../../providers/env";
+import { execSync } from "child_process";
+import { format } from "../../utils/string";
+import { transpile } from "typescript";
+import { permissions } from "../../providers/permissions";
+import { Command } from "../../structures/Command";
+import { client } from "../../providers/client";
+import { channel } from "diagnostics_channel";
+import { StringSelectMenuBuilder, EmbedBuilder } from "discord.js";
 
 export const command = new Command("select", "Select Menu Example")
 	.addPermission(permissions.developer) // add permission here
@@ -13,20 +19,19 @@ export const command = new Command("select", "Select Menu Example")
 					label: "Option 1",
 					value: "option_1",
 					description: "The first option",
-					// type: 3
-					// type does not exist in the current version of discord.js
+					type: 3 // changed from "SELECT_MENU" to 3
 				},
 				{
 					label: "Option 2",
 					value: "option_2",
 					description: "The second option",
-					// type: 3 // changed from "SELECT_MENU" to 3
+					type: 3 // changed from "SELECT_MENU" to 3
 				},
 				{
 					label: "Option 3",
 					value: "option_3",
 					description: "The third option",
-					// type: 3 // changed from "SELECT_MENU" to 3
+					type: 3 // changed from "SELECT_MENU" to 3
 				},
 			]);
 
@@ -35,11 +40,10 @@ export const command = new Command("select", "Select Menu Example")
 			.setTitle("Select Menu Example")
 			.setDescription("Please select an option:")
 			.addFields(
-				{name: "Option 1", value: "The first option"},
-				{name: "Option 2", value: "The second option"},
-				{name: "Option 3", value: "The third option"}
+				{ name: "Option 1", value: "The first option" },
+				{ name: "Option 2", value: "The second option" },
+				{ name: "Option 3", value: "The third option" }
 			);
-
 		await interaction.reply({
 			embeds: [embed],
 			components: [{
@@ -49,4 +53,4 @@ export const command = new Command("select", "Select Menu Example")
 		});
 	});
 
-module.exports = {command};
+module.exports = { command };

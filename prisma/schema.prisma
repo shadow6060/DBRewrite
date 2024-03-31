@@ -140,6 +140,7 @@ enum CafeStatus {
   Cancelled
   Deleted
   Failed
+  Claimed
 }
 
 enum OrderStatus {
@@ -153,6 +154,7 @@ enum OrderStatus {
   Cancelled
   Deleted
   Failed
+  Claimed
 }
 
 model GuildsXP {
@@ -165,4 +167,12 @@ model GuildsXP {
   location              String?
   notificationChannelId String? // New field for notification channel ID
   @@unique([userId, guildId])
+}
+
+model WorkerStats {
+  id String @id
+  ordersBrewed Int
+  ordersDelivered Int
+  lastUsed DateTime
+  lastCommand String?
 }
