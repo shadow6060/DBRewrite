@@ -1,13 +1,6 @@
-import { development } from "../../providers/env";
-import { execSync } from "child_process";
-import { format } from "../../utils/string";
-import { transpile } from "typescript";
-import { permissions } from "../../providers/permissions";
-import { Command } from "../../structures/Command";
-import { client } from "../../providers/client";
-import { channel } from "diagnostics_channel";
-import { ButtonBuilder } from "discord.js";
-import { ButtonStyle, ActionRowBuilder } from "discord.js";
+import {permissions} from "../../providers/permissions";
+import {Command} from "../../structures/Command";
+import {ActionRowBuilder, ButtonBuilder, ButtonStyle} from "discord.js";
 
 export const command = new Command("but", "hm.")
 	.addPermission(permissions.developer) // add permission here
@@ -27,13 +20,14 @@ export const command = new Command("but", "hm.")
 			.setStyle(ButtonStyle.Success)
 			.setCustomId("3");
 
-		const row = new ActionRowBuilder()
-			.addComponents(button1, button2, button3,);
+		const row = new ActionRowBuilder<ButtonBuilder>()
+			.addComponents(button1, button2, button3);
 
 		await int.reply({
+			fetchReply: true,
 			content: "Here are three buttons:",
-			components: [row],
+			components: [row]
 		});
 	});
 
-module.exports = { command };
+module.exports = {command};

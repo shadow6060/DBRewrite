@@ -1,72 +1,56 @@
 /* eslint-disable quotes */
-/* eslint-disable indent */
-import { upsertWorkerInfo } from "../../../database/workerInfo";
-import { Command } from "../../../structures/Command";
-import { permissions } from "../../../providers/permissions";
-import { OrderStatus, getClaimedOrder } from "../../../database/orders";
-import { db } from "../../../database/database";
-import { text } from "../../../providers/config";
-import { client } from "../../../providers/client";
-import { CommandInteraction, StringSelectMenuBuilder, ComponentType, EmbedBuilder } from "discord.js";
-
-const claimedOrderLocks = new Map<string, boolean>();  // Map to store claim locks for each order ID
-const claimedOrders = new Set<string>();  // Set to store claimed order IDs
+import {CommandInteraction, ComponentType, EmbedBuilder, StringSelectMenuBuilder} from "discord.js";
+import {Command} from "../../../structures/Command";
+import {permissions} from "../../../providers/permissions";
+import {getClaimedOrder, OrderStatus,} from "../../../database/orders";
+import {db} from "../../../database/database";
+import {text} from "../../../providers/config";
+import {client} from "../../../providers/client";
 
 export const command = new Command("unclaim", "Allows you to unclaim an order.")
 	.addPermission(permissions.employee)
 	.setExecutor(async (int: CommandInteraction) => {
 		const claimedOrder = await getClaimedOrder(int.user);
 		if (!claimedOrder) {
-			await int.reply({ content: text.commands.unclaim.notClaimed, ephemeral: true });
+			await int.reply({content: text.commands.unclaim.notClaimed, ephemeral: true});
 			return;
 		}
 
-		const orders = await db.orders.findMany({
+		const order = await db.orders.findUnique({
 			where: {
-				claimer: int.user.id,
-				status: OrderStatus.Preparing,
+				id: claimedOrder.id,
 			},
 			select: {
 				id: true,
 				user: true,
-				details: true,
+				details: true, // Include the 'details' property
 			},
 		});
 
-		if (orders.length === 0) {
-			await int.reply({ content: "You don't have any orders to unclaim.", ephemeral: true });
+		if (!order) {
+			await int.reply({content: "Invalid order selected.", ephemeral: true});
 			return;
 		}
-
-		const options = orders.map(order => {
-			const details = order.details.length > 50 ? `${order.details.substring(0, 47)}...` : order.details;
-			const user = order.user.length > 50 ? `${order.user.substring(0, 47)}...` : order.user;
-
-			return {
-				label: order.id,
-				description: `Details: ${details}\nUser: ${user}`,
-				value: order.id,
-				details: order.details,
-			};
-		});
-
-		const minValues = Math.min(1, orders.length);
-		const maxValues = Math.min(3, orders.length);
+		const details = order.details.length > 50 ? order.details.substring(0, 47) + "..." : order.details;
+		const user = order.user.length > 50 ? order.user.substring(0, 47) + "..." : order.user;
 
 		const selectMenu = new StringSelectMenuBuilder()
 			.setCustomId("unclaim_order")
-			.setPlaceholder("Select orders to unclaim")
-			.addOptions(options)
-			.setMinValues(minValues)  // Set minimum selected values
-			.setMaxValues(maxValues);  // Set maximum selected values
-
+			.setPlaceholder("Select the order to unclaim")
+			.addOptions([
+				{
+					label: order.id,
+					description: `Details: ${details}\nUser: ${user}`,
+					value: order.id,
+				},
+			]);
 		const actionRow = {
 			type: ComponentType.ActionRow,
 			components: [selectMenu],
 		};
 
 		const embed = new EmbedBuilder()
-			.setDescription("Please select orders to unclaim.")
+			.setDescription("Please select the order to unclaim.")
 			.setColor("#FF0000");
 
 		await int.reply({
@@ -76,62 +60,42 @@ export const command = new Command("unclaim", "Allows you to unclaim an order.")
 		});
 	});
 
+// Interaction Create Event (for handling select menu interaction)
 client.on("interactionCreate", async (interaction) => {
 	if (!interaction.isStringSelectMenu()) return;
 
 	const componentId = interaction.customId;
 	if (componentId === "unclaim_order") {
-		const orderIds = interaction.values;
-		const unclaimedOrderMessages = [];
+		const orderId = interaction.values[0];
 
-		for (const orderId of orderIds) {
-			try {
-				// Check if the order is claimed by the user
-				const order = await db.orders.findFirst({
-					where: {
-						id: orderId,
-						claimer: interaction.user.id,
-						status: OrderStatus.Preparing,
-					},
-				});
+		const order = await db.orders.findUnique({
+			where: {
+				id: orderId,
+			},
+			select: {
+				id: true,
+				user: true,
+				claimer: true,
+			},
+		});
 
-				if (!order) {
-					unclaimedOrderMessages.push(`Order ${orderId} is not claimed by you.`);
-					continue;
-				}
-
-				// Check if a claim lock exists for this order
-				if (claimedOrderLocks.has(orderId) && claimedOrderLocks.get(orderId)) {
-					unclaimedOrderMessages.push(`Another process is currently unclaiming Order ${orderId}. Please try again later.`);
-					continue;
-				}
-
-				// Set an unclaim lock for this order
-				claimedOrderLocks.set(orderId, true);
-
-				// Update the claimed order and release the unclaim lock
-				await db.orders.update({
-					where: { id: orderId },
-					data: { claimer: null, status: OrderStatus.Unprepared },
-				});
-
-				claimedOrders.delete(orderId);
-
-				// Release the unclaim lock for this order
-				claimedOrderLocks.delete(orderId);
-
-				unclaimedOrderMessages.push(`Order ${orderId} unclaimed successfully.`);
-			} catch (error) {
-				console.error(`Error processing Order ${orderId}:`, error);
-				unclaimedOrderMessages.push(`Error processing Order ${orderId}`);
-			} finally {
-				claimedOrderLocks.delete(orderId);
-			}
+		if (!order) {
+			await interaction.reply({content: "Invalid order selected.", ephemeral: true});
+			return;
 		}
 
-		// Send a single reply summarizing the unclaimed orders
+		if (order.claimer !== interaction.user.id) {
+			await interaction.reply({content: text.commands.unclaim.notClaimed, ephemeral: true});
+			return;
+		}
+
+		await db.orders.update({
+			where: {id: orderId},
+			data: {claimer: null, status: OrderStatus.Unprepared},
+		});
+
 		await interaction.reply({
-			content: `Unclaiming results:\n${unclaimedOrderMessages.join('\n')}`,
+			content: text.commands.unclaim.success.replace("{id}", order.id),
 			ephemeral: false,
 		});
 	}

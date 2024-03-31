@@ -1,25 +1,34 @@
-// drink.ts
-
-import { PrismaClient, Drink } from "@prisma/client";
+import type { Drink } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-// Function to retrieve all drinks
+/** Retrieves all drinks from the database. */
 export async function getAllDrinks(): Promise<Drink[]> {
-    return prisma.drink.findMany();
+	return prisma.drink.findMany();
 }
 
-// Function to create a new drink
-export async function createDrink(data: Partial<Drink>): Promise<Drink> {
-    return prisma.drink.create({ data });
+/**
+ * Creates a drink.
+ * @param data - Drink data. The `createdAt` and `updatedAt` fields are optional, and will be set to the current timestamp if not provided.
+ */
+export async function createDrink(data: Omit<Drink, "createdAt" | "updatedAt"> & Partial<Pick<Drink, "createdAt" | "updatedAt">>): Promise<Drink> {
+	return prisma.drink.create({ data });
 }
 
-// Function to update an existing drink
-export async function updateDrink(id: number, data: Partial<Drink>): Promise<Drink> {
-    return prisma.drink.update({ where: { id }, data });
+/**
+ * Retrieves a drink by its ID, and updates it.
+ * @param id - The ID of the drink to update.
+ * @param data - Drink data. The `createdAt` and `updatedAt` fields are optional, and will be set to the current timestamp if not provided.
+ */
+export async function updateDrink(id: number, data: Omit<Drink, "createdAt" | "updatedAt"> & Partial<Pick<Drink, "createdAt" | "updatedAt">>): Promise<Drink> {
+	return prisma.drink.update({ where: { id }, data });
 }
 
-// Function to delete a drink
+/**
+ * Deletes a drink.
+ * @param id - The ID of the drink to delete.
+ */
 export async function deleteDrink(id: number): Promise<Drink> {
-    return prisma.drink.delete({ where: { id } });
+	return prisma.drink.delete({ where: { id } });
 }

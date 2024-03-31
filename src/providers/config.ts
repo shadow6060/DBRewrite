@@ -6,17 +6,28 @@ import type { NamedFormattable, PositionalFormattable } from "../utils/string";
 import { formatZodError } from "../utils/zod";
 import pc from "picocolors";
 import { IllegalStateError } from "../utils/error";
-import { OrderStatus } from "@prisma/client";
+import {OrderStatus} from "@prisma/client";
+
+/** A snowflake ID */
 export const snowflake = z.union([
 	z.string().length(18).regex(/^\d+$/),
 	z.string().length(19).regex(/^\d+$/),
 ]);
 
+/**
+ * Zod schema for a formattable string with n placeholders in the form of `{}`.
+ * @param n - The number of placeholders.
+ */
 const pFormattable = <T extends number = 1>(n: T = 1 as T) =>
 	z.string().refine(x => x.split("{}").length - 1 === n, {
 		message: `Formattable must contain ${n} placeholders`,
 	}) as z.ZodType<PositionalFormattable<T>>;
 
+
+/**
+ * Zod schema for a formattable string with named placeholders in the form of `{key}`.
+ * @param keys - The keys of the placeholders as a list of string arguments.
+ */
 const nFormattable = <T extends string[]>(...keys: T) =>
 	z.string().refine(
 		x => {
@@ -30,7 +41,7 @@ const nFormattable = <T extends string[]>(...keys: T) =>
 		{
 			message: `Formattable must contain ${keys.join(", ")}`,
 		},
-	) as z.ZodType<NamedFormattable<T>>;;
+	) as z.ZodType<NamedFormattable<T>>;
 
 const textSchema = z
 	.object({
@@ -176,7 +187,7 @@ const textSchema = z
 				success: z.string(),
 				alreadyRated: z.string(),
 				invalidRating: z.string(),
-			}).passthrough(),
+			}),
 
 			drinkingr: z.object({
 				drinks: z.array(pFormattable()),
@@ -242,8 +253,16 @@ const constantsSchema = z
 	})
 	.strict();
 
+/**
+ * The path to the config folder.
+ */
 export const configFolder = path.join(__dirname, "../../config/");
 
+/**
+ * Scans a HJSON file with a given schema.
+ * @param schema - The schema to validate the file against.
+ * @param file - The file to scan.
+ */
 export const parseHjson = <T>(schema: z.ZodType<T>, file: string) => {
 	const sp = schema.safeParse(HJSON.parse(fs.readFileSync(path.join(configFolder, file), "utf-8")));
 	if (sp.success) return sp.data;
@@ -252,6 +271,9 @@ export const parseHjson = <T>(schema: z.ZodType<T>, file: string) => {
 	throw new IllegalStateError(`${file} is invalid.`);
 };
 
+/** The parsed text config file */
 export const text = parseHjson(textSchema, "text.hjson");
+/** The parsed config file */
 export const config = parseHjson(configSchema, "config.hjson");
+/** The parsed constants config file */
 export const constants = parseHjson(constantsSchema, "constants.hjson");

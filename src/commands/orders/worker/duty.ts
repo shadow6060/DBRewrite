@@ -1,7 +1,7 @@
-import { text } from "../../../providers/config";
-import { mainGuild, mainRoles } from "../../../providers/discord";
-import { permissions } from "../../../providers/permissions";
-import { Command } from "../../../structures/Command";
+import {text} from "../../../providers/config";
+import {mainGuild, mainRoles} from "../../../providers/discord";
+import {permissions} from "../../../providers/permissions";
+import {Command} from "../../../structures/Command";
 
 export const command = new Command("duty", "Toggles your on-duty status.")
 	.addPermission(permissions.employee)

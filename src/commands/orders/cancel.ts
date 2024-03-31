@@ -1,9 +1,9 @@
-import { CafeStatus, OrderStatus } from "@prisma/client";
-import { db } from "../../database/database";
-import { mainChannels } from "../../providers/discord";
-import { getUserActiveOrder } from "../../database/orders";
-import { text } from "../../providers/config";
-import { Command } from "../../structures/Command";
+import {OrderStatus} from "@prisma/client";
+import {db} from "../../database/database";
+import {mainChannels} from "../../providers/discord";
+import {getUserActiveOrder} from "../../database/orders";
+import {text} from "../../providers/config";
+import {Command} from "../../structures/Command";
 
 export const command = new Command("cancel", "Cancels your active order.")
 	.setExecutor(async int => {
