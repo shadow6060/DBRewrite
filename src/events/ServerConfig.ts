@@ -5,7 +5,8 @@ interface GuildConfig {
     orderChannelId?: string;
 }
 
-interface ServerConfig {
+
+export interface ServerConfig {
     guilds: Record<string, GuildConfig>;
 }
 
@@ -23,7 +24,7 @@ export class ServerConfig {
             return JSON.parse(data);
         } catch (error) {
             console.error("Error loading config file:", error);
-            return { guilds: {} };
+            return { guilds: {} } as ServerConfig; // todo: handle error cause this is not a valid config
         }
     }
 

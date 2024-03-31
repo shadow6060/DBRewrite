@@ -16,7 +16,6 @@ export const command = new Command("doggo", "Get cute doggos.")
 					.setTitle("Bam someone got doggoed")
 					.setImage(yeeeee.url)
 					.setFooter({ text: format(tcfe.footer, int.user.tag), iconURL: int.user.displayAvatarURL() }),
-
 			],
 		});
 	}); 

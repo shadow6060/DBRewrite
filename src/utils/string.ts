@@ -1,5 +1,3 @@
-// shut up eslint
-/* eslint-disable indent */
 import type {A, L, N, S} from "ts-toolbelt";
 import {mainEmojis} from "../providers/discord";
 
@@ -13,8 +11,7 @@ export const capitalize = <T extends string>(str?: T) =>
 	str ? ((str.charAt(0).toUpperCase() + str.slice(1)) as Capitalize<T>) : str;
 
 /**
- * Represents a string with positional placeholders.
- * In the form of `<some string><{} * T><some string>`.
+ * Represents a string with a number of placeholders in the form `{}`.
  */
 export type PositionalFormattable<T extends number = 1> = `${string}${S.Join<
 	L.Repeat<"{}", T>,
@@ -79,20 +76,20 @@ export const format = <T extends string>(
 	str: T,
 	...arr: FormatArguments<T>
 ): string =>
-	str.includes("{}")
-		? str
-			.split("{}")
-			.reduce(
-				(l, c, i, a) =>
-					l + c + (i + 1 === a.length ? "" : arr[i] ?? "{}"),
-				""
-			)
-		: /\{\w+\}/.test(str)
-			? str.replaceAll(
-				/\{(\w+)\}/g,
-				(_, k) => (arr[0] as Record<string, string>)[k]
-			)
-			: str;
+		str.includes("{}")
+			? str
+				.split("{}")
+				.reduce(
+					(l, c, i, a) =>
+						l + c + (i + 1 === a.length ? "" : arr[i] ?? "{}"),
+					""
+				)
+			: /\{\w+\}/.test(str)
+				? str.replaceAll(
+					/\{(\w+)\}/g,
+					(_, k) => (arr[0] as Record<string, string>)[k]
+				)
+				: str;
 
 /**
  * Parses a text by replacing emoji placeholders with their corresponding emoji strings.

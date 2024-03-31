@@ -7,6 +7,12 @@ import {LifetimeMap} from "../structures/LifetimeMap";
 import type {InteractionByType} from "../utils/components";
 import type {Awaitable} from "discord.js";
 
+/**
+ * This file is responsible for handling interactions.
+ * It listens for interactionCreate events and executes the command if it is a command.
+ * It also checks if the user is blacklisted and if the command has the required permissions.
+ */
+
 export const componentCallbacks = new LifetimeMap<string, (int: InteractionByType) => Awaitable<void>>(
 	constants.interactionExpiryTimeMs
 );

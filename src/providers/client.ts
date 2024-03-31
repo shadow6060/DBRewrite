@@ -25,13 +25,14 @@ client.on("ready", () => {
 	console.log(`Logged in as ${client.user?.tag}!`);
 	client.user?.setPresence({
 		activities: [{ name: "We are online! Use slash cmds to order /order <description> & You get money through /work" }],
-		status: "online", // Online , idle , dnd (Do Not Disturb), invisible , offline
+		status: "online", // "online", "idle", "dnd" (do not disturb), "invisible"
 	});
 });
 
 /**
- * Discord's REST API.
+ * Instance of Discord's API for the bot, use `discord-api-types` for REST routes
  * @see https://discord.js.org/docs/packages/rest/main
+ * @see https://discord-api-types.dev
  */
 export const rest = new REST({ version: "9" }).setToken(config.token);
 

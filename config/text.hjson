@@ -71,7 +71,7 @@
 		brew: {
 			invalidUrl: "[no] Please specify a valid URL."
 			success: "[yes] The order is now brewing."
-			ready:  <@&1053887156701118485>he order{} {} {} finished brewing and {} now available for delivery.
+			ready:  <@&1053887156701118485> The order{} {} {} finished brewing and {} now available for delivery.
 		}
 		deliver: {
 			noMessage: ⚠️ You do not have a delivery message set, and the default message was used. Make to set one with `/deliverymessage`!

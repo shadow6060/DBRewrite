@@ -3,6 +3,11 @@
 import { PrismaClient } from "@prisma/client";
 import { client } from "../providers/client";
 
+/**
+ * This event handler listens for messages and updates the user's XP and level.
+ * It also sends a message to the notification channel when a user levels up.
+ */
+
 const prisma = new PrismaClient();
 
 // Map to hold cooldown Sets per guild

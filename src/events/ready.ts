@@ -8,6 +8,11 @@ import { IllegalStateError } from "../utils/error";
 import { parseText } from "../utils/string";
 import { isNotInitialized, typedEntries, typedFromEntries } from "../utils/utils";
 
+/**
+ * This file contains the `ready` event handler.
+ * It loads commands, sets up the main guild, roles, channels, and emojis, and starts the order timeout checks.
+ */
+
 type TextObject = {
 	[k: string]: string | string[] | TextObject;
 };
@@ -15,7 +20,7 @@ type TextObject = {
 client.on("ready", async () => {
 	if (!client.isReady()) return;
 	console.log(`Bot up as ${client.user.tag}!`);
-	loadCommands();
+	await loadCommands();
 	if (isNotInitialized(mainGuild)) setMainGuild(await client.guilds.fetch(config.mainServer));
 	setMainRoles(
 		typedFromEntries(
@@ -45,7 +50,7 @@ client.on("ready", async () => {
 	const parseTexts = (texts: TextObject) => {
 		for (const k in texts) {
 			if (typeof texts[k] === "string") texts[k] = parseText(texts[k] as string);
-			else if (typeof texts[k] === "object") parseTexts(texts[k] as TextObject);
+			else if (typeof texts[k] === "object") parseTexts(texts[k] as TextObject); // recursive call
 		}
 	};
 	parseTexts(text.commands);
