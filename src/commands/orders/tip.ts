@@ -1,11 +1,11 @@
-import { EmbedBuilder } from "discord.js";
-import { db } from "../../database/database";
-import { getLatestOrder, OrderFlags } from "../../database/orders";
-import { getUserInfo } from "../../database/userInfo";
-import { text } from "../../providers/config";
-import { mainChannels } from "../../providers/discord";
-import { Command } from "../../structures/Command";
-import { format } from "../../utils/string";
+import {EmbedBuilder} from "discord.js";
+import {db} from "../../database/database";
+import {getLatestOrder, OrderFlags} from "../../database/orders";
+import {getUserInfo} from "../../database/userInfo";
+import {text} from "../../providers/config";
+import {mainChannels} from "../../providers/discord";
+import {Command} from "../../structures/Command";
+import {format} from "../../utils/string";
 
 export const command = new Command("tip", "Tip your last order.")
 	.addOption("integer", o => o.setName("money").setDescription("The amount to tip.").setRequired(true))
@@ -38,19 +38,19 @@ export const command = new Command("tip", "Tip your last order.")
 					.setDescription(
 						format(tcte.description, lastOrder.id, tip, `<@${lastOrder.claimer}>`, `<@${lastOrder.deliverer}>`)
 					)
-					.setFooter({ text: format(tcte.footer, int.user.tag), iconURL: int.user.displayAvatarURL() }),
+					.setFooter({text: format(tcte.footer, int.user.tag), iconURL: int.user.displayAvatarURL()}),
 			],
 		});
 		await db.orders.update({
-			where: { id: lastOrder.id },
-			data: { flags: lastOrder.flags | OrderFlags.Tipped },
+			where: {id: lastOrder.id},
+			data: {flags: lastOrder.flags | OrderFlags.Tipped},
 		});
 		await db.userInfo.update({
-			where: { id: int.user.id },
-			data: { balance: { decrement: tip } }
+			where: {id: int.user.id},
+			data: {balance: {decrement: tip}}
 		});
 		await db.userInfo.updateMany({
-			where: { id: { in: [lastOrder.claimer, lastOrder.deliverer].filter(Boolean) as string[] } },
-			data: { balance: { increment: tip } }
+			where: {id: {in: [lastOrder.claimer, lastOrder.deliverer].filter(Boolean) as string[]}},
+			data: {balance: {increment: tip}}
 		});
 	});

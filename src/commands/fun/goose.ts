@@ -1,7 +1,7 @@
-import { EmbedBuilder } from "discord.js";
-import { text } from "../../providers/config";
-import { Command } from "../../structures/Command";
-import { format } from "../../utils/string";
+import {EmbedBuilder} from "discord.js";
+import {text} from "../../providers/config";
+import {Command} from "../../structures/Command";
+import {format} from "../../utils/string";
 import Client from "nekos.life";
 
 export const command = new Command("goose", "See cute gooseeeeeeeeee")
@@ -9,7 +9,7 @@ export const command = new Command("goose", "See cute gooseeeeeeeeee")
 	.setExecutor(async int => {
 		const nekos = new Client();
 		const yeeeee = await nekos.goose();
-		const goose = int.options.getUser("goose", true);
+		const goose = (int.options.get("goose", true).value as string);
 		const tcfe = text.commands.feedback.embed;
 		await int.reply({
 			embeds: [
@@ -17,7 +17,7 @@ export const command = new Command("goose", "See cute gooseeeeeeeeee")
 					.setTitle("Hoooonk")
 					.setImage(yeeeee.url)
 					.setDescription(`${goose} got honked at by ${int.user.tag}`)
-					.setFooter({ text: format(tcfe.footer, int.user.tag), iconURL: int.user.displayAvatarURL() }),
+					.setFooter({text: format(tcfe.footer, int.user.tag), iconURL: int.user.displayAvatarURL()}),
 
 			],
 		});

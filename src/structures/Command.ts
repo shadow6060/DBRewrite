@@ -1,11 +1,11 @@
-import { SlashCommandBuilder } from "@discordjs/builders";
-import type { CommandInteraction } from "discord.js";
-import { Attachment } from "discord.js";
-import type { Permission } from "../providers/permissions";
-import { capitalize } from "../utils/string";
+import {SlashCommandBuilder} from "@discordjs/builders";
+import type {CommandInteraction} from "discord.js";
+import type {Permission} from "../providers/permissions";
+import {capitalize} from "../utils/string";
+import {ChatInputCommandInteraction} from "discord.js";
 
 /** A command executor. Either returns void or a promise that resolves to void. */
-export type CommandExecutor = (interaction: CommandInteraction<"cached">) => void | Promise<void>;
+export type CommandExecutor = (int: ChatInputCommandInteraction<"cached">) => void | Promise<void>;
 
 /** An option that can be added to a command. */
 export type CommandOptionType = Extract<
@@ -31,16 +31,13 @@ type StringOptionArgs = CommandOptionArgs<"string">;
  * command.setExecutor(i => i.reply("Pong!"));
  */
 export class Command {
-	readonly #slash = new SlashCommandBuilder();
 	accessible = true;
-	executor: CommandExecutor = i => {
-		i.reply("No executor was specified.");
-	};
 	permissions: Permission[] = [];
 	local = false;
 	aliases: string[] = [];
 	shortcuts: string[] = [];
 	syntax: { name: string; type: CommandOptionType; require: boolean }[] = [];
+	readonly #slash = new SlashCommandBuilder();
 
 	/**
 	 * Creates a new command.
@@ -50,6 +47,10 @@ export class Command {
 	constructor(public readonly name: string, public readonly description = "") {
 		this.#slash.setName(this.name).setDescription(this.description).setDefaultPermission(true);
 	}
+
+	executor: CommandExecutor = i => {
+		i.reply("No executor was specified.");
+	};
 
 	/**
 	 * Sets the command to be accessible by default or not.
@@ -173,7 +174,7 @@ export class Command {
 	 * command.addSyntax("name", "string", true);
 	 */
 	addSyntax(name: string, type: CommandOptionType, require = false) {
-		this.syntax.push({ name, type, require });
+		this.syntax.push({name, type, require});
 		return this;
 	}
 

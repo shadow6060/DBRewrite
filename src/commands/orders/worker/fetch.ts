@@ -1,8 +1,8 @@
-import { getOrder, matchActiveOrder, orderEmbedAsync } from "../../../database/orders";
-import { client } from "../../../providers/client";
-import { text } from "../../../providers/config";
-import { permissions } from "../../../providers/permissions";
-import { Command } from "../../../structures/Command";
+import {getOrder, matchActiveOrder, orderEmbedAsync} from "../../../database/orders";
+import {client} from "../../../providers/client";
+import {text} from "../../../providers/config";
+import {permissions} from "../../../providers/permissions";
+import {Command} from "../../../structures/Command";
 
 export const command = new Command(
 	"fetch",
@@ -20,13 +20,13 @@ export const command = new Command(
 		o.setName("inactive").setDescription("Include inactive orders too.")
 	)
 	.setExecutor(async (int) => {
-		const match = int.options.get("order")?.value;
-		const inactive = int.options.get("inactive")?.value;
+		const match = int.options.get("order", true).value as string;
+		const inactive = int.options.get("inactive", true).value as boolean;
 		const order = inactive ? await getOrder(match) : await matchActiveOrder(match);
 		if (!order) {
 			await int.reply(text.common.invalidOrderId);
 			return;
 		} else {
-			await int.reply({ embeds: [await orderEmbedAsync(order, client)] });
+			await int.reply({embeds: [await orderEmbedAsync(order, client)]});
 		}
 	});

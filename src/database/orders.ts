@@ -1,5 +1,5 @@
 import type {CafeOrders, Orders} from "@prisma/client";
-import {OrderStatus, CafeStatus, PrismaClient} from "@prisma/client";
+import {CafeStatus, OrderStatus, PrismaClient} from "@prisma/client";
 import type {Channel, Client, User, UserResolvable} from "discord.js";
 import {EmbedBuilder, GuildChannel} from "discord.js";
 import {client} from "../providers/client";

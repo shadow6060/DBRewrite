@@ -1,18 +1,18 @@
 /* eslint-disable quotes */
-import { StringSelectMenuBuilder, CommandInteraction, ComponentType, EmbedBuilder } from "discord.js";
-import { Command } from "../../../structures/Command";
-import { permissions } from "../../../providers/permissions";
-import { OrderStatus, getClaimedOrder, } from "../../../database/orders";
-import { db } from "../../../database/database";
-import { text } from "../../../providers/config";
-import { client } from "../../../providers/client";
+import {CommandInteraction, ComponentType, EmbedBuilder, StringSelectMenuBuilder} from "discord.js";
+import {Command} from "../../../structures/Command";
+import {permissions} from "../../../providers/permissions";
+import {getClaimedOrder, OrderStatus,} from "../../../database/orders";
+import {db} from "../../../database/database";
+import {text} from "../../../providers/config";
+import {client} from "../../../providers/client";
 
 export const command = new Command("unclaim", "Allows you to unclaim an order.")
 	.addPermission(permissions.employee)
 	.setExecutor(async (int: CommandInteraction) => {
 		const claimedOrder = await getClaimedOrder(int.user);
 		if (!claimedOrder) {
-			await int.reply({ content: text.commands.unclaim.notClaimed, ephemeral: true });
+			await int.reply({content: text.commands.unclaim.notClaimed, ephemeral: true});
 			return;
 		}
 
@@ -28,7 +28,7 @@ export const command = new Command("unclaim", "Allows you to unclaim an order.")
 		});
 
 		if (!order) {
-			await int.reply({ content: "Invalid order selected.", ephemeral: true });
+			await int.reply({content: "Invalid order selected.", ephemeral: true});
 			return;
 		}
 		const details = order.details.length > 50 ? order.details.substring(0, 47) + "..." : order.details;
@@ -80,22 +80,22 @@ client.on("interactionCreate", async (interaction) => {
 		});
 
 		if (!order) {
-			await interaction.reply({ content: "Invalid order selected.", ephemeral: true });
+			await interaction.reply({content: "Invalid order selected.", ephemeral: true});
 			return;
 		}
 
 		if (order.claimer !== interaction.user.id) {
-			await interaction.reply({ content: text.commands.unclaim.notClaimed, ephemeral: true });
+			await interaction.reply({content: text.commands.unclaim.notClaimed, ephemeral: true});
 			return;
 		}
 
 		await db.orders.update({
-			where: { id: orderId },
-			data: { claimer: null, status: OrderStatus.Unprepared },
+			where: {id: orderId},
+			data: {claimer: null, status: OrderStatus.Unprepared},
 		});
 
 		await interaction.reply({
-			content: text.commands.unclaim.success.replace('{id}', order.id),
+			content: text.commands.unclaim.success.replace("{id}", order.id),
 			ephemeral: false,
 		});
 	}
