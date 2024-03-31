@@ -49,7 +49,6 @@ export const command = new Command("profile", "Shows your profile.")
 						userName: int.user.username,
 						level: 0,
 						exp: 0,
-						user: {connect: {id: userId}}, // Connect the guildsXP to the UserInfo
 					},
 				});
 			} else if (!userGuildData.userName) {

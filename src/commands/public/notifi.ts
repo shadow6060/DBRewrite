@@ -16,7 +16,7 @@ export const command = new Command("notifi",
 		if (int.user.bot || !int.guild) return;
 
 		// Get the ID of the channel from the command option
-		const channelId = int.options.getChannel()?.id;
+		const channelId = int.options.getChannel("channel")?.id;
 		if (!channelId) {
 			await int.reply("Please provide a valid channel.");
 			return;

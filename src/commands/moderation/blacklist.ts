@@ -11,7 +11,7 @@ export const command = new Command("blacklist", "Blacklists a user, server, or c
 	.addOption("boolean", o => o.setName("unblacklist").setDescription("Whether to unblacklist instead of blacklisting."))
 	.setExecutor(async int => {
 		const id = int.options.get("id", true).value as string;
-		if (int.options.get("unblacklist", true).value as boolean) {
+		if ((int.options.get("unblacklist")?.value ?? false) as boolean) {
 			if (!blacklist.has(id)) {
 				await int.reply(text.commands.blacklist.remove.existing);
 				return;
@@ -24,7 +24,7 @@ export const command = new Command("blacklist", "Blacklists a user, server, or c
 				await int.reply(text.commands.blacklist.existing);
 				return;
 			}
-			await createBlacklist(id, int.user, int.options.get("reason", true).value as string ?? "No reason specified.");
+			await createBlacklist(id, int.user, int.options.get("reason")?.value as string ?? "No reason specified.");
 			await int.reply(text.commands.blacklist.success);
 		}
 	});

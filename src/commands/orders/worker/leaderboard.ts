@@ -8,7 +8,7 @@ const PAGE_SIZE = 5; // Number of workers per page
 
 async function refreshWorkerInfos() {
 	// Refresh worker infos from the database
-	await getWorkerInfos(true);
+	await getWorkerInfos();
 	// Wait for 1 second before retrieving the worker infos again
 	await new Promise((resolve) => setTimeout(resolve, 1000));
 }
@@ -38,7 +38,7 @@ export const command = new Command("leaderboard", "hm.")
 		const totalPages = Math.ceil(activeWorkerInfos.length / PAGE_SIZE);
 
 		// Get the current page number from the command options (defaults to page 1)
-		const currentPage = int.options.getInteger("page") ?? 1;
+		const currentPage = int.options.get("page", true).value as number ?? 1;
 
 		// Calculate the start and end index for the workers on the current page
 		const startIndex = (currentPage - 1) * PAGE_SIZE;

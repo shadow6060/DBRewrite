@@ -1,4 +1,9 @@
-// todo: uncomment when components are fixed
+import {Command} from "../structures/Command";
+
+export const command = new Command("unimplemented", "foo bar baz").setExecutor(async int => {
+	await int.reply("not implemented");
+});
+
 // import { Command } from "../structures/Command";
 // import { actionRowOf, cbButton, cbSelectMenu } from "../utils/components";
 //

@@ -6,7 +6,7 @@ import {Command} from "../../structures/Command";
 import {format} from "../../utils/string";
 import {sampleArray} from "../../utils/utils";
 
-export const command = new Command("drinkroullete", "Get a random drink ordered!")
+export const command = new Command("drinkroulette", "Get a random drink ordered!")
 	.setExecutor(async int => {
 		if (await hasActiveOrder(int.user)) {
 			await int.reply(text.commands.order.exists);

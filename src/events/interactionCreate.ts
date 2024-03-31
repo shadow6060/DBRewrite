@@ -1,11 +1,11 @@
-import { client } from "../providers/client";
-import { commandRegistry } from "../providers/commandManager";
+import {client} from "../providers/client";
+import {commandRegistry} from "../providers/commandManager";
 import {constants, text} from "../providers/config";
-import { blacklist } from "../database/blacklist";
-import { StopCommandExecution } from "../utils/error";
+import {blacklist} from "../database/blacklist";
+import {StopCommandExecution} from "../utils/error";
 import {LifetimeMap} from "../structures/LifetimeMap";
 import type {InteractionByType} from "../utils/components";
-import type {Awaitable} from "discord.js";
+import type {Awaitable, ChatInputCommandInteraction} from "discord.js";
 
 /**
  * This file is responsible for handling interactions.
@@ -31,7 +31,7 @@ client.on("interactionCreate", async (int) => {
 			if (!command) throw new Error(`Unregistered command ${int.commandName}`);
 			// TODO remove this and use discord builtin when permissions get better
 			for (const perm of command.permissions) await perm.check(int);
-			await command.executor(int);
+			await command.executor(int as ChatInputCommandInteraction<"cached">);
 		}
 	} catch (e) {
 		if (!(e instanceof StopCommandExecution)) {

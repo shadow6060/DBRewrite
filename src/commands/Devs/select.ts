@@ -39,6 +39,7 @@ export const command = new Command("select", "Select Menu Example")
 				{name: "Option 2", value: "The second option"},
 				{name: "Option 3", value: "The third option"}
 			);
+
 		await interaction.reply({
 			embeds: [embed],
 			components: [{
