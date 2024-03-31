@@ -1,4 +1,4 @@
-import type {CafeOrders, Orders} from "@prisma/client";
+import type {Orders} from "@prisma/client";
 import {CafeStatus, OrderStatus, PrismaClient} from "@prisma/client";
 import type {Channel, Client, User, UserResolvable} from "discord.js";
 import {EmbedBuilder, GuildChannel} from "discord.js";
@@ -28,7 +28,7 @@ export const activeCafeStatus = [
  * @param user - A user resolvable.
  */
 export const hasActiveOrder = async (user: UserResolvable) =>
-	(await db.cafeOrders.count({
+	(await db.orders.count({
 		where: {
 			user: resolveUserId(user),
 			status: {in: activeCafeStatus},
@@ -40,7 +40,7 @@ export const hasActiveOrder = async (user: UserResolvable) =>
  * @param user - A user resolvable.
  */
 export const getUserActiveOrder = async (user: UserResolvable) =>
-	await db.cafeOrders.findFirst({
+	await db.orders.findFirst({
 		where: {
 			user: resolveUserId(user),
 			status: {in: activeCafeStatus},
@@ -52,7 +52,7 @@ export const getUserActiveOrder = async (user: UserResolvable) =>
  * @param id - The ID to check.
  */
 export const orderExists = async (id: string) =>
-	(await db.cafeOrders.count({
+	(await db.orders.count({
 		where: {
 			id,
 		},
@@ -96,7 +96,7 @@ const dishExists = async (id: string) =>
 /**
  * Get all active orders.
  */
-export const getAllActiveOrders = async () => db.cafeOrders.findMany({where: {status: {in: activeCafeStatus}}});
+export const getAllActiveOrders = async () => db.orders.findMany({where: {status: {in: activeCafeStatus}}});
 
 /**
  * Gets all orders of a current status.
@@ -104,35 +104,35 @@ export const getAllActiveOrders = async () => db.cafeOrders.findMany({where: {st
  * @param status - The status to check for.
  */
 export const matchCafeStatus = async (id: string, status: CafeStatus) =>
-	db.cafeOrders.findFirst({where: {id: {startsWith: id}, status}});
+	db.orders.findFirst({where: {id: {startsWith: id}, status}});
 
 /**
  * Gets the first active order that starts with the given ID.
  * @param id
  */
 export const matchActiveOrder = async (id: string) =>
-	db.cafeOrders.findFirst({where: {id: {startsWith: id.toLowerCase()}, status: {in: activeCafeStatus}}});
+	db.orders.findFirst({where: {id: {startsWith: id.toLowerCase()}, status: {in: activeCafeStatus}}});
 
 /**
  * Gets the first active order from a user.
  * @param user - A user resolvable.
  */
 export const getClaimedOrder = async (user: UserResolvable) =>
-	db.cafeOrders.findFirst({where: {claimer: resolveUserId(user), status: CafeStatus.Preparing}});
+	db.orders.findFirst({where: {claimer: resolveUserId(user), status: CafeStatus.Preparing}});
 
 /**
  * Gets the first active order with a given ID.
  * @param id - The ID to check.
  */
 export const getOrder = async (id: string) =>
-	db.cafeOrders.findFirst({where: {id}});
+	db.orders.findFirst({where: {id}});
 
 /**
  * Gets the latest delivered order of a user.
  * @param user - A user resolvable.
  */
 export const getLatestOrder = async (user: UserResolvable) =>
-	db.cafeOrders.findFirst({
+	db.orders.findFirst({
 		where: {user: resolveUserId(user), status: CafeStatus.Delivered},
 		orderBy: {createdAt: "desc"}
 	});
@@ -173,7 +173,7 @@ const formatChannel = (channel: Channel | string) =>
  * @param order - The order to create the embed with.
  * @param client - The client to fetch users and channels with.
  */
-export const orderEmbedSync = async (order: CafeOrders, client: Client) => {
+export const orderEmbedSync = async (order: Orders, client: Client) => {
 	const embed = rawOrderEmbed(order)
 		.addFields({
 			name: embedFields.customer,
@@ -206,7 +206,7 @@ const nulli = () => null;
  * @param order - The order to create the embed with.
  * @param client - The client to fetch users and channels with.
  */
-export const orderEmbedAsync = async (order: CafeOrders, client: Client<boolean>): Promise<EmbedBuilder> => {
+export const orderEmbedAsync = async (order: Orders, client: Client<boolean>): Promise<EmbedBuilder> => {
 	const user = await client.users.fetch(order.user).catch(() => null);
 	const channel = await client.channels.fetch(order.channel).catch(() => null);
 	const guild = await client.guilds.fetch(order.guild).catch(() => null);
@@ -241,7 +241,7 @@ export const requiredOrderPlaceholders = ["mention", "image"];
  * Creates placeholders for an order.
  * @param order - The order to create placeholders for.
  */
-export const orderPlaceholders = async (order: CafeOrders) => Object.assign(Object.create(null), {
+export const orderPlaceholders = async (order: Orders) => Object.assign(Object.create(null), {
 	preparer: order.claimer ? formatUser((await client.users.fetch(order.claimer).catch(nulli)) ?? order.claimer) : "Unknown",
 	deliverer: order.deliverer ? formatUser((await client.users.fetch(order.deliverer).catch(nulli)) ?? order.deliverer) : "Unknown",
 	id: order.id,

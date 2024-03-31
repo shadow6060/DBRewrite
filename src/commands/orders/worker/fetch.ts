@@ -21,7 +21,7 @@ export const command = new Command(
 	)
 	.setExecutor(async (int) => {
 		const match = int.options.get("order", true).value as string;
-		const inactive = int.options.get("inactive", true).value as boolean;
+		const inactive = int.options.get("inactive")?.value as boolean;
 		const order = inactive ? await getOrder(match) : await matchActiveOrder(match);
 		if (!order) {
 			await int.reply(text.common.invalidOrderId);

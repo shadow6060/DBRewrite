@@ -13,7 +13,7 @@ export const command = new Command("workerstats", "Checks the global worker stat
 	.addPermission(permissions.employee)
 	.addShortcuts("ws")
 	.setExecutor(async (int: CommandInteraction) => {
-		const args = (int.options.get("monthly", true).value as string)?.includes("m") ? ["monthly", ...(int.options.get("monthly", true).value as string).split(" ").slice(1)] : [];
+		const args = (int.options.get("monthly")?.value as string)?.includes("m") ? ["monthly", ...(int.options.get("monthly")?.value as string).split(" ").slice(1)] : [];
 		const workerInfos = await getWorkerInfos(); // Retrieve the workerInfos
 		let data = workerInfos;
 		let isMonthly = false;
