@@ -1,9 +1,5 @@
 {
 	interactionExpiryTimeMs: 30000 // 30 seconds
-	bakeTimeRangeMs: [
-		20000 // 20 seconds
-		90000 // 1.5 minutes
-	]
 	brewTimeRangeMs: [
 		20000 // 20 seconds
 		90000 // 1.5 minutes

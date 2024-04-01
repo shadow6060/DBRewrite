@@ -1,16 +1,13 @@
+import { OrderStatus } from "@prisma/client";
 import { db } from "../database/database";
 import { format } from "../utils/string";
 import { text } from "./config";
 import { mainChannels } from "./discord";
-import { OrderStatus } from "../database/orders";
 
-/**
- * Checks for orders that have finished brewing every 5s, updates status to `PendingDelivery`, and sends a message to the delivery channel.
- */
 export const startOrderTimeoutChecks = () => {
 	setInterval(async () => {
-		const brewFinished = await db.orders.findMany({ where: { timeout: { lte: new Date() }, status: OrderStatus.Brewing } });
-		await db.orders.updateMany({
+		const brewFinished = await db.order.findMany({ where: { timeout: { lte: new Date() }, status: OrderStatus.Brewing } });
+		await db.order.updateMany({
 			where: { id: { in: brewFinished.map(x => x.id) } },
 			data: { timeout: null, status: OrderStatus.PendingDelivery },
 		});
