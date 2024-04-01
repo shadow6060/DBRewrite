@@ -1,15 +1,16 @@
-/* eslint-disable linebreak-style */
-import {getUserInfo} from "../../database/userInfo";
-import {text} from "../../providers/config";
-import {Command} from "../../structures/Command";
-import {format} from "../../utils/string";
+import { OrderStatus } from "@prisma/client";
+import { db } from "../../database/database";
+import { generateOrderId, getClaimedOrder, getUserActiveOrder, hasActiveOrder, matchActiveOrder, matchOrderStatus, orderEmbedAsync } from "../../database/order";
+import { getUserInfo } from "../../database/userInfo";
+import { client } from "../../providers/client";
+import { config, text } from "../../providers/config";
+import { mainGuild } from "../../providers/discord";
+import { permissions } from "../../providers/permissions";
+import { Command } from "../../structures/Command";
+import { format } from "../../utils/string";
 
 export const command = new Command("balance", "Checks your balance.")
 	.setExecutor(async int => {
 		const info = await getUserInfo(int.user);
-		const balance = info?.balance ?? 0;
-		//const donuts = info?.donuts ?? 0;
-		const replyMessage = format(text.commands.balance.success, balance); //+ "\n" +
-		//format(text.commands.balance.success1, donuts);
-		await int.reply(replyMessage);
+		await int.reply(format(text.commands.balance.success, info?.balance ?? 0));
 	});

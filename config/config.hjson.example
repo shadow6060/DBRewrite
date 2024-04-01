@@ -13,7 +13,6 @@
 		moderator: ""
 		duty: ""
 		dutyd: ""
-		admin: ""
 	}
 	channels: {
 		brewery: "" 

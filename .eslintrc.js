@@ -21,6 +21,5 @@ module.exports = {
 		"@typescript-eslint/consistent-type-imports": "warn",
 		"@typescript-eslint/no-non-null-assertion": "off",
 		"@typescript-eslint/no-restricted-imports": ["error", "discord-api-types"],
-		"no-unused-vars": "off",
 	},
 };
