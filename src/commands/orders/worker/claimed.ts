@@ -2,7 +2,8 @@ import { getClaimedOrder, orderEmbedAsync } from "../../../database/orders";
 import { permissions } from "../../../providers/permissions";
 import { Command } from "../../../structures/Command";
 import type { CommandInteraction } from "discord.js";
-export const command = new Command("claimed", "Checks your claimed order.")
+import { ExtendedCommand } from "../../../structures/extendedCommand";
+export const command = new ExtendedCommand({ name: "claimed", description: "checks your claimed order.", local: true })
 	.addPermission(permissions.employee)
 	.setExecutor(async (int: CommandInteraction) => {
 		const order = await getClaimedOrder(int.user);

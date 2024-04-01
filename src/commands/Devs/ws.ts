@@ -6,12 +6,12 @@ import { getWorkerStats } from "../../database/workerstats";
 import { resolveUserId } from "../../utils/id";
 import { Command } from "../../structures/Command";
 import { permissions } from "../../providers/permissions";
+import { ExtendedCommand } from "../../structures/extendedCommand";
 
-export const command = new Command(
-    "ws",
-    "View worker statistics."
-
+export const command = new ExtendedCommand(
+    { name: "ws", description: "View worker statistics.", local: true }
 )
+
     .addPermission(permissions.admin)
     .addUserOption((option) =>
         option
@@ -32,7 +32,7 @@ export const command = new Command(
         const workerStats = await getWorkerStats(userId);
 
         const embed = new EmbedBuilder()
-            .setTitle(`${targetUser ? targetUser.tag : int.user.tag}'s Worker Statistics`)
+            .setTitle(`${targetUser ? targetUser.tag : int.user.username}'s Worker Statistics`)
             .addFields([
                 { name: "Orders Brewed", value: workerStats.ordersBrewed.toString(), inline: true },
                 { name: "Orders Delivered", value: workerStats.ordersDelivered.toString(), inline: true },

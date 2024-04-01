@@ -4,11 +4,13 @@ import { CommandInteraction, User } from "discord.js";
 import { permissions } from "../../../providers/permissions";
 import { Command } from "../../../structures/Command";
 import { PrismaClient, CafeStatus, OrderStatus } from "@prisma/client";
+import { ExtendedCommand } from "../../../structures/extendedCommand";
 
 const prisma = new PrismaClient();
 
-export const command = new Command("workerinfo",
-    "Tracks the number of orders an employee has prepared and delivered.")
+export const command = new ExtendedCommand(
+    { name: "workerinfo", description: "Tracks the number of orders an employee has prepared and delivered..", local: true }
+)
     .addPermission(permissions.employee)
     .addOption("user", (o) =>
         o.setName("employee")

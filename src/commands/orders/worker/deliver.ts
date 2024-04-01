@@ -1,8 +1,9 @@
+/* eslint-disable indent */
 /* eslint-disable no-constant-condition */
 /* eslint-disable quotes */
 // Main code
 import { CafeStatus, OrderStatus } from "@prisma/client";
-import { ChannelType, GuildChannel, StringSelectMenuBuilder, CommandInteraction, ComponentType, EmbedBuilder } from "discord.js";
+import { ChannelType, GuildChannel, StringSelectMenuBuilder, CommandInteraction, ComponentType, EmbedBuilder, PartialGroupDMChannel } from "discord.js";
 import { db } from "../../../database/database";
 import { orderPlaceholders, generateOrderId } from "../../../database/orders";
 import { upsertWorkerInfo } from "../../../database/workerInfo";
@@ -12,10 +13,10 @@ import { permissions } from "../../../providers/permissions";
 import { Command } from "../../../structures/Command";
 import { format } from "../../../utils/string";
 import { upsertWorkerStats } from "../../../database/workerstats";
+import { ExtendedCommand } from "../../../structures/extendedCommand";
 
-export const command = new Command(
-	"deliver",
-	"Delivers an order."
+export const command = new ExtendedCommand(
+	{ name: "deliver", description: "Delivers an order.", local: true }
 )
 	.addPermission(permissions.employee)
 	.setExecutor(async (int: CommandInteraction) => {
@@ -27,9 +28,10 @@ export const command = new Command(
 			where: {
 				status: OrderStatus.PendingDelivery,
 			},
+			take: 25,
 			select: {
 				id: true,
-				user: true,
+				user: true
 			},
 		});
 
@@ -122,6 +124,7 @@ client.on("interactionCreate", async (interaction) => {
 		}
 
 		await interaction.reply({ content: `${text.commands.deliver.success}${info?.deliveryMessage ? "" : `\n${text.commands.deliver.noMessage}`}`, ephemeral: false });
-		await channel.send(format(info?.deliveryMessage || text.commands.deliver.default, await orderPlaceholders(order)));
+		// unable to send to partial group dm channel, workaround by checking if the channel is a partial group dm channel
+		if (!(channel instanceof PartialGroupDMChannel)) channel.send(format(info?.deliveryMessage || text.commands.deliver.default, await orderPlaceholders(order)));
 	}
 });

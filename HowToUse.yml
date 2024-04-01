@@ -24,26 +24,3 @@ Put binaryTargets ["native", "Type"]
 
 You'll get an error Anyways So you'll know what to Replace the "type" with
 Then, load up the bot and see if you get any errors!
-
-If you want to go into Production mode/ Back to development Mode Use the a ecosystem file: 
-
-TEMPLATE:
-``
-module.exports = {
-  apps : [{
-    name: "DBRewrite",
-    script: "node dist",
-    env: {
-      NODE_ENV: "development",
-    },
-    env_production: {
-      NODE_ENV: "production",
-    }
-  }]
-}
-
-``
-Commands: (Use the Production Command for global commands) To Restart replace start with restart
- 
-- start pm2 ecosystem.config.js --env production
-- start pm2 ecosystem.config.js --env development

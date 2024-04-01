@@ -5,6 +5,8 @@ import { client } from "../../../providers/client";
 import { text } from "../../../providers/config";
 import { permissions } from "../../../providers/permissions";
 import { Command } from "../../../structures/Command";
+import { ExtendedCommand } from "../../../structures/extendedCommand";
+import { IllegalStateError } from "../../../utils/error";
 import { format } from "../../../utils/string";
 
 const tcdp = text.commands.deliverymessage.placeholders;
@@ -13,7 +15,9 @@ const placeholderMessage = `${tcdp.title}\n${Object.entries(tcdp.list)
 	.map(([k, v]) => format(requiredOrderPlaceholders.includes(k) ? tcdp.requiredFormat : tcdp.format, k, v))
 	.join("\n")}`;
 
-export const command = new Command("deliverymessage", "Configures your delivery message.")
+export const command = new ExtendedCommand(
+	{ name: "deliverymessage", description: "Configures your delivery message.", local: true }
+)
 	.addPermission(permissions.employee)
 	.addSubCommand(s => s.setName("get").setDescription("Checks your current delivery message."))
 	.addSubCommand(s => s.setName("placeholders").setDescription("Shows the list of delivery placeholders."))
@@ -24,6 +28,7 @@ export const command = new Command("deliverymessage", "Configures your delivery 
 			.addStringOption(o => o.setName("message").setDescription("The delivery message.").setRequired(true))
 	)
 	.setExecutor(async int => {
+		if (!client.user) throw new IllegalStateError("Client user is not available.");
 		switch (int.options.getSubcommand(true)) {
 			case "get": {
 				const message = (await getWorkerInfo(int.user))?.deliveryMessage ?? text.commands.deliver.default;
@@ -45,7 +50,7 @@ export const command = new Command("deliverymessage", "Configures your delivery 
 				break;
 			}
 			case "set": {
-				const message = int.options.getString("message", true);
+				const message = int.options.get("message", true).value as string;
 				if (requiredOrderPlaceholders.some(x => !message.includes(`{${x}}`))) {
 					await int.reply(
 						format(

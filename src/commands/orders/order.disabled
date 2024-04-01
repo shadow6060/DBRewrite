@@ -1,0 +1,306 @@
+/* eslint-disable indent */
+import { db } from "../../database/database";
+import { generateOrderId, OrderStatus, hasActiveOrder } from "../../database/orders"; // Import hasActiveOrder function
+import { text } from "../../providers/config";
+import { mainChannels, mainRoles } from "../../providers/discord";
+import { Command } from "../../structures/Command";
+import { format } from "../../utils/string";
+import type { CommandInteraction } from "discord.js";
+import { ComponentType, EmbedBuilder, StringSelectMenuBuilder } from "discord.js";
+import { getUserInfo, getUserBalance, updateBalance } from "../../database/userInfo";
+import { client } from "../../providers/client";
+
+// Cached menu items
+let cachedMenuItems: any[] = [];
+
+// Fixed price for custom orders
+const customOrderPrice = 6.00;
+
+export const command = new Command("order", "Orders a drink.")
+	.setExecutor(async (int: CommandInteraction) => {
+		// Check if the user already has an active order using the hasActiveOrder function
+		const userHasActiveOrder = await hasActiveOrder(int.user.id);
+		if (userHasActiveOrder) {
+			await int.reply({ content: text.commands.order.exists, ephemeral: true });
+			return;
+		}
+
+		// Check if the channel has the "Embed Links" permission enabled
+		if (!int.channel.permissionsFor(int.client.user).has("EmbedLinks")) {
+			await int.reply("This channel doesn't have Embed Links enabled. You can't place an order here.");
+			return;
+		}
+
+		// Fetch menu items if not cached
+		if (!cachedMenuItems.length) {
+			cachedMenuItems = await getDropdownOptions();
+		}
+
+		// If there are no options available, inform the user and return
+		if (cachedMenuItems.length === 0) {
+			await int.reply("There are no options available to select.");
+			return;
+		}
+
+		// Create a StringSelectMenuBuilder for the dropdown menu
+		const selectMenu = new StringSelectMenuBuilder()
+			.setCustomId("order_item")
+			.setPlaceholder("Select a drink");
+
+		// Add options to the dropdown menu
+		cachedMenuItems.forEach(option => {
+			selectMenu.addOptions(option);
+		});
+
+		// Add custom order option with fixed price
+		selectMenu.addOptions({
+			label: `Custom Order  💲 ${customOrderPrice.toFixed(2)}`, // Label with custom order and fixed price
+			value: "Custom Order",
+			description: "Create a custom order",
+		});
+
+		// Create an action row with the dropdown menu
+		const actionRow = {
+			type: ComponentType.ActionRow,
+			components: [selectMenu],
+		};
+
+		// Create an embed with instructions
+		const embed = new EmbedBuilder()
+			.setDescription("Please select a drink.")
+			.setColor("#00FF00");
+
+		// Reply to the interaction with the embed and dropdown menu
+		try {
+			await int.reply({
+				embeds: [embed],
+				components: [actionRow],
+				ephemeral: true,
+			});
+		} catch (error) {
+			console.error("Error replying to interaction:", error);
+		}
+	});
+
+async function getDropdownOptions() {
+	try {
+		// Fetch menu items and their prices from the database
+		const menuItems = await db.menuItem.findMany();
+
+		// Map menu items to options for the dropdown menu
+		const options = menuItems.map(item => ({
+			label: `📔 ${item.name}  💲 ${item.price.toFixed(2)}`, // Name of the menu item with price, all in bold
+			value: item.name, // Use the name of the menu item as the value
+			description: `Description: 📝 ${item.description}`, // Description of the menu item
+		}));
+
+		return options;
+	} catch (error) {
+		console.error("Error fetching menu items:", error);
+		return []; // Return an empty array in case of error
+	}
+}
+
+// Handle interaction for order selection
+client.on("interactionCreate", async (interaction) => {
+	if (!interaction.isStringSelectMenu()) return;
+
+	const componentId = interaction.customId;
+	if (componentId === "order_item") {
+		// Check if the user already has an active order using the hasActiveOrder function
+		const userHasActiveOrder = await hasActiveOrder(interaction.user.id);
+		if (userHasActiveOrder) {
+			await interaction.reply(text.commands.order.exists);
+			return;
+		}
+
+		// Disable the dropdown menu to prevent further selections
+		const selectMenu = interaction.message.components?.find(component => component.type === ComponentType.ActionRow)?.components
+			.find(component => component.customId === "order_item");
+		if (selectMenu && selectMenu instanceof StringSelectMenuBuilder) {
+			selectMenu.setDisabled(true);
+		}
+
+		const drink = interaction.values[0]; // Assuming only one drink can be selected
+
+		// If custom order is selected, handle it separately
+		if (drink === "Custom Order") {
+			await handleCustomOrder(interaction);
+			return;
+		}
+
+		const orderId = await generateOrderId(); // Generate a unique order ID
+
+		// Fetch the price of the selected menu item
+		let orderPrice;
+		if (drink === "Custom Order") {
+			orderPrice = customOrderPrice;
+		} else {
+			const menuItem = await db.menuItem.findFirst({ where: { name: drink } });
+			if (!menuItem) {
+				await interaction.reply({ content: "Invalid menu item selected. Please try again.", ephemeral: true });
+				return;
+			}
+			orderPrice = menuItem.price;
+		}
+
+		// Check if the user has sufficient balance
+		const userId = interaction.user.id;
+		const userBalance = await getUserBalance(userId);
+		if (userBalance.balance < orderPrice) {
+			await interaction.reply({ content: "You don't have enough balance to place this order.", ephemeral: true });
+			return;
+		}
+
+		// Deduct the order price from the user's balance
+		const updatedBalance = userBalance.balance - orderPrice;
+		await updateBalance(userId, updatedBalance, 0);
+		// Send a message to the user informing them about the deducted balance
+		const message = await interaction.message.channel.send(`You have $${updatedBalance.toFixed(2)} left after placing your order.`);
+		setTimeout(() => {
+			message.delete().catch(console.error); // Delete the message after a certain timeout
+		}, 5000); // Delete the message after 5 seconds
+
+
+		//other code
+		//await interaction.reply({ content: `You have $${updatedBalance.toFixed(2)} left after placing your order.`, ephemeral: true });
+
+		// Create the order
+		const order = await db.orders.create({
+			data: {
+				id: orderId,
+				user: userId,
+				details: drink,
+				channel: interaction.channelId,
+				guild: interaction.guildId,
+				status: OrderStatus.Unprepared, // Initial status set to PendingDelivery
+			},
+		});
+
+		try {
+			// Attempt to send the "Order has been placed successfully" message directly to the user
+			console.log("Sending order confirmation to user...");
+			const embed = new EmbedBuilder()
+				.setTitle("Order Placement")
+				.setColor("Random")
+				.addFields(
+					{ name: "Order Details", value: `Your order with ID ${order.id} | ${drink}\nStatus: Has been placed successfully` }
+				);
+			await interaction.user.send({ embeds: [embed] });
+		} catch (error) {
+			// Handle the error if sending the message fails due to closed DMs
+			await interaction.reply("Your DMs are closed. Please enable them to receive the order confirmation.");
+			return;
+		}
+
+
+		await interaction.reply(format(text.commands.order.success, { id: order.id, details: drink }));
+
+		if (interaction.member?.nickname?.toLowerCase() === "bart") {
+			await interaction.followUp("I will end you");
+		}
+
+		await mainChannels.brewery.send(
+			format(text.commands.order.created, {
+				details: drink,
+				duty: mainRoles.duty.toString(),
+				id: order.id,
+				tag: interaction.user.username,
+			})
+		);
+
+	}
+});
+
+// Function to handle custom order
+async function handleCustomOrder(interaction) {
+	// Prompt the user to provide details for the custom order
+	console.log("Prompting user for custom order details...");
+	await interaction.reply("Please type what you would like to order.");
+
+	// Collect user's message for custom order
+	const filter = (message) => message.author.id === interaction.user.id;
+	const collector = interaction.channel.createMessageCollector({ filter, time: 60000 }); // Adjust time as needed
+
+	collector.on("collect", async (message) => {
+		const customOrderDetails = message.content.trim();
+		console.log("Message content:", customOrderDetails); // Log custom order details
+
+		if (!customOrderDetails) {
+			console.error("Empty message content!"); // Log error for empty message content
+			await interaction.channel.send("You didn't provide any details for your custom order. Please type again.");
+			return;
+		}
+
+		const orderId = await generateOrderId(); // Generate a unique order ID
+		const userId = interaction.user.id; // Get user ID
+
+		try {
+			// Proceed with custom order processing
+			console.log("Processing custom order...");
+			const orderPrice = customOrderPrice; // Fixed price for custom orders
+			const userBalance = await getUserBalance(userId);
+			if (userBalance.balance < orderPrice) {
+				await interaction.reply({ content: "You don't have enough balance to place this order.", ephemeral: true });
+				return;
+			}
+
+			// Deduct the order price from the user's balance
+			const updatedBalance = userBalance.balance - orderPrice;
+			await updateBalance(userId, updatedBalance, 0);
+
+			// Send a message to the user informing them about the deducted balance
+			const message = await interaction.channel.send(`You have $${updatedBalance.toFixed(2)} left after placing your order.`);
+			setTimeout(() => {
+				message.delete().catch(console.error); // Delete the message after a certain timeout
+			}, 5000); // Delete the message after 5 seconds
+
+			const order = await db.orders.create({
+				data: {
+					id: orderId,
+					user: userId,
+					details: customOrderDetails,
+					channel: interaction.channelId,
+					guild: interaction.guildId,
+					status: OrderStatus.Unprepared,
+				},
+			});
+
+			// Attempt to send the "Order has been placed successfully" message directly to the user
+			console.log("Sending order confirmation to user...");
+			const embed = new EmbedBuilder()
+				.setTitle("Order Placement")
+				.setColor("Random")
+				.addFields(
+					{ name: "Order Details", value: `Your order with ID ${order.id} | ${customOrderDetails}\nStatus: Has been placed successfully` }
+				);
+			await interaction.user.send({ embeds: [embed] });
+
+			// Send order confirmation to brewery channel
+			console.log("Sending order confirmation to brewery channel...");
+			await mainChannels.brewery.send(
+				format(text.commands.order.created, {
+					details: customOrderDetails,
+					duty: mainRoles.duty.toString(),
+					id: order.id,
+					tag: interaction.user.username,
+				})
+			);
+
+			// Stop collecting messages
+			console.log("Stopping message collector...");
+			collector.stop();
+		} catch (error) {
+			console.error("Error processing custom order:", error); // Log error for custom order processing
+			await interaction.reply("An error occurred while processing your order. Please try again later.");
+		}
+	});
+
+	// Handle collector end event
+	collector.on("end", (collected, reason) => {
+		if (reason === "time") {
+			console.log("User took too long to provide custom order details."); // Log info for collector timeout
+			interaction.channel.send("You took too long to provide the custom order details. Order cancelled.");
+		}
+	});
+}

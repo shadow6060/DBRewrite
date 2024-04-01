@@ -13,10 +13,11 @@ import { format } from "../../../utils/string";
 import { randRange } from "../../../utils/utils";
 import { StringSelectMenuBuilder, CommandInteraction, ComponentType, EmbedBuilder } from "discord.js";
 import { upsertWorkerStats, handleBrew, handleDeliver } from "../../../database/workerstats"; // Import the workerstats functions
+import { ExtendedCommand } from "../../../structures/extendedCommand";
 
-export const command = new Command(
-    "brew",
-    "Brews your claimed order."
+export const command = new ExtendedCommand(
+    { name: "brew", description: "Brews your claimed order.", local: true }
+
 )
     .addSubCommand((subcommand) =>
         subcommand
@@ -236,5 +237,3 @@ export const command = new Command(
             });
         }
     });
-
-// ... (existing code)

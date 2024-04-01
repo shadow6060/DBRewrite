@@ -19,7 +19,7 @@ export const command = new Command("feedback", "Give feedback on your last order
 			return;
 		}
 
-		const feedback = int.options.getString("feedback", true);
+		const feedback = int.options.get("feedback", true).value as string;
 		await int.reply(format(text.commands.feedback.success, lastOrder.details));
 		const tcfe = text.commands.feedback.embed;
 		await mainChannels.feedback.send({

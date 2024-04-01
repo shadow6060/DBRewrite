@@ -8,8 +8,11 @@ import { client } from "../../providers/client";
 import { channel } from "diagnostics_channel";
 import { ButtonBuilder } from "discord.js";
 import { ButtonStyle, ActionRowBuilder } from "discord.js";
+import { ExtendedCommand } from "../../structures/extendedCommand";
 
-export const command = new Command("but", "hm.")
+export const command = new ExtendedCommand(
+	{ name: "but", description: "hm.", local: true }
+)
 	.addPermission(permissions.developer) // add permission here
 	.setExecutor(async int => {
 		const button1 = new ButtonBuilder()

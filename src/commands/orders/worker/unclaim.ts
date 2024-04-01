@@ -8,11 +8,14 @@ import { db } from "../../../database/database";
 import { text } from "../../../providers/config";
 import { client } from "../../../providers/client";
 import { CommandInteraction, StringSelectMenuBuilder, ComponentType, EmbedBuilder } from "discord.js";
+import { ExtendedCommand } from "../../../structures/extendedCommand";
 
 const claimedOrderLocks = new Map<string, boolean>();  // Map to store claim locks for each order ID
 const claimedOrders = new Set<string>();  // Set to store claimed order IDs
 
-export const command = new Command("unclaim", "Allows you to unclaim an order.")
+export const command = new ExtendedCommand(
+	{ name: "unclaim", description: "Allows you to unclaim an order.", local: true }
+)
 	.addPermission(permissions.employee)
 	.setExecutor(async (int: CommandInteraction) => {
 		const claimedOrder = await getClaimedOrder(int.user);

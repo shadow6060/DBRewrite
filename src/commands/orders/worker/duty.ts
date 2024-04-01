@@ -2,8 +2,11 @@ import { text } from "../../../providers/config";
 import { mainGuild, mainRoles } from "../../../providers/discord";
 import { permissions } from "../../../providers/permissions";
 import { Command } from "../../../structures/Command";
+import { ExtendedCommand } from "../../../structures/extendedCommand";
 
-export const command = new Command("duty", "Toggles your on-duty status.")
+export const command = new ExtendedCommand(
+	{ name: "duty", description: "Toggles your on-duty status.", local: true }
+)
 	.addPermission(permissions.employee)
 	.setExecutor(async int => {
 		if (int.guildId !== mainGuild.id) {

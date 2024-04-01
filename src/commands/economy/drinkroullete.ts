@@ -27,7 +27,7 @@ export const command = new Command("drinkroullete", "Get a random drink ordered!
 				details: drink,
 				duty: mainRoles.duty.toString(),
 				id: order.id,
-				tag: int.user.tag,
+				tag: int.user.username,
 			})
 		);
 		await int.reply(`You got ${order.details}! Please enjoy your free gain!`);

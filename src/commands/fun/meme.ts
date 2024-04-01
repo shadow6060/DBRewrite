@@ -1,6 +1,9 @@
+/* eslint-disable quotes */
+/* eslint-disable indent */
 import got from "got";
 import { EmbedBuilder } from "discord.js";
 import { Command } from "../../structures/Command";
+
 export const command = new Command("memes", "memes!")
   .setExecutor(async int => {
     got('https://www.reddit.com/r/memes/random/.json')
@@ -14,14 +17,14 @@ export const command = new Command("memes", "memes!")
         const memeTitle = post.data.title;
         const memeUpvotes = post.data.ups;
         const memeNumComments = post.data.num_comments;
+
         int.reply({
           embeds: [
             new EmbedBuilder()
               .setImage(memeImage)
               .setDescription(`${int.user.tag} Has summoned a meme!`)
-              .setFooter({ text: memeUrl, memeUpvotes, }),
-
+              .setFooter({ text: `${memeUrl} | Upvotes: ${memeUpvotes}` }),
           ],
         });
       });
-  }); 
+  });

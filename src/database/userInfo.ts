@@ -49,14 +49,23 @@ export const getUserBalance = async (user: UserResolvable): Promise<{ balance: n
 	return { balance, donuts };
 };
 
+// Update user balance function
 export const updateBalance = async (
 	user: UserResolvable,
 	newBalance: number,
 	newDonuts: number
 ): Promise<UserInfo | null> => {
+	// Check if newBalance is a valid number
+	if (isNaN(newBalance) || typeof newBalance !== 'number') {
+		console.error('Invalid newBalance:', newBalance);
+		return null;
+	}
+
+	// Ensure balance is a whole number
 	const balance = Math.floor(newBalance);
 	const donuts = Math.floor(newDonuts);
 
+	// Update the user's balance in the database
 	const updatedUserInfo = await prisma.userInfo.update({
 		where: {
 			id: resolveUserId(user),
@@ -69,3 +78,4 @@ export const updateBalance = async (
 
 	return updatedUserInfo;
 };
+

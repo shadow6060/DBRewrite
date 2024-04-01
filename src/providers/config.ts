@@ -75,7 +75,10 @@ const textSchema = z
 				success: nFormattable("details", "id"),
 				created: nFormattable("details", "duty", "id", "tag"),
 				success1: nFormattable("details", "id"),
+				success2: nFormattable("details", "id", "price"),
 				success_tab: nFormattable("details", "id"),
+				customOrderSuccess: nFormattable("customOrderDetails", "id"),
+				customOrderSuccess1: nFormattable("customOrderDetails", "id", "price"),
 
 			}),
 			list: z.object({

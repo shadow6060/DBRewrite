@@ -1,3 +1,4 @@
+/* eslint-disable indent */
 import { EmbedBuilder } from "discord.js";
 import { text } from "../../providers/config";
 import { Command } from "../../structures/Command";

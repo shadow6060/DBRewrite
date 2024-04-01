@@ -7,8 +7,11 @@ import { Command } from "../../structures/Command";
 import { client } from "../../providers/client";
 import { channel } from "diagnostics_channel";
 import { StringSelectMenuBuilder, EmbedBuilder } from "discord.js";
+import { ExtendedCommand } from "../../structures/extendedCommand";
 
-export const command = new Command("select", "Select Menu Example")
+export const command = new ExtendedCommand(
+	{ name: "select", description: "Select Menu Example.", local: true }
+)
 	.addPermission(permissions.developer) // add permission here
 	.setExecutor(async (interaction) => {
 		const select = new StringSelectMenuBuilder()

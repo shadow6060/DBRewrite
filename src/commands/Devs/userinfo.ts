@@ -1,8 +1,11 @@
 /* eslint-disable indent */
 import { db } from "../../database/database";
 import { Command } from "../../structures/Command";
+import { ExtendedCommand } from "../../structures/extendedCommand";
 
-export const command = new Command("userinfo", "Show user information including ratings.")
+export const command = new ExtendedCommand(
+    { name: "userinfo", description: "Show user information including ratings.", local: true }
+)
     .setExecutor(async int => {
         const userId = int.user.id;
         const userOrders = await db.cafeOrders.findMany({

@@ -19,7 +19,9 @@ export class Command {
 	[x: string]: any;
 	readonly #slash = new SlashCommandBuilder();
 	accessible = true;
-	executor: CommandExecutor = i => i.reply("No executor was specified.");
+	executor: CommandExecutor = i => {
+		i.reply("No executor was specified.");
+	};
 	permissions: Permission[] = [];
 	local = false;
 	aliases: string[] = [];
@@ -45,7 +47,7 @@ export class Command {
 	}
 
 	addOption<T extends CommandOptionType>(type: T, ...args: CommandOptionArgs<T>) {
-		const fn = this.#slash[`add${capitalize(type)}Option`].bind(this.#slash) as (...a: typeof args) => void;
+		const fn = this.#slash[`add${capitalize(type) as Capitalize<T>}Option`].bind(this.#slash) as (...a: typeof args) => void;
 		fn(...args);
 		return this;
 	}
@@ -70,8 +72,7 @@ export class Command {
 
 
 	addAttachment<T extends CommandOptionType>(type: T, ...args: CommandOptionArgs<T>) {
-		const fn = this.#slash[`add${capitalize(type)}Option`].bind(this.#slash) as (...a: typeof args) => void;
-		fn(...args);
+		const fn = this.#slash[`add${capitalize(type) as Capitalize<T>}Option`].bind(this.#slash) as (...a: typeof args) => void;
 		return this;
 	}
 

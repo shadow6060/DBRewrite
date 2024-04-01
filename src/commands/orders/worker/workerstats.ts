@@ -5,10 +5,13 @@ import { permissions } from "../../../providers/permissions";
 import { Command } from "../../../structures/Command";
 import { PrismaClient, Prisma } from '@prisma/client';
 import { getWorkerInfo, getWorkerInfos } from "../../../database/workerInfo";
+import { ExtendedCommand } from "../../../structures/extendedCommand";
 
 const prisma = new PrismaClient();
 
-export const command = new Command("workerstats", "Checks the global worker stats.")
+export const command = new ExtendedCommand(
+    { name: "workerstats", description: "Checks the global worker stats.", local: true }
+)
     .addSyntax("monthly", "text")
     .addPermission(permissions.employee)
     .addShortcuts("ws")

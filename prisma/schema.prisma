@@ -19,7 +19,7 @@ model WorkerInfo {
   lastCommandName       String?    // New field to track the last command name
   claimUsageCount       Int @default(0)   // Usage count for "claim" command
   brewUsageCount        Int @default(0)    // Usage count for "brew" command
-}
+} 
 
 model UserInfo {
   id                    String     @id @db.VarChar(30)
@@ -120,14 +120,6 @@ model Drink {
   updatedAt DateTime @updatedAt
 }
 
-model CustomDrink {
-  id        Int      @id @default(autoincrement())
-  name      String   @unique
-  type      String
-  price     Float
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
 
 enum CafeStatus {
   Unprepared
@@ -175,4 +167,13 @@ model WorkerStats {
   ordersDelivered Int
   lastUsed DateTime
   lastCommand String?
+}
+
+
+model MenuItem {
+  id          String     @id @default(uuid()) // You can use a UUID for the ID
+  name        String     // Name of the menu item
+  description String     // Description of the menu item
+  price       Float      // Price of the menu item
+  category    String     // Category of the menu item (e.g., appetizer, main course, dessert)
 }

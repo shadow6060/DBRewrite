@@ -4,16 +4,18 @@ import { matchActiveOrder } from "../../../database/orders";
 import { client } from "../../../providers/client";
 import { text } from "../../../providers/config";
 import { permissions } from "../../../providers/permissions";
-import { Command } from "../../../structures/Command";
+import { ExtendedCommand } from "../../../structures/extendedCommand"; // Import the ExtendedCommand class
 import { format } from "../../../utils/string";
 
-export const command = new Command("delete", "Deletes an order.")
+export const command = new ExtendedCommand(
+	{ name: "delete", description: "Deletes an order.", local: true }
+)
 	.addPermission(permissions.employee)
 	.addOption("string", o => o.setRequired(true).setName("order").setDescription("The order to delete."))
 	.addOption("string", o => o.setRequired(true).setName("reason").setDescription("The reason for the deletion."))
 	.setExecutor(async int => {
-		const match = int.options.getString("order", true);
-		const reason = int.options.getString("reason", true);
+		const match = int.options.get("order", true).value as string;
+		const reason = int.options.get("reason", true).value as string;
 		const order = await matchActiveOrder(match);
 		if (order === null) {
 			await int.reply(text.common.invalidOrderId);
@@ -46,4 +48,3 @@ export const command = new Command("delete", "Deletes an order.")
 			await int.reply(text.commands.delete.successNoDm);
 		}
 	});
- 

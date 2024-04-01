@@ -6,14 +6,18 @@ import { db } from "../../../database/database";
 import { text } from "../../../providers/config";
 import { client } from "../../../providers/client";
 import { CommandInteraction, StringSelectMenuBuilder, ComponentType, EmbedBuilder } from "discord.js";
+import { ExtendedCommand } from "../../../structures/extendedCommand";
 
 const claimedOrderLocks = new Map<string, boolean>();
 const claimedOrders = new Set<string>();
 
-export const command = new Command("claim", "Claims an order.")
+export const command = new ExtendedCommand(
+    { name: "claim", description: "Claims an order.", local: true }
+)
     .addPermission(permissions.employee)
     .setExecutor(async (int: CommandInteraction) => {
-        if (await getClaimedOrder(int.user)) {
+        const existingOrder = await getClaimedOrder(int.user);
+        if (existingOrder) {
             await int.reply({ content: text.commands.claim.existing, ephemeral: true });
             return;
         }
@@ -67,7 +71,6 @@ export const command = new Command("claim", "Claims an order.")
                 ephemeral: true,
             });
         } catch (error) {
-            // If an error occurs (e.g., InteractionAlreadyReplied), handle it here
             console.error("Error replying to interaction:", error);
         }
     });
@@ -128,7 +131,6 @@ client.on("interactionCreate", async (interaction) => {
                 ephemeral: false,
             });
         } catch (error) {
-            // If an error occurs (e.g., InteractionAlreadyReplied), handle it here
             console.error("Error replying to interaction:", error);
         }
     }

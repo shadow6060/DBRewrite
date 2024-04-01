@@ -26,7 +26,7 @@ export const command = new Command("botinfo", "Displays information about the bo
             .setColor("#00ff00")
             .setTitle("Bot Information")
             .addFields(
-                { name: "Name", value: client.user?.tag || "Unknown", inline: true },
+                { name: "Name", value: client.user?.username || "Unknown", inline: true },
                 { name: "Version", value: "1.0.0", inline: true },
                 { name: "Guilds", value: guildsSize, inline: true },
                 { name: "Uptime", value: uptimeString, inline: true },

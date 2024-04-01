@@ -38,7 +38,7 @@ export const command = new Command("tip", "Tip your last order.")
 					.setDescription(
 						format(tcte.description, lastOrder.id, tip, `<@${lastOrder.claimer}>`, `<@${lastOrder.deliverer}>`)
 					)
-					.setFooter({ text: format(tcte.footer, int.user.tag), iconURL: int.user.displayAvatarURL() }),
+					.setFooter({ text: format(tcte.footer, int.user.username), iconURL: int.user.displayAvatarURL() }),
 			],
 		});
 		await db.orders.update({

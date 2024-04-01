@@ -1,3 +1,4 @@
+/* eslint-disable indent */
 import { Command } from "../structures/Command";
 import { permissions } from "../providers/permissions";
 import { CommandInteraction } from "discord.js";

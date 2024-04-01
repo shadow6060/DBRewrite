@@ -5,10 +5,10 @@ import { permissions } from "../../../providers/permissions";
 import { Command } from "../../../structures/Command";
 import { CommandInteraction } from "discord.js";
 import { db } from "../../../database/database";
+import { ExtendedCommand } from "../../../structures/extendedCommand";
 
-export const command = new Command(
-    "editstatus",
-    "Edit the status of an order."
+export const command = new ExtendedCommand(
+    { name: "editstatus", description: "Edit the status of an order.", local: true }
 )
     .addPermission(permissions.admin)
     .addOption("string", (option) =>
