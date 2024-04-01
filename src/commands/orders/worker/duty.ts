@@ -1,20 +1,7 @@
-import { OrderStatus } from "@prisma/client";
-import { db } from "../../../database/database";
-import {
-	generateOrderId,
-	getClaimedOrder,
-	getOrder,
-	hasActiveOrder,
-	matchActiveOrder,
-	matchOrderStatus,
-	orderEmbedAsync,
-} from "../../../database/order";
-import { client } from "../../../providers/client";
-import { config, text } from "../../../providers/config";
-import { mainGuild, mainRoles } from "../../../providers/discord";
-import { permissions } from "../../../providers/permissions";
-import { Command } from "../../../structures/Command";
-import { format } from "../../../utils/string";
+import {text} from "../../../providers/config";
+import {mainGuild, mainRoles} from "../../../providers/discord";
+import {permissions} from "../../../providers/permissions";
+import {Command} from "../../../structures/Command";
 
 export const command = new Command("duty", "Toggles your on-duty status.")
 	.addPermission(permissions.employee)

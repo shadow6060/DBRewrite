@@ -1,22 +1,12 @@
-import { OrderStatus } from "@prisma/client";
-import { CategoryChannel, GuildChannel } from "discord.js";
-import { db } from "../../../database/database";
-import {
-	generateOrderId,
-	getClaimedOrder,
-	hasActiveOrder,
-	matchActiveOrder,
-	matchOrderStatus,
-	orderPlaceholders,
-	requiredOrderPlaceholders,
-} from "../../../database/order";
-import { getWorkerInfo, upsertWorkerInfo } from "../../../database/workerInfo";
-import { client } from "../../../providers/client";
-import { config, text } from "../../../providers/config";
-import { mainGuild } from "../../../providers/discord";
-import { permissions } from "../../../providers/permissions";
-import { Command } from "../../../structures/Command";
-import { format } from "../../../utils/string";
+import {db} from "../../../database/database";
+import {requiredOrderPlaceholders} from "../../../database/orders";
+import {getWorkerInfo, upsertWorkerInfo} from "../../../database/workerInfo";
+import {client} from "../../../providers/client";
+import {text} from "../../../providers/config";
+import {permissions} from "../../../providers/permissions";
+import {Command} from "../../../structures/Command";
+import {format} from "../../../utils/string";
+import {IllegalStateError} from "../../../utils/error";
 
 const tcdp = text.commands.deliverymessage.placeholders;
 const placeholderMessage = `${tcdp.title}\n${Object.entries(tcdp.list)
@@ -35,6 +25,7 @@ export const command = new Command("deliverymessage", "Configures your delivery 
 			.addStringOption(o => o.setName("message").setDescription("The delivery message.").setRequired(true))
 	)
 	.setExecutor(async int => {
+		if (!client.user) throw new IllegalStateError("Client user is not available.");
 		switch (int.options.getSubcommand(true)) {
 			case "get": {
 				const message = (await getWorkerInfo(int.user))?.deliveryMessage ?? text.commands.deliver.default;
@@ -56,7 +47,7 @@ export const command = new Command("deliverymessage", "Configures your delivery 
 				break;
 			}
 			case "set": {
-				const message = int.options.getString("message", true);
+				const message = int.options.get("message", true).value as string;
 				if (requiredOrderPlaceholders.some(x => !message.includes(`{${x}}`))) {
 					await int.reply(
 						format(
@@ -68,8 +59,8 @@ export const command = new Command("deliverymessage", "Configures your delivery 
 				}
 				await upsertWorkerInfo(int.user);
 				await db.workerInfo.update({
-					where: { id: int.user.id },
-					data: { deliveryMessage: message },
+					where: {id: int.user.id},
+					data: {deliveryMessage: message},
 				});
 				await int.reply(text.commands.deliverymessage.set.success);
 				break;

@@ -12,6 +12,7 @@ Starting the bot:
 Run These commands: Might only need to run these once Before Starting the bot
 - "yarn prisma:generate" // You'll need to Do this After you edit the schema.prisma File
 - "yarn prisma:push" // You'll use this to make the Database you defined Before startup
+(don't forget to create a .env file, defining DATABASE_URL=<your url>)
 Then,
 - To start the bot go to the dist directory and start "index.js" with pm2
 

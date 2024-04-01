@@ -1,8 +1,7 @@
-import { MessageEmbed } from "discord.js";
-import { text } from "../../providers/config";
-import { mainChannels } from "../../providers/discord";
-import { Command } from "../../structures/Command";
-import { format } from "../../utils/string";
+import {EmbedBuilder} from "discord.js";
+import {text} from "../../providers/config";
+import {Command} from "../../structures/Command";
+import {format} from "../../utils/string";
 import Client from "nekos.life";
 
 export const command = new Command("pat", "Give your friends a good Pat.")
@@ -10,15 +9,15 @@ export const command = new Command("pat", "Give your friends a good Pat.")
 	.setExecutor(async int => {
 		const nekos = new Client();
 		const yeeeee = await nekos.pat();
-		const slapped = int.options.getUser("pat", true);
+		const slapped = int.options.get("pat", true).value as string;
 		const tcfe = text.commands.feedback.embed;
 		await int.reply({
 			embeds: [
-				new MessageEmbed()
+				new EmbedBuilder()
 					.setTitle("Bam someone got patted")
 					.setImage(yeeeee.url)
 					.setDescription(`${slapped} got patted by ${int.user.tag}`)
-					.setFooter({ text: format(tcfe.footer, int.user.tag), iconURL: int.user.displayAvatarURL() }),
+					.setFooter({text: format(tcfe.footer, int.user.tag), iconURL: int.user.displayAvatarURL()}),
 
 			],
 		});
