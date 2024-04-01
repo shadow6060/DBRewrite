@@ -1,6 +1,6 @@
-import { MessageEmbed } from "discord.js";
+import { EmbedBuilder } from "discord.js";
 import { db } from "../../database/database";
-import { generateOrderId, getLatestOrder, hasActiveOrder, OrderFlags } from "../../database/order";
+import { getLatestOrder, OrderFlags } from "../../database/orders";
 import { text } from "../../providers/config";
 import { mainChannels } from "../../providers/discord";
 import { Command } from "../../structures/Command";
@@ -24,13 +24,13 @@ export const command = new Command("feedback", "Give feedback on your last order
 		const tcfe = text.commands.feedback.embed;
 		await mainChannels.feedback.send({
 			embeds: [
-				new MessageEmbed()
+				new EmbedBuilder()
 					.setTitle(format(tcfe.title, lastOrder.id))
 					.setDescription(feedback)
-					.setFooter({ text: format(tcfe.footer, int.user.tag), iconURL: int.user.displayAvatarURL() }),
+					.setFooter({ text: format(tcfe.footer, int.user.username), iconURL: int.user.displayAvatarURL() }),
 			],
 		});
-		await db.order.update({
+		await db.orders.update({
 			where: { id: lastOrder.id },
 			data: { flags: lastOrder.flags | OrderFlags.FeedbackGiven }
 		});

@@ -1,28 +1,51 @@
+// client.ts
 import { REST } from "@discordjs/rest";
-import { Client } from "discord.js";
-import { config, text } from "./config";
-import { join, posix, win32 } from "path";
+import { Client, GatewayIntentBits, Partials } from "discord.js";
+import { config } from "./config";
+import { join } from "path";
 import { sync } from "fast-glob";
-import { development } from "./env";
-import { production } from "./env";
+import fs from "fs/promises";
+
 if (globalThis._$clientLoaded) throw new Error("The client was loaded twice. This should never happen.");
 globalThis._$clientLoaded = true;
 
-export const client = new Client<true>({
-	shards: "auto",
-	intents: ["GUILD_MEMBERS", "GUILDS"],
-	presence: {
-		activities: [text.bot.status],
-		status: production ? "online" : "online",
-	},
-	partials: [
-		"CHANNEL", "USER"
-	]
+export const client = new Client({
+	intents: [
+		GatewayIntentBits.Guilds,
+		GatewayIntentBits.GuildMessages,
+		GatewayIntentBits.GuildMembers,
+	],
+	partials: [Partials.User, Partials.Channel, Partials.GuildMember, Partials.Message],
+});
+
+client.on("ready", async () => {
+	console.log(`Logged in as ${client.user?.tag}!`);
+	/*
+		// Set Avatar
+		const avatarPath = "C:/Somewhere/AnotherFolder/Test/DB/src/avatar";
+		console.log("Checking contents of directory:", avatarPath);
+	
+		try {
+			const files = await fs.readdir(avatarPath);
+			console.log("Files in directory:", files);
+	
+			const avatarBuffer = await fs.readFile(join(avatarPath, "demon-slayer-running-zenitsu.gif"));
+			await client.user?.setAvatar(avatarBuffer);
+			console.log("Avatar set successfully!");
+		} catch (error) {
+			console.error("Error setting avatar:", error);
+		
+		}
+	*/
+	client.user?.setPresence({
+		activities: [{ name: "We are online! Use slash cmds to order /order <description> & You get money through /work" }],
+		status: "online",
+	});
 });
 
 export const rest = new REST({ version: "9" }).setToken(config.token);
 
 client.login(config.token);
 
-const eventsFolder = join(__dirname, "../events/**/*.js").replaceAll(win32.sep, posix.sep);
-sync(eventsFolder).forEach(x => import(x) as unknown);
+const eventsFolder = join(__dirname, "../events/**/*.js").replace(/\\/g, "/");
+sync(eventsFolder).forEach((x) => import(x) as unknown);
