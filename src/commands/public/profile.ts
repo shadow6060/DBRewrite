@@ -46,24 +46,10 @@ export const command = new Command("profile", "Shows your profile.")
                     data: {
                         userId: userId,
                         guildId: guildId,
-                        userName: int.user.username,
                         level: 0,
                         exp: 0,
                         user: { connect: { id: userId } }, // Connect the guildsXP to the UserInfo
-                    },
-                });
-            } else if (!userGuildData.userName) {
-                // If the userName is blank, update it with the user's username
-                userGuildData = await prisma.guildsXP.update({
-                    where: {
-                        userId_guildId: {
-                            userId: userId,
-                            guildId: guildId,
-                        },
-                    },
-                    data: {
-                        userName: int.user.username,
-                    },
+                    } as any, // Explicitly specifying the type of 'data'
                 });
             }
 
@@ -72,7 +58,7 @@ export const command = new Command("profile", "Shows your profile.")
 
             // Create a new embed using EmbedBuilder
             const embed = new EmbedBuilder()
-                .setTitle(`${int.user.username}'s Profile`)
+                .setTitle("Profile")
                 .setThumbnail(int.user.displayAvatarURL())
                 .addFields(
                     { name: "Experience", value: `${userGuildData.exp}/${nextLevelExp}`, inline: true },
