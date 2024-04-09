@@ -14,15 +14,15 @@ model WorkerInfo {
   preparations          Int      @default(0)
   deliveries            Int      @default(0)
   deliveryMessage       String?
-  lastCommandUsage      DateTime?  // New field to track the last command usage time
   commandUsageCount     Int      // New field to track the command usage count
-  lastCommandName       String?    // New field to track the last command name
-  claimUsageCount       Int @default(0)   // Usage count for "claim" command
-  brewUsageCount        Int @default(0)    // Usage count for "brew" command
+  lastCommandName       String?   // New field to track the last command name
+  cafeDeliveryMessage String?
 } 
 
 model UserInfo {
   id                    String     @id @db.VarChar(30)
+  userName    String   // Add the userName field
+  guildId     String   // Ensure that guildId is defined here
   createdAt             DateTime   @default(now())
   balance               Int        @default(0)
   newBalance            Int?
@@ -111,16 +111,6 @@ model dishes {
   updatedAt DateTime @db.Timestamp(6)
 }
 
-model Drink {
-  id        Int      @id @default(autoincrement())
-  name      String   @unique
-  type      String
-  price     Float
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-
 enum CafeStatus {
   Unprepared
   Preparing
@@ -176,4 +166,22 @@ model MenuItem {
   description String     // Description of the menu item
   price       Float      // Price of the menu item
   category    String     // Category of the menu item (e.g., appetizer, main course, dessert)
+}
+
+
+model ShopItem {
+  id          String   @id @default(uuid())
+  name        String
+  price       Int
+  description String
+  type        String
+  roleId      String?  // Optional: If purchasing grants a role
+}
+
+model InventoryItem {
+  id        String  @id @default(uuid())
+  itemId    String
+  userId    String
+  quantity  Int
+  // Add more properties as needed, such as item name, description, etc.
 }

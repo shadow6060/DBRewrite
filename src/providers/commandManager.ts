@@ -42,6 +42,7 @@ const registerCommands = async (commands: (Command | ExtendedCommand)[]) => {
 
 	const globalCommands = commands.filter((x) => !(x instanceof ExtendedCommand && x.local));
 	const localCommands = commands.filter((x) => x instanceof ExtendedCommand && x.local);
+	const serverCommands = commands.filter((x) => x instanceof ExtendedCommand && x.servers); // New line for server commands
 
 	// Register global commands
 	await rest.put(Routes.applicationCommands(client.application.id), { body: globalCommands.map((x) => x.toJSON()) });
@@ -50,6 +51,15 @@ const registerCommands = async (commands: (Command | ExtendedCommand)[]) => {
 	await rest.put(Routes.applicationGuildCommands(client.application.id, config.mainServer), {
 		body: localCommands.map((x) => x.toJSON()),
 	});
+
+	// Register server commands for specific servers
+	for (const serverId of Object.values(config.servers)) {
+		const serverName = "TestServer"; // Replace this with the name of the server
+		await rest.put(Routes.applicationGuildCommands(client.application.id, serverId), {
+			body: serverCommands.map((x) => x.toJSON()),
+		});
+		console.log(`Registered local commands for ${serverName}: ${serverCommands.map((x) => x.name).join(", ")}`); // Log the loaded commands for the server
+	}
 
 	commands.forEach((x) => commandRegistry.set(x.name, x));
 	for (const cmd of (await applicationCommandManager.fetch({})).values()) {

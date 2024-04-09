@@ -9,7 +9,7 @@ export const command = new ExtendedCommand({ name: "menu", description: "Manage 
     .addPermission(permissions.developer)
     .addSubCommand((subcommand) =>
         subcommand
-            .setName("add")
+            .setName("add") 
             .setDescription("Add a new menu item.")
             .addStringOption((option) =>
                 option

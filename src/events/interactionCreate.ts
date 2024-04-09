@@ -4,14 +4,32 @@ import { text } from "../providers/config";
 import { blacklist } from "../database/blacklist";
 import { StopCommandExecution } from "../utils/error";
 
+// Custom logging functions
+function logInteractionAlreadyReplied() {
+	console.log("The reply to this interaction has already been sent or deferred.");
+}
+
+function logBlacklistedUserInteraction(userId) {
+	console.log(`Interaction failed due to user being blacklisted: ${userId}`);
+}
+
+function logException(message) {
+	console.log(`Interaction failed with exception: ${message}`);
+}
+
+
 client.on("interactionCreate", async (int) => {
 	try {
 		if (!int.inCachedGuild()) {
-			if (int.isCommand()) int.reply("Error B417");
+			if (int.isCommand()) {
+				logInteractionAlreadyReplied();
+				await int.reply("Error B417");
+			}
 			return;
 		}
 		if (int.isCommand()) {
 			if (blacklist.has(int.user.id)) {
+				logBlacklistedUserInteraction(int.user.id);
 				await int.reply(text.errors.blacklisted);
 			}
 			const command = commandRegistry.get(int.commandName);
@@ -22,7 +40,10 @@ client.on("interactionCreate", async (int) => {
 		}
 	} catch (e) {
 		if (!(e instanceof StopCommandExecution)) {
-			if (int.isCommand()) int.reply({ content: text.errors.exception, ephemeral: true }).catch();
+			if (int.isCommand()) {
+				logException(e.message);
+				int.reply({ content: text.errors.exception, ephemeral: true }).catch();
+			}
 			console.error(e);
 		}
 	}

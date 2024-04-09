@@ -216,6 +216,15 @@ export const command = new ExtendedCommand(
                         await handleBrew(int.user);
                         await upsertWorkerStats(int.user, { ordersBrewed: 1 }); // Increment the ordersBrewed count
                         await upsertWorkerInfo(int.user);
+                        // Increment the brew count for the worker
+                        await db.workerInfo.update({
+                            where: {
+                                id: int.user.id,
+                            },
+                            data: {
+                                brews: { increment: 1 }, // Increment the brew count
+                            },
+                        });
 
                         await int.followUp({
                             content: "Brewing process started.",

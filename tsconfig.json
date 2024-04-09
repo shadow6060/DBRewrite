@@ -1,5 +1,5 @@
 {
-	"include": ["./src/**/*.ts", "src/commands/orders/order.disabled"],
+	"include": ["./src/**/*.ts", "src/commands/orders/order.ts"],
 	"exclude": ["./node_modules/**", "genenv.js"],
 	"compilerOptions": {
 		/* Visit https://aka.ms/tsconfig.json to read more about this file */
