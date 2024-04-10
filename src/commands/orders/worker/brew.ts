@@ -12,12 +12,11 @@ import { Command } from "../../../structures/Command";
 import { format } from "../../../utils/string";
 import { randRange } from "../../../utils/utils";
 import { StringSelectMenuBuilder, CommandInteraction, ComponentType, EmbedBuilder } from "discord.js";
-import { upsertWorkerStats, handleBrew, handleDeliver } from "../../../database/workerstats"; // Import the workerstats functions
+import { upsertWorkerStats, handleBrew } from "../../../database/workerstats"; // Import the workerstats functions
 import { ExtendedCommand } from "../../../structures/extendedCommand";
 
 export const command = new ExtendedCommand(
     { name: "brew", description: "Brews your claimed order.", local: true }
-
 )
     .addSubCommand((subcommand) =>
         subcommand
@@ -50,7 +49,7 @@ export const command = new ExtendedCommand(
         }
 
         // Set last command to "brew" when brewing
-        await upsertWorkerStats(int.user, { lastCommand: "brew" });
+        await upsertWorkerStats(int.user, { ordersBrewed: 1, lastCommand: "brew" });
 
         const subcommand = int.options.getSubcommand(true);
         let imageUrl: string | undefined;
@@ -124,8 +123,7 @@ export const command = new ExtendedCommand(
                             },
                         });
 
-                        // Update worker stats when brewing an order
-                        await handleBrew(int.user);
+                        // Update worker info
                         await upsertWorkerInfo(int.user);
 
                         await int.followUp({
@@ -212,19 +210,8 @@ export const command = new ExtendedCommand(
                             },
                         });
 
-                        // Update worker stats when brewing an order
-                        await handleBrew(int.user);
-                        await upsertWorkerStats(int.user, { ordersBrewed: 1 }); // Increment the ordersBrewed count
+                        // Update worker info
                         await upsertWorkerInfo(int.user);
-                        // Increment the brew count for the worker
-                        await db.workerInfo.update({
-                            where: {
-                                id: int.user.id,
-                            },
-                            data: {
-                                brews: { increment: 1 }, // Increment the brew count
-                            },
-                        });
 
                         await int.followUp({
                             content: "Brewing process started.",
