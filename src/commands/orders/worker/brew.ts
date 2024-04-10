@@ -122,10 +122,6 @@ export const command = new ExtendedCommand(
                                 timeout: new Date(Date.now() + time),
                             },
                         });
-
-                        // Update worker info
-                        await upsertWorkerInfo(int.user);
-
                         await int.followUp({
                             content: "Brewing process started.",
                             files: imageUrl ? [{ attachment: imageUrl }] : undefined,
@@ -212,7 +208,14 @@ export const command = new ExtendedCommand(
 
                         // Update worker info
                         await upsertWorkerInfo(int.user);
-
+                        await db.workerInfo.update({
+                            where: {
+                                id: int.user.id,
+                            },
+                            data: {
+                                preparations: { increment: 1 },
+                            },
+                        });
                         await int.followUp({
                             content: "Brewing process started.",
                             files: imageUrl ? [{ attachment: imageUrl }] : undefined,
