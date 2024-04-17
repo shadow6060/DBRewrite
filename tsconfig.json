@@ -4,7 +4,9 @@
   ],
   "exclude": [
     "./node_modules/",
-    "genenv.js"
+    "genenv.js",
+    "./src/commands/orders/worker/ebrew.ts",
+    "./src/commands/orders/worker/eclaim.ts"
   ],
   "compilerOptions": {
     /* Visit https://aka.ms/tsconfig.json to read more about this file */

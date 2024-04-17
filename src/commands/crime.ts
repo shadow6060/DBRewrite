@@ -1,11 +1,12 @@
 //crime.ts
-import { db } from "../../database/database";
-import { upsertUserInfo } from "../../database/userInfo";
-import { constants, text } from "../../providers/config";
-import { Command } from "../../structures/Command";
-import { format } from "../../utils/string";
+import {db} from "../database/database";
+import {upsertUserInfo} from "../database/userInfo";
+import {constants, text} from "../providers/config";
+import {Command} from "../structures/Command";
+import {format} from "../utils/string";
 import pms from "pretty-ms";
-import { randRange, sampleArray } from "../../utils/utils";
+import {randRange, sampleArray} from "../utils/utils";
+
 const cooldowns: Record<string, number> = {};
 
 export const command = new Command("crime", "Try your chances on doing crime!")

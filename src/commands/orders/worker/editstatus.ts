@@ -1,10 +1,9 @@
 /* eslint-disable indent */
-import { OrderStatus, matchActiveOrder } from "../../../database/orders";
-import { text } from "../../../providers/config";
-import { permissions } from "../../../providers/permissions";
-import { Command } from "../../../structures/Command";
-import { CommandInteraction } from "discord.js";
-import { db } from "../../../database/database";
+import {matchActiveOrder, OrderStatus} from "../../../database/orders";
+import {permissions} from "../../../providers/permissions";
+import {Command} from "../../../structures/Command";
+import {ChatInputCommandInteraction} from "discord.js";
+import {db} from "../../../database/database";
 
 export const command = new Command(
     "editstatus",
@@ -31,9 +30,15 @@ export const command = new Command(
                 // Add other choices here if needed
             )
     )
-    .setExecutor(async (int: CommandInteraction) => {
+	.setExecutor(async (int: ChatInputCommandInteraction) => {
         const orderId = int.options.getString("order_id", true);
         const newStatus = int.options.getString("status", true);
+
+		// assert that newStatus is of type OrderStatus
+		if (!Object.values(OrderStatus).includes(newStatus as OrderStatus)) {
+			await int.reply({content: "Invalid status provided."});
+			return;
+		}
 
         const order = await matchActiveOrder(orderId);
         if (!order) {
@@ -46,7 +51,7 @@ export const command = new Command(
                 id: order.id,
             },
             data: {
-                status: newStatus,
+				status: newStatus as OrderStatus,
             },
         });
 

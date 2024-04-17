@@ -1,15 +1,22 @@
 /* eslint-disable indent */
 /* eslint-disable quotes */
-import { OrderStatus } from "@prisma/client";
-import { db } from "../../../database/database";
-import { upsertWorkerInfo } from "../../../database/workerInfo";
-import { client } from "../../../providers/client";
-import { config, constants, text } from "../../../providers/config";
-import { permissions } from "../../../providers/permissions";
-import { Command } from "../../../structures/Command";
-import { format } from "../../../utils/string";
-import { randRange } from "../../../utils/utils";
-import { StringSelectMenuBuilder, CommandInteraction, ComponentType, EmbedBuilder } from "discord.js";
+import {OrderStatus} from "@prisma/client";
+import {db} from "../../../database/database";
+import {upsertWorkerInfo} from "../../../database/workerInfo";
+import {constants} from "../../../providers/config";
+import {permissions} from "../../../providers/permissions";
+import {Command} from "../../../structures/Command";
+import {randRange} from "../../../utils/utils";
+import {
+    ButtonInteraction,
+    ChatInputCommandInteraction,
+    Client,
+    CollectedMessageInteraction,
+    ComponentType,
+    EmbedBuilder,
+    StringSelectMenuBuilder
+} from "discord.js";
+import {IllegalStateError} from "../../../utils/error";
 
 // Define the getClaimedOrders function without specifying OrderStatus
 async function getClaimedOrders(userId: string) {
@@ -53,9 +60,14 @@ export const command = new Command(
             .setDescription("Claim an order.")
     )
     .addPermission(permissions.employee)
-    .setExecutor(async (int: CommandInteraction) => {
+    .setExecutor(async (int: ChatInputCommandInteraction) => {
         // Check the subcommand
         const subcommand = int.options.getSubcommand(true);
+
+        // temporary workaround, since client does not have ordersInProcess
+        let client: Client<true> & {
+            ordersInProcess?: { [userId: string]: { orderId: string } };
+        } = int.client;
 
         if (subcommand === "claim") {
             // Get a list of claimed orders for the user using getClaimedOrders
@@ -78,8 +90,7 @@ export const command = new Command(
             const orderSelectMenu = new StringSelectMenuBuilder()
                 .setCustomId("select_order_to_claim")
                 .setPlaceholder("Select an order to brew")
-                .addOptions(orderOptions)
-                .toJSON();
+                .addOptions(orderOptions);
 
             const actionRow = {
                 type: ComponentType.ActionRow,
@@ -92,11 +103,15 @@ export const command = new Command(
                 ephemeral: true,
             });
 
+            if (!int.channel) throw new IllegalStateError("Channel is not available.");
             // Create a collector to listen for the user's selection
-            const filter = (i) => i.customId === "select_order_to_claim" && i.user.id === int.user.id;
+            const filter: (i: CollectedMessageInteraction) => boolean = (i) => i.customId === "select_order_to_claim" && i.user.id === int.user.id;
             const collector = int.channel.createMessageComponentCollector({ filter, time: 15000 });
+            int.channel.createMessageComponentCollector(
 
-            collector.on("collect", async (interaction) => {
+            )
+            collector.on("collect", async (interaction: CollectedMessageInteraction) => {
+                if (interaction instanceof ButtonInteraction) throw new IllegalStateError("help how did we get here?!?");
                 const selectedOrderId = interaction.values[0];
 
                 // Fetch the order details using the order ID
@@ -121,7 +136,7 @@ export const command = new Command(
                 }
 
                 // Store the selected order ID in a context variable for future use
-                int.client.ordersInProcess = {
+                client.ordersInProcess = {
                     [int.user.id]: {
                         orderId: selectedOrderId,
                     },
@@ -139,9 +154,9 @@ export const command = new Command(
                 }
             });
 
-        } else if ((subcommand === "attach" || subcommand === "url") && int.client.ordersInProcess?.[int.user.id]?.orderId) {
+        } else if ((subcommand === "attach" || subcommand === "url") && client.ordersInProcess?.[int.user.id]?.orderId) {
             // Fetch the order ID from the context variable
-            const selectedOrderId = int.client.ordersInProcess[int.user.id].orderId;
+            const selectedOrderId = client.ordersInProcess[int.user.id].orderId;
 
             // Fetch the order details using the order ID
             const order = await db.orders.findUnique({
@@ -180,7 +195,7 @@ export const command = new Command(
 
             const imagePreviewEmbed = new EmbedBuilder()
                 .setTitle("Image Preview")
-                .setImage(imageUrl) // Set the image URL as the preview
+                .setImage(imageUrl!) // Set the image URL as the preview, TODO: Fix the non-null assertion
                 .toJSON();
 
             const confirmSelectMenu = new StringSelectMenuBuilder()
@@ -197,8 +212,7 @@ export const command = new Command(
                         description: "Cancel the brewing process",
                         value: "no",
                     },
-                ])
-                .toJSON();
+                ]);
 
             const confirmActionRow = {
                 type: ComponentType.ActionRow,
@@ -212,7 +226,9 @@ export const command = new Command(
                 ephemeral: true,
             });
 
-            const confirmFilter = (i) => i.customId === "confirm_brew" && i.user.id === int.user.id;
+            if (!int.channel) throw new IllegalStateError("Channel is not available.");
+
+            const confirmFilter: (i: CollectedMessageInteraction) => boolean = (i) => i.customId === "confirm_brew" && i.user.id === int.user.id;
             const confirmCollector = int.channel.createMessageComponentCollector({ filter: confirmFilter, time: 15000 });
 
             confirmCollector.on("collect", async (confirmInteraction) => {

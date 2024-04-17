@@ -231,6 +231,7 @@ export const command = new Command(
 		}
 	});
 
+/*
         // Set last command to "brew" when brewing
         await upsertWorkerStats(int.user, { lastCommand: "brew" });
 
@@ -419,5 +420,6 @@ export const command = new Command(
             });
         }
     });
+*/
 
 // ... (existing code)

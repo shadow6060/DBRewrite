@@ -1,11 +1,10 @@
 /* eslint-disable quotes */
 /* eslint-disable indent */
-import { CommandInteraction, EmbedBuilder, UserResolvable } from "discord.js";
-import { db } from "../../database/database";
-import { getWorkerStats } from "../../database/workerstats";
-import { resolveUserId } from "../../utils/id";
-import { Command } from "../../structures/Command";
-import { permissions } from "../../providers/permissions";
+import {CommandInteraction, EmbedBuilder} from "discord.js";
+import {getWorkerStats} from "../../database/workerstats";
+import {resolveUserId} from "../../utils/id";
+import {Command} from "../../structures/Command";
+import {permissions} from "../../providers/permissions";
 
 export const command = new Command(
     "ws",
@@ -13,7 +12,7 @@ export const command = new Command(
 
 )
     .addPermission(permissions.admin)
-    .addUserOption((option) =>
+    .addOption("user", (option) =>
         option
             .setName("user")
             .setDescription("The user to view statistics for.")
@@ -30,6 +29,11 @@ export const command = new Command(
         }
 
         const workerStats = await getWorkerStats(userId);
+
+        if (!workerStats) {
+            await int.reply("No worker statistics found.");
+            return;
+        }
 
         const embed = new EmbedBuilder()
             .setTitle(`${targetUser ? targetUser.tag : int.user.tag}'s Worker Statistics`)

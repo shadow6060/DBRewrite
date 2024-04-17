@@ -3,10 +3,10 @@ import {getAllActiveOrders} from "../../../database/orders";
 import {client} from "../../../providers/client";
 import {text} from "../../../providers/config";
 import {permissions} from "../../../providers/permissions";
-import {Command} from "../../../structures/Command";
 import {format} from "../../../utils/string";
 import pms from "pretty-ms";
 import {OrderStatus} from "@prisma/client";
+import {ExtendedCommand} from "../../../structures/extendedCommand";
 
 // Define the command options
 interface CommandOptions {

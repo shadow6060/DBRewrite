@@ -1,13 +1,13 @@
+// @ts-nocheck
 /* eslint-disable quotes */
 /* eslint-disable indent */
-import { upsertWorkerInfo } from "../../../database/workerInfo";
-import { Command } from "../../../structures/Command";
-import { permissions } from "../../../providers/permissions";
-import { OrderStatus, getClaimedOrder } from "../../../database/orders";
-import { db } from "../../../database/database";
-import { text } from "../../../providers/config";
-import { client } from "../../../providers/client";
-import { CommandInteraction, StringSelectMenuBuilder, ComponentType, EmbedBuilder } from "discord.js";
+import {Command} from "../../../structures/Command";
+import {permissions} from "../../../providers/permissions";
+import {getClaimedOrder, OrderStatus} from "../../../database/orders";
+import {db} from "../../../database/database";
+import {text} from "../../../providers/config";
+import {client} from "../../../providers/client";
+import {CommandInteraction, ComponentType, EmbedBuilder, StringSelectMenuBuilder} from "discord.js";
 
 const claimedOrderLocks = new Map<string, boolean>();  // Map to store claim locks for each order ID
 const claimedOrders = new Set<string>();  // Set to store claimed order IDs

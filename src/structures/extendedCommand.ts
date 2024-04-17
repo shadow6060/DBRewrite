@@ -1,6 +1,5 @@
 /* eslint-disable indent */
-import { Command } from "./Command";
-import { config } from "../providers/config";
+import {Command} from "./Command";
 
 // Define the interface for command options
 interface CommandOptions {
@@ -19,7 +18,7 @@ export class ExtendedCommand extends Command {
 
     // Constructor
     constructor({ name, description, local = false, ...options }: CommandOptions) {
-        super(name, description, options);
+        super(name, description);
         this.global = !local; // Set global property based on the value of local
         this.local = local;
     }

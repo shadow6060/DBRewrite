@@ -1,22 +1,22 @@
 /* eslint-disable quotes */
-import { basename, join, posix, win32 } from "path";
-import { sync } from "fast-glob";
-import { Command } from "../structures/Command";
-import { Routes } from "discord-api-types/v10";
-import { client, rest } from "./client";
-import { development } from "./env";
-import { config } from "./config";
+import {basename, join, posix, win32} from "path";
+import {sync} from "fast-glob";
+import {Command} from "../structures/Command";
+import {Routes} from "discord-api-types/v10";
+import {client, rest} from "./client";
+import {development} from "./env";
+import {config} from "./config";
 import type {
 	ApplicationCommand,
 	ApplicationCommandManager,
 	GuildApplicationCommandManager,
 	GuildResolvable,
 } from "discord.js";
-import { Collection } from "discord.js";
-import { notInitialized } from "../utils/utils";
+import {Collection} from "discord.js";
+import {notInitialized} from "../utils/utils";
 import "./permissions";
-import { ExtendedCommand } from "../structures/extendedCommand"; // Import the ExtendedCommand class
-import { mainGuild } from "./discord";
+import {ExtendedCommand} from "../structures/extendedCommand"; // Import the ExtendedCommand class
+import {mainGuild} from "./discord";
 
 const commandFolder = join(__dirname, "../commands/**/*.js").replaceAll(win32.sep, posix.sep);
 /** Command registry for commands passed into registerCommands */
@@ -80,15 +80,15 @@ export const loadCommands = async (): Promise<Command[]> => {
 		commands.push(data.command);
 	}
 
-	const extendedCommands = await loadExtendedCommands();
-	commands.push(...extendedCommands);
+	// const extendedCommands = await loadExtendedCommands();
+	// commands.push(...extendedCommands);
 
 	await registerCommands(commands);
 	return commands;
 };
 
 // Define a new function to load ExtendedCommands
-const loadExtendedCommands = async (): Promise<ExtendedCommand[]> => {
+/*const loadExtendedCommands = async (): Promise<ExtendedCommand[]> => {
 	const commands: ExtendedCommand[] = [];
 	const commandFiles = sync(extendedCommandFolder);
 	for (const file of commandFiles) {
@@ -98,4 +98,4 @@ const loadExtendedCommands = async (): Promise<ExtendedCommand[]> => {
 		commands.push(data.command);
 	}
 	return commands;
-};
+};*/

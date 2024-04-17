@@ -1,10 +1,9 @@
-import { ExtendedCommand } from "./../../structures/extendedCommand";
+import {ExtendedCommand} from "../../structures/extendedCommand";
 /* eslint-disable quotes */
 /* eslint-disable indent */
-import { client } from "../../providers/client";
-import { permissions } from "../../providers/permissions";
-import { Command } from "../../structures/Command";
-import { CommandInteraction, EmbedBuilder } from "discord.js";
+import {client} from "../../providers/client";
+import {permissions} from "../../providers/permissions";
+import {ChatInputCommandInteraction, EmbedBuilder} from "discord.js";
 
 export const command = new ExtendedCommand({ name: "avatar", description: "Some info." })
     .addPermission(permissions.developer) // AnyRank
@@ -19,7 +18,7 @@ export const command = new ExtendedCommand({ name: "avatar", description: "Some 
                     .setRequired(true)
             )
     )
-    .setExecutor(async (int: CommandInteraction) => {
+    .setExecutor(async (int: ChatInputCommandInteraction) => {
         // Check the subcommand
         const subcommand = int.options.getSubcommand(true);
 
@@ -28,7 +27,7 @@ export const command = new ExtendedCommand({ name: "avatar", description: "Some 
             await int.deferReply({ ephemeral: true });
 
             // Fetch the attachment from the options
-            const attachment = int.options.get("attachment", true)?.attachment;
+            const attachment = int.options.getAttachment("attachment", true);
 
             if (!attachment) {
                 await int.editReply({ content: "Attachment is missing or not valid." });

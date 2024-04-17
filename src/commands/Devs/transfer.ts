@@ -1,8 +1,8 @@
 /* eslint-disable indent */
-import { PrismaClient } from "@prisma/client";
-import { CommandInteraction } from "discord.js";
-import { permissions } from "../../providers/permissions";
-import { Command } from "../../structures/Command";
+import {PrismaClient} from "@prisma/client";
+import {CommandInteraction} from "discord.js";
+import {permissions} from "../../providers/permissions";
+import {Command} from "../../structures/Command";
 
 const prisma = new PrismaClient();
 
@@ -22,7 +22,7 @@ export const command = new Command("transfer", "Transfers data from the old sche
 
                 //console.log(`Transferring data for user with ID: ${userId}`);
 
-                const guildsXPDataObject = parseGuildsXPData(guildsXPData);
+                const guildsXPDataObject = parseGuildsXPData(guildsXPData + "");
 
                 //console.log(`GuildsXPDataObject: ${JSON.stringify(guildsXPDataObject)}`);
 

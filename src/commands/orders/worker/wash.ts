@@ -1,8 +1,8 @@
-import { CommandInteraction } from 'discord.js';
-import { PrismaClient } from '@prisma/client';
-import { permissions } from "../../../providers/permissions";
-import { Command } from "../../../structures/Command";
-import { getUserBalance, updateBalance } from "../../../database/userInfo";
+import {ChatInputCommandInteraction} from "discord.js";
+import {PrismaClient} from "@prisma/client";
+import {permissions} from "../../../providers/permissions";
+import {Command} from "../../../structures/Command";
+import {getUserBalance, updateBalance} from "../../../database/userInfo";
 
 const prisma = new PrismaClient();
 
@@ -19,7 +19,7 @@ export const command = new Command('wash', 'Wash a dish.')
     .addOption("boolean", (o) =>
         o.setName("inactive").setDescription("Include inactive orders too.")
     )
-    .setExecutor(async (interaction: CommandInteraction) => {
+    .setExecutor(async (interaction: ChatInputCommandInteraction) => {
         const all = await prisma.dishes.findMany({ take: 10 });
         if (!all.length) {
             await interaction.reply("There are currently no dishes to wash.");
