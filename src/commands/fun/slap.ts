@@ -16,7 +16,7 @@ export const command = new Command("slap", "Give your friends a good slap.")
 				new EmbedBuilder()
 					.setTitle("Bam someone got slapped")
 					.setImage(yeeeee.url)
-					.setDescription(`${slapped} got slapped by ${int.user.tag}`)
+					.setDescription(`<@!${slapped}> got slapped by ${int.user.tag}`)
 					.setFooter({text: format(tcfe.footer, int.user.tag), iconURL: int.user.displayAvatarURL()}),
 			],
 		});

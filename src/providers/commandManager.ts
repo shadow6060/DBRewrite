@@ -68,6 +68,8 @@ const registerCommands = async (commands: Command[]) => {
  * Loads all commands from the commands folder.
  * Registers them with the commandRegistry and the applicationCommandManager.
  */
+let commandNames: string[] = [];
+
 export const loadCommands = async (): Promise<Command[]> => {
 	const commands: Command[] = [];
 	const commandFiles = sync(commandFolder);
@@ -76,6 +78,10 @@ export const loadCommands = async (): Promise<Command[]> => {
 		if (!(data.command instanceof Command || (data.command as any) instanceof ExtendedCommand)) {
 			throw new Error(`File ${file} does not export 'command'.`);
 		}
+		if (commandNames.includes(data.command.name)) {
+			console.log("Duplicate command found: " + data.command.name);
+			continue;
+		} else commandNames.push(data.command.name);
 		console.log(`Registered command ${basename(file, ".js")}.`);
 		commands.push(data.command);
 	}
