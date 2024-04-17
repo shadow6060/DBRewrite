@@ -45,6 +45,7 @@
 		"cross-env": "^7.0.3",
 		"discord.js": "^14.14.1",
 		"fast-glob": "^3.2.11",
+      "fastify": "^4.26.2",
 		"got": "^11.8.3",
 		"hjson": "^3.2.2",
 		"nekos.life": "^3.0.0",
