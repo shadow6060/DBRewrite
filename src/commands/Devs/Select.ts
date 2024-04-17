@@ -1,13 +1,6 @@
-import { development } from "../../providers/env";
-import { execSync } from "child_process";
-import { format } from "../../utils/string";
-import { transpile } from "typescript";
-import { permissions } from "../../providers/permissions";
-import { Command } from "../../structures/Command";
-import { client } from "../../providers/client";
-import { channel } from "diagnostics_channel";
-import { StringSelectMenuBuilder, EmbedBuilder } from "discord.js";
-import { ExtendedCommand } from "../../structures/extendedCommand";
+import {permissions} from "../../providers/permissions";
+import {EmbedBuilder, StringSelectMenuBuilder} from "discord.js";
+import {ExtendedCommand} from "../../structures/extendedCommand";
 
 export const command = new ExtendedCommand(
 	{ name: "select", description: "Select Menu Example.", local: true }
@@ -22,19 +15,19 @@ export const command = new ExtendedCommand(
 					label: "Option 1",
 					value: "option_1",
 					description: "The first option",
-					type: 3 // changed from "SELECT_MENU" to 3
+					// type: 3 // changed from "SELECT_MENU" to 3
 				},
 				{
 					label: "Option 2",
 					value: "option_2",
 					description: "The second option",
-					type: 3 // changed from "SELECT_MENU" to 3
+					// type: 3 // changed from "SELECT_MENU" to 3
 				},
 				{
 					label: "Option 3",
 					value: "option_3",
 					description: "The third option",
-					type: 3 // changed from "SELECT_MENU" to 3
+					// type: 3 // changed from "SELECT_MENU" to 3
 				},
 			]);
 

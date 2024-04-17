@@ -1,12 +1,10 @@
 /* eslint-disable quotes */
 /* eslint-disable indent */
-import { CommandInteraction, EmbedBuilder, UserResolvable } from "discord.js";
-import { db } from "../../database/database";
-import { getWorkerStats } from "../../database/workerstats";
-import { resolveUserId } from "../../utils/id";
-import { Command } from "../../structures/Command";
-import { permissions } from "../../providers/permissions";
-import { ExtendedCommand } from "../../structures/extendedCommand";
+import {CommandInteraction, EmbedBuilder} from "discord.js";
+import {getWorkerStats} from "../../database/workerstats";
+import {resolveUserId} from "../../utils/id";
+import {permissions} from "../../providers/permissions";
+import {ExtendedCommand} from "../../structures/extendedCommand";
 
 export const command = new ExtendedCommand(
     { name: "ws", description: "View worker statistics.", local: true }
@@ -30,6 +28,10 @@ export const command = new ExtendedCommand(
         }
 
         const workerStats = await getWorkerStats(userId);
+		if (!workerStats) {
+			await int.reply({content: "No worker statistics found for this user.", ephemeral: true});
+			return;
+		}
 
         const embed = new EmbedBuilder()
             .setTitle(`${targetUser ? targetUser.tag : int.user.username}'s Worker Statistics`)

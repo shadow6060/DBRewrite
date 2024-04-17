@@ -1,10 +1,8 @@
 /* eslint-disable indent */
-import { permissions } from "../../providers/permissions";
-import { Command } from "../../structures/Command";
-import { CommandInteraction, EmbedBuilder } from "discord.js";
-import { getUserInfo, updateBalance } from "../../database/userInfo";
-import { ExtendedCommand } from "../../structures/extendedCommand";
-import { config } from "../../providers/config";
+import {permissions} from "../../providers/permissions";
+import {getUserInfo, updateBalance} from "../../database/userInfo";
+import {ExtendedCommand} from "../../structures/extendedCommand";
+import {config} from "../../providers/config";
 
 export const command = new ExtendedCommand({ name: "currencyedit", description: "Manage user balance.", servers: [config.servers.extraServer], local: true })
     .addPermission(permissions.developer)
@@ -36,7 +34,7 @@ export const command = new ExtendedCommand({ name: "currencyedit", description: 
                     .setRequired(true)
             )
     )
-    .setExecutor(async (int: CommandInteraction) => {
+    .setExecutor(async (int) => {
         const subcommand = int.options.getSubcommand(true);
 
         if (subcommand === "set") {

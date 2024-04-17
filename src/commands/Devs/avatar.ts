@@ -1,10 +1,9 @@
-import { ExtendedCommand } from "./../../structures/extendedCommand";
+import {ExtendedCommand} from "./../../structures/extendedCommand";
 /* eslint-disable quotes */
 /* eslint-disable indent */
-import { client } from "../../providers/client";
-import { permissions } from "../../providers/permissions";
-import { Command } from "../../structures/Command";
-import { CommandInteraction, EmbedBuilder } from "discord.js";
+import {client} from "../../providers/client";
+import {permissions} from "../../providers/permissions";
+import {ChatInputCommandInteraction, CommandInteraction, EmbedBuilder} from "discord.js";
 
 export const command = new ExtendedCommand({ name: "avatar", description: "Some info." })
     .addPermission(permissions.developer) // AnyRank
@@ -21,7 +20,7 @@ export const command = new ExtendedCommand({ name: "avatar", description: "Some 
     )
     .setExecutor(async (int: CommandInteraction) => {
         // Check the subcommand
-        const subcommand = int.options.getSubcommand(true);
+		const subcommand = int instanceof ChatInputCommandInteraction ? int.options.getSubcommand(true) : int.options.get("subcommand", true)?.value as string;
 
         if (subcommand === "attach") {
             // Defer the reply to avoid potential issues with the interaction being deleted

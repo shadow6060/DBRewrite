@@ -1,17 +1,15 @@
 /* eslint-disable indent */
-import { WorkerInfo } from "@prisma/client";
-import { permissions } from "../../providers/permissions";
-import { Command } from "../../structures/Command";
-import { getWorkerInfo } from "../../database/workerInfo"; // Update with the correct path
-import { CommandInteraction, EmbedBuilder } from "discord.js";
-import { ExtendedCommand } from "../../structures/extendedCommand";
+import {permissions} from "../../providers/permissions";
+import {getWorkerInfo} from "../../database/workerInfo"; // Update with the correct path
+import {EmbedBuilder} from "discord.js";
+import {ExtendedCommand} from "../../structures/extendedCommand";
 
 export const command = new ExtendedCommand(
     { name: "workst", description: "view a worker's stats by their id.", local: true }
 )
 
     .addPermission(permissions.employee)
-    .setExecutor(async (int: CommandInteraction) => {
+    .setExecutor(async (int) => {
         try {
             const userId = int.options.getString("user_id");
 
@@ -32,8 +30,8 @@ export const command = new ExtendedCommand(
                 .addFields([
                     { name: "Preparations", value: workerInfo.preparations.toString(), inline: true },
                     { name: "Deliveries", value: workerInfo.deliveries.toString(), inline: true },
-                    { name: "Claim Usage Count", value: workerInfo.claimUsageCount.toString(), inline: true },
-                    { name: "Brew Usage Count", value: workerInfo.brewUsageCount.toString(), inline: true }
+                    // { name: "Claim Usage Count", value: workerInfo.claimUsageCount.toString(), inline: true },
+                    // { name: "Brew Usage Count", value: workerInfo.brewUsageCount.toString(), inline: true }
                 ])
                 .setTimestamp();
 

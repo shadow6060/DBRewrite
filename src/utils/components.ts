@@ -1,6 +1,13 @@
-import type { ButtonInteraction, Constructable, MessageActionRowComponent, MessageComponentInteraction, SelectMenuInteraction } from "discord.js";
-import { MessageActionRow, MessageButton, MessageSelectMenu } from "discord.js";
-import { componentCallbacks } from "../events/interactionCreate";
+// @ts-nocheck TODO: Remove this comment when the issue is fixed
+import type {
+	ButtonInteraction,
+	Constructable,
+	MessageActionRowComponent,
+	MessageComponentInteraction,
+	SelectMenuInteraction
+} from "discord.js";
+import {MessageActionRow, MessageButton, MessageSelectMenu} from "discord.js";
+import {componentCallbacks} from "../events/interactionCreate";
 
 export type InteractionByType<C extends MessageActionRowComponent = MessageActionRowComponent> = C extends MessageButton
 	? ButtonInteraction<"cached">

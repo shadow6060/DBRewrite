@@ -1,9 +1,8 @@
 /* eslint-disable indent */
-import { permissions } from "../../providers/permissions";
-import { Command } from "../../structures/Command";
-import { EmbedBuilder, CommandInteraction } from "discord.js";
-import { db } from "../../database/database";
-import { ExtendedCommand } from "../../structures/extendedCommand";
+import {permissions} from "../../providers/permissions";
+import {EmbedBuilder} from "discord.js";
+import {db} from "../../database/database";
+import {ExtendedCommand} from "../../structures/extendedCommand";
 
 export const command = new ExtendedCommand({ name: "menu", description: "Manage menu Items.", local: true })
     .addPermission(permissions.developer)
@@ -83,7 +82,7 @@ export const command = new ExtendedCommand({ name: "menu", description: "Manage 
             .setName("list")
             .setDescription("List all menu items.")
     )
-    .setExecutor(async (int: CommandInteraction) => {
+	.setExecutor(async (int) => {
         const subcommand = int.options.getSubcommand(true);
 
         if (subcommand === "add") {
