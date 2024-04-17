@@ -23,7 +23,7 @@
 	},
 	"homepage": "https://github.com/MelnCat/DBRewrite#readme",
 	"devDependencies": {
-		"@types/node": "^17.0.42",
+		"@types/node": "^17.0.45",
 		"@types/uuid": "^9.0.1",
 		"@typescript-eslint/eslint-plugin": "^5.16.0",
 		"@typescript-eslint/parser": "^5.16.0",
@@ -45,6 +45,7 @@
 		"cross-env": "^7.0.3",
 		"discord.js": "^14.14.1",
 		"fast-glob": "^3.2.11",
+		"fastify": "^4.26.2",
 		"got": "^11.8.3",
 		"hjson": "^3.2.2",
 		"nekos.life": "^3.0.0",
