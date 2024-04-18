@@ -1,11 +1,8 @@
 /* eslint-disable indent */
-import { OrderStatus, matchActiveOrder } from "../../../database/orders";
-import { text } from "../../../providers/config";
-import { permissions } from "../../../providers/permissions";
-import { Command } from "../../../structures/Command";
-import { CommandInteraction } from "discord.js";
-import { db } from "../../../database/database";
-import { ExtendedCommand } from "../../../structures/extendedCommand";
+import {matchActiveOrder, OrderStatus} from "../../../database/orders";
+import {permissions} from "../../../providers/permissions";
+import {db} from "../../../database/database";
+import {ExtendedCommand} from "../../../structures/extendedCommand";
 
 export const command = new ExtendedCommand(
     { name: "editstatus", description: "Edit the status of an order.", local: true }
@@ -31,9 +28,15 @@ export const command = new ExtendedCommand(
                 // Add other choices here if needed
             )
     )
-    .setExecutor(async (int: CommandInteraction) => {
+	.setExecutor(async (int) => {
         const orderId = int.options.getString("order_id", true);
-        const newStatus = int.options.getString("status", true);
+		const newStatus = int.options.getString("status", true) as OrderStatus;
+
+		// assert newStatus is a valid OrderStatus to make sure this is type-safe
+		if (!Object.values(OrderStatus).includes(newStatus as OrderStatus)) {
+			await int.reply({content: "Invalid status provided."});
+			return;
+		}
 
         const order = await matchActiveOrder(orderId);
         if (!order) {

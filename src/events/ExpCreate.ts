@@ -2,7 +2,6 @@
 /* eslint-disable indent */
 import { PrismaClient } from "@prisma/client";
 import { client } from "../providers/client";
-
 const prisma = new PrismaClient();
 
 // Map to hold cooldown Sets per guild
@@ -47,8 +46,7 @@ client.on('messageCreate', async (message) => {
                     balance: 0,
                     tabLimit: 0.0,
                     donuts: 0,
-                    guildsxp: "{}",
-                },
+                } as any, // Explicitly specifying the type of 'data'
             });
         }
 
@@ -63,21 +61,21 @@ client.on('messageCreate', async (message) => {
             create: {
                 userId: userId,
                 guildId: guildId,
-                userName: message.author.username,
                 level: 0,
                 exp: 0,
-            },
+            } as any, // Explicitly specifying the type of 'data'
             update: {},
         });
 
         // Increase their XP
-        guildsXPData.exp += Math.floor(Math.random() * 20) + 1;
+        const xpGain = Math.floor(Math.random() * 20) + 1;
+        guildsXPData.exp += xpGain;
 
         // Check if the user has enough XP to level up
-        if (guildsXPData.exp >= guildsXPData.level * 100) {
+        while (guildsXPData.exp >= guildsXPData.level * 100) {
             // If they do, increase their level and reset their XP
             guildsXPData.level += 1;
-            guildsXPData.exp = 0;
+            guildsXPData.exp -= guildsXPData.level * 100;
 
             // Get the ID of the notification channel from the database
             const notificationChannelId = guildsXPData.notificationChannelId;
@@ -91,6 +89,11 @@ client.on('messageCreate', async (message) => {
                     notificationChannel.send(`${message.author.username} has leveled up to level ${guildsXPData.level}!`);
                 }
             }
+        }
+
+        // Ensure exp is not negative
+        if (guildsXPData.exp < 0) {
+            guildsXPData.exp = 0;
         }
 
         // Update the user's data in the database

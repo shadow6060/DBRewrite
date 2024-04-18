@@ -1,5 +1,7 @@
 /**
  * Checks if two arrays contain the same elements.
+ * @param arr1 - The first array.
+ * @param arr2 - The second array.
  */
 export const arraysSimilar = <T>(arr1: readonly T[], arr2: readonly T[]) => {
 	if (arr1.length !== arr2.length) return false;

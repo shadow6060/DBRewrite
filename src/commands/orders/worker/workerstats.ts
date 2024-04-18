@@ -1,22 +1,21 @@
 /* eslint-disable quotes */
 /* eslint-disable indent */
-import { CommandInteraction, EmbedBuilder } from "discord.js";
-import { permissions } from "../../../providers/permissions";
-import { Command } from "../../../structures/Command";
-import { PrismaClient, Prisma } from '@prisma/client';
-import { getWorkerInfo, getWorkerInfos } from "../../../database/workerInfo";
-import { ExtendedCommand } from "../../../structures/extendedCommand";
+import {EmbedBuilder} from "discord.js";
+import {permissions} from "../../../providers/permissions";
+import {PrismaClient} from "@prisma/client";
+import {getWorkerInfos} from "../../../database/workerInfo";
+import {ExtendedCommand} from "../../../structures/extendedCommand";
 
 const prisma = new PrismaClient();
 
 export const command = new ExtendedCommand(
     { name: "workerstats", description: "Checks the global worker stats.", local: true }
 )
-    .addSyntax("monthly", "text")
+	.addSyntax("monthly", "string")
     .addPermission(permissions.employee)
     .addShortcuts("ws")
-    .setExecutor(async (int: CommandInteraction) => {
-        const args = int.options.getString("monthly")?.includes("m") ? ["monthly", ...int.options.getString("monthly").split(" ").slice(1)] : [];
+	.setExecutor(async (int) => {
+		const args = int.options.getString("monthly")?.includes("m") ? ["monthly", ...int.options.getString("monthly", true).split(" ").slice(1)] : [];
         const workerInfos = await getWorkerInfos(); // Retrieve the workerInfos
         let data = workerInfos;
         let isMonthly = false;

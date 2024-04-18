@@ -1,4 +1,4 @@
-import { IllegalStateError } from "./error";
+import {IllegalStateError} from "./error";
 
 const notInitializedSymbol = Symbol("notInitialized");
 export const notInitialized = <T>(identifier?: string) => {
@@ -38,6 +38,10 @@ export const typedFromEntries = <K extends string | number | symbol, V>(arr: rea
 	Object.fromEntries(arr) as { [k in K]: V };
 
 export const typedKeys = <T extends object>(obj: T) => Object.keys(obj) as (keyof T)[];
+/**
+ * Returns a random element from the given array.
+ * @param arr - The array to get a random element from.
+ */
 export const sampleArray = <T>(arr: T[]) => arr[Math.floor(Math.random() * arr.length)];
 
 export const randRange = (lowerInclusive: number, upperExclusive: number) =>

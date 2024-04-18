@@ -222,6 +222,9 @@ const configSchema = z
 			feedback: snowflake,
 			tips: snowflake,
 		}),
+		servers: z.object({
+			extraServer: snowflake, // Add the extra server here
+		})
 	})
 	.strict();
 

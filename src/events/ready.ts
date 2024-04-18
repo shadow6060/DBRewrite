@@ -1,12 +1,12 @@
-import type { GuildEmoji, TextBasedChannel } from "discord.js";
-import { client } from "../providers/client";
-import { loadCommands } from "../providers/commandManager";
-import { config, text } from "../providers/config";
-import { mainChannels, mainEmojis, mainGuild, setMainGuild, setMainRoles } from "../providers/discord";
-import { startOrderTimeoutChecks } from "../providers/orderManager";
-import { IllegalStateError } from "../utils/error";
-import { parseText } from "../utils/string";
-import { isNotInitialized, typedEntries, typedFromEntries } from "../utils/utils";
+import type {GuildEmoji, TextBasedChannel} from "discord.js";
+import {client} from "../providers/client";
+import {loadCommands} from "../providers/commandManager";
+import {config, text} from "../providers/config";
+import {mainChannels, mainEmojis, mainGuild, setMainGuild, setMainRoles} from "../providers/discord";
+import {startOrderTimeoutChecks} from "../providers/orderManager";
+import {IllegalStateError} from "../utils/error";
+import {parseText} from "../utils/string";
+import {isNotInitialized, typedEntries, typedFromEntries} from "../utils/utils";
 
 type TextObject = {
 	[k: string]: string | string[] | TextObject;
@@ -48,6 +48,7 @@ client.on("ready", async () => {
 			else if (typeof texts[k] === "object") parseTexts(texts[k] as TextObject);
 		}
 	};
+	// @ts-ignore todo
 	parseTexts(text.commands);
 	parseTexts(text.errors);
 	parseTexts(text.common);

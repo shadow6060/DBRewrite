@@ -1,15 +1,14 @@
 /* eslint-disable indent */
-import { permissions } from "../../../providers/permissions";
-import { CommandInteraction, EmbedBuilder, Message } from "discord.js";
-import { ButtonBuilder, ButtonStyle, ActionRowBuilder } from "discord.js";
-import { Command } from "../../../structures/Command";
-import { getWorkerInfos } from "../../../database/workerInfo";
-import { ExtendedCommand } from "../../../structures/extendedCommand";
+import {permissions} from "../../../providers/permissions";
+import {ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, Message} from "discord.js";
+import {getWorkerInfos} from "../../../database/workerInfo";
+import {ExtendedCommand} from "../../../structures/extendedCommand";
+
 const PAGE_SIZE = 5; // Number of workers per page
 
 async function refreshWorkerInfos() {
   // Refresh worker infos from the database
-  await getWorkerInfos(true);
+	await getWorkerInfos();
   // Wait for 1 second before retrieving the worker infos again
   await new Promise((resolve) => setTimeout(resolve, 1000));
 }
@@ -18,7 +17,7 @@ export const command = new ExtendedCommand(
   { name: "leaderboard", description: "hm", local: true }
 )
   .addPermission(permissions.developer)
-  .setExecutor(async (int: CommandInteraction) => {
+	.setExecutor(async (int) => {
     // Refresh worker infos from the database
     await refreshWorkerInfos();
 

@@ -1,13 +1,13 @@
-import type { Order, } from "@prisma/client";
-import { CafeStatus, CafeOrders, PrismaClient } from "@prisma/client";
-import type { Client, User, UserResolvable, Channel } from "discord.js";
-import { EmbedBuilder, GuildChannel } from "discord.js";
-import { client } from "../providers/client";
-import { text } from "../providers/config";
-import { resolveUserId } from "../utils/id";
-import { format } from "../utils/string";
-import { db } from "./database";
-import type { EmbedField } from "discord.js";
+import type {Orders} from "@prisma/client";
+import {CafeOrders, CafeStatus, PrismaClient} from "@prisma/client";
+import type {Channel, Client, User, UserResolvable} from "discord.js";
+import {EmbedBuilder, GuildChannel} from "discord.js";
+import {client} from "../providers/client";
+import {text} from "../providers/config";
+import {resolveUserId} from "../utils/id";
+import {format} from "../utils/string";
+import {db} from "./database";
+
 const prisma = new PrismaClient();
 export const activeCafeStatus = [
 	CafeStatus.Unprepared,
@@ -89,7 +89,7 @@ export const getLatestOrder = async (user: UserResolvable) =>
 const embedText = text.common.orderEmbed;
 const embedFields = text.common.orderEmbed.fields;
 
-const rawOrderEmbed = (order: Order) =>
+const rawOrderEmbed = (order: Orders) =>
 	new EmbedBuilder()
 		.setTitle(format(embedText.title, order.id))
 		.setDescription(format(embedText.description, order.id))

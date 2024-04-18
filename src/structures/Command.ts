@@ -1,11 +1,11 @@
 /* eslint-disable quotes */
 /* eslint-disable indent */
-import { SlashCommandBuilder } from "@discordjs/builders";
-import type { CommandInteraction } from "discord.js";
-import type { Permission } from "../providers/permissions";
-import { capitalize } from "../utils/string";
+import {SlashCommandBuilder} from "@discordjs/builders";
+import type {ChatInputCommandInteraction} from "discord.js";
+import type {Permission} from "../providers/permissions";
+import {capitalize} from "../utils/string";
 
-export type CommandExecutor = (interaction: CommandInteraction<"cached">) => void | Promise<void>;
+export type CommandExecutor = (interaction: ChatInputCommandInteraction<"cached">) => void | Promise<void>;
 
 export type CommandOptionType = Extract<
 	keyof SlashCommandBuilder,

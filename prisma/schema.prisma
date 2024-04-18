@@ -14,11 +14,9 @@ model WorkerInfo {
   preparations          Int      @default(0)
   deliveries            Int      @default(0)
   deliveryMessage       String?
-  lastCommandUsage      DateTime?  // New field to track the last command usage time
   commandUsageCount     Int      // New field to track the command usage count
-  lastCommandName       String?    // New field to track the last command name
-  claimUsageCount       Int @default(0)   // Usage count for "claim" command
-  brewUsageCount        Int @default(0)    // Usage count for "brew" command
+  lastCommandName       String?   // New field to track the last command name
+  cafeDeliveryMessage String?
 } 
 
 model UserInfo {
@@ -29,9 +27,6 @@ model UserInfo {
   tabLimit              Float      @default(0)
   tab                   Tab?
   donuts                Int        @default(0)
-  guildsxp              Json       @default("{}")
-  guildsxpData          GuildsXP[]
-
 }
 
 model Tree {
@@ -111,16 +106,6 @@ model dishes {
   updatedAt DateTime @db.Timestamp(6)
 }
 
-model Drink {
-  id        Int      @id @default(autoincrement())
-  name      String   @unique
-  type      String
-  price     Float
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-
 enum CafeStatus {
   Unprepared
   Preparing
@@ -150,14 +135,11 @@ enum OrderStatus {
 }
 
 model GuildsXP {
-  userId   String
-  guildId  String
-  userName String // Add the userName field
-  level    Int      @default(0)
-  exp      Int      @default(0)
-  user     UserInfo @relation(fields: [userId], references: [id])
-  location              String?
-  notificationChannelId String? // New field for notification channel ID
+  userId                String      // References the id in UserInfo
+  guildId               String
+  level                 Int         @default(0)
+  exp                   Int         @default(0)
+  notificationChannelId String?     // New field for notification channel ID
   @@unique([userId, guildId])
 }
 
@@ -176,4 +158,22 @@ model MenuItem {
   description String     // Description of the menu item
   price       Float      // Price of the menu item
   category    String     // Category of the menu item (e.g., appetizer, main course, dessert)
+}
+
+
+model ShopItem {
+  id          String   @id @default(uuid())
+  name        String
+  price       Int
+  description String
+  type        String
+  roleId      String?  // Optional: If purchasing grants a role
+}
+
+model InventoryItem {
+  id        String  @id @default(uuid())
+  itemId    String
+  userId    String
+  quantity  Int
+  // Add more properties as needed, such as item name, description, etc.
 }

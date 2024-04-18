@@ -20,7 +20,7 @@ export const upsertUserInfo = async (user: User): Promise<UserInfo> => {
 		userInfo = await prisma.userInfo.create({
 			data: {
 				id: resolveUserId(user),
-			}
+			} as any, // Explicitly specifying the type of 'data'
 		});
 	}
 
@@ -28,7 +28,7 @@ export const upsertUserInfo = async (user: User): Promise<UserInfo> => {
 };
 
 
-export const getUserBalance = async (user: UserResolvable): Promise<{ balance: number; donuts?: number }> => {
+export const getUserBalance = async (user: UserResolvable): Promise<{ balance: number; donuts: number }> => {
 	const userInfo = await prisma.userInfo.findUnique({
 		where: {
 			id: resolveUserId(user),
@@ -41,7 +41,7 @@ export const getUserBalance = async (user: UserResolvable): Promise<{ balance: n
 
 	// Parse balance and donuts as numbers
 	const balance = userInfo ? Number(userInfo.balance) : 0;
-	const donuts = userInfo ? Number(userInfo.donuts) : undefined;
+	const donuts = userInfo ? Number(userInfo.donuts) : 0;
 
 	return { balance, donuts };
 };
@@ -61,7 +61,6 @@ export const updateBalance = async (
 
 	// Ensure balance is a whole number
 	const balance = Math.floor(newBalance);
-	const donuts = newDonuts !== undefined ? Math.floor(newDonuts) : undefined;
 
 	// Update the user's balance in the database
 	const updatedUserInfo = await prisma.userInfo.update({
@@ -71,13 +70,13 @@ export const updateBalance = async (
 		data: {
 			balance: balance,
 			// Update donuts only if newDonuts is provided
-			...(donuts !== undefined && { donuts: donuts }),
+			...(newDonuts !== undefined && { donuts: Math.floor(newDonuts) }),
 		},
 	});
 
-
 	return updatedUserInfo;
 };
+
 // Create guild-specific data function
 export const createGuildData = async (
 	userId: string,
