@@ -1,13 +1,9 @@
 generator client {
   provider      = "prisma-client-js"
   binaryTargets = ["native", "windows"]
-  provider      = "prisma-client-js"
-  binaryTargets = ["native", "windows"]
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
@@ -55,10 +51,6 @@ model Tab {
 }
 
 model Blacklist {
-  id          String   @id @db.VarChar(20)
-  createdAt   DateTime @default(now())
-  reason      String
-  blacklister String   @db.VarChar(20)
   id          String   @id @db.VarChar(20)
   createdAt   DateTime @default(now())
   reason      String
