@@ -16,9 +16,6 @@
 		noClaimedOrder: "[no] You do not have an order claimed at the moment."
 		noOrders: "[no] You don't have any orders yet."
 		identified: **{name}** (`{id}`) 
-		noClaimedOrder: "[no] You do not have an order claimed at the moment."
-		noOrders: "[no] You don't have any orders yet."
-		identified: **{name}** (`{id}`) 
 		orderEmbed: {
 			title: Order Information for `{}`
 			description: Information about the order `{}`.
@@ -33,7 +30,6 @@
 				orderedAt: ⏰ Ordered At
 			}
 		}
-		invalidNatural: "[no] Invalid number provided; the number must be an integer greater than 0."
 		invalidNatural: "[no] Invalid number provided; the number must be an integer greater than 0."
 		notEnoughBalance: "[no] You do not have enough money."
 		interactOwn: "[no] You cannot interact with your own orders."
@@ -66,12 +62,8 @@
 		claim: {
 			existing: "[no] You already have an order claimed."
 			success: "[yes] You have successfully claimed the order `{id}`."
-			success: "[yes] You have successfully claimed the order `{id}`."
 		}
 		unclaim: {
-    		success: "[yes] You have successfully unclaimed the order `{id}` . ",
-   			notClaimed: "[no] You haven't claimed any order.", // Add this line for the error message
-		},
     		success: "[yes] You have successfully unclaimed the order `{id}` . ",
    			notClaimed: "[no] You haven't claimed any order.", // Add this line for the error message
 		},
@@ -89,7 +81,6 @@
 			noMessage: ⚠️ You do not have a delivery message set, and the default message was used. Make to set one with `/deliverymessage`!
 			noChannel: "[no] I wasn't able to access the channel for the order, and the order failed to deliver."
 			success: "[yes] The order has been successfully delivered."
-			multiSuccess: "Successfully delivered {count} orders."
 			multiSuccess: "Successfully delivered {count} orders."
 			default:
 				'''
@@ -134,8 +125,6 @@
 		balance: {
 			success: You currently have `${}` Balance!.
 			success1: You currently have `${}` Donuts!.
-			success: You currently have `${}` Balance!.
-			success1: You currently have `${}` Donuts!.
 		}
 		work: {
 			responses: [
@@ -167,14 +156,7 @@
 				You fought an old lady and got {}.
 				You decided to go to the corner shop and rob them. You got {}.
 				You robbed an ATM and got {}.
-				You decided to go to the corner shop and rob them. You got {}.
-				You robbed an ATM and got {}.
 				You robbed Tofu and got {}.
-				A kid spat on you, you got {} for selling it to child predators.
-				You burnt down someones mansion and got {}.
-				You kiddnapped someones dog. They paid you {} to get the dog back.
-				You stole someones jewelry and sold it for {}.
-				
 				A kid spat on you, you got {} for selling it to child predators.
 				You burnt down someones mansion and got {}.
 				You kiddnapped someones dog. They paid you {} to get the dog back.
@@ -184,12 +166,9 @@
 			failure: [
 				You tried to steal from Drunk Bartender and lost {}.
 				You tried to fight an old lady, lost, then got robbed for {}.
-				You tried to fight an old lady, lost, then got robbed for {}.
 				You tried to rob the corner shop and lost {}.
 				You tried robbing an ATM and ended up being scammed for {}.
-				You tried robbing an ATM and ended up being scammed for {}.
 				You attempted to rob Tofu but ended up being robbed by Tofu for {}.
-				You stole someones purse when they were walking their dog and the dog started chasing you. You dropped her purse and an extra {} while running away.
 				You stole someones purse when they were walking their dog and the dog started chasing you. You dropped her purse and an extra {} while running away.
 			]
 		}
@@ -209,12 +188,6 @@
 				footer: By {}
 			}
 		}
-		rate: {
-  		success: "[yes] You have successfully rated the bake/prep/delivery process of your last order.",
-  		alreadyRated: "[no] You have already rated the bake/prep/delivery process of your previous order. Try ordering another.",
-  		invalidRating: "[no] Invalid rating. Please provide a rating between 1 and 5 for each process."
-		}
-
 		rate: {
   		success: "[yes] You have successfully rated the bake/prep/delivery process of your last order.",
   		alreadyRated: "[no] You have already rated the bake/prep/delivery process of your previous order. Try ordering another.",
@@ -241,12 +214,7 @@
          	dmFailed: "[no] Failed to send a direct message to the user. Please try again later.",
 			"userNotFound": "[no] User not found. Please try again.",
 			successNoDm: "[yes] The order was successfully deleted, but we couldn't send a DM to the user because their DMs are off.",
-			userDmDisabled: "[no] Unable to send a direct message to the user. Their DMs are disabled.",
-         	dmFailed: "[no] Failed to send a direct message to the user. Please try again later.",
-			"userNotFound": "[no] User not found. Please try again.",
-			successNoDm: "[yes] The order was successfully deleted, but we couldn't send a DM to the user because their DMs are off.",
 		}
-  
   
 		blacklist: {
 			success: "[yes] The ID has been successfully blacklisted."
@@ -273,13 +241,6 @@
 		cooldown: ⏰ Please wait `{}` before using this command again.
 		blacklisted: "[no] Either you or the server has been blacklisted from using this bot."
 	}
-	//tab: //{
-    	 //createConfirmation: "Tab creation confirmation message",
-    	 //createMaxLimit: "Tab creation maximum limit reached message",
-    	 //createCancelled: "Tab creation cancelled message",
-    	 //payConfirmation: "Tab payment confirmation message",
-    	 //payMaxLimit: "Tab payment maximum limit reached message",
-  		//}
 	//tab: //{
     	 //createConfirmation: "Tab creation confirmation message",
     	 //createMaxLimit: "Tab creation maximum limit reached message",

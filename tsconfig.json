@@ -1,5 +1,9 @@
 {
-	"include": ["./src/**/*.ts", "src/commands/orders/order.ts"],
+	"include": [
+		"./src/**/*.ts",
+		"src/commands/orders/order.ts",
+		"purgatory/drink.ts"
+	],
 	"exclude": ["./node_modules/**", "genenv.js"],
 	"compilerOptions": {
 		/* Visit https://aka.ms/tsconfig.json to read more about this file */
