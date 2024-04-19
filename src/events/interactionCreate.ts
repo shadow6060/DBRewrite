@@ -30,9 +30,10 @@ client.on("interactionCreate", async (int) => {
 		}
 		if (int.isCommand()) {
 			if (blacklist.has(int.user.id)) {
-				logBlacklistedUserInteraction(int.user.id);
 				await int.reply(text.errors.blacklisted);
+				return; // Return after replying to prevent further execution
 			}
+
 			const command = commandRegistry.get(int.commandName);
 			if (!command) throw new Error(`Unregistered command ${int.commandName}`);
 			// TODO remove this and use discord builtin when permissions get better
