@@ -9,24 +9,24 @@ datasource db {
 }
 
 model WorkerInfo {
-  id                    String   @id @db.VarChar(20)
-  createdAt             DateTime @default(now())
-  preparations          Int      @default(0)
-  deliveries            Int      @default(0)
-  deliveryMessage       String?
-  commandUsageCount     Int      // New field to track the command usage count
-  lastCommandName       String?   // New field to track the last command name
+  id                  String   @id @db.VarChar(20)
+  createdAt           DateTime @default(now())
+  preparations        Int      @default(0)
+  deliveries          Int      @default(0)
+  deliveryMessage     String?
+  commandUsageCount   Int // New field to track the command usage count
+  lastCommandName     String? // New field to track the last command name
   cafeDeliveryMessage String?
-} 
+}
 
 model UserInfo {
-  id                    String     @id @db.VarChar(30)
-  createdAt             DateTime   @default(now())
-  balance               Int        @default(0)
-  newBalance            Int?
-  tabLimit              Float      @default(0)
-  tab                   Tab?
-  donuts                Int        @default(0)
+  id         String   @id @db.VarChar(30)
+  createdAt  DateTime @default(now())
+  balance    Int      @default(0)
+  newBalance Int?
+  tabLimit   Float    @default(0)
+  tab        Tab?
+  donuts     Int      @default(0)
 }
 
 model Tree {
@@ -135,45 +135,44 @@ enum OrderStatus {
 }
 
 model GuildsXP {
-  userId                String      // References the id in UserInfo
+  userId                String // References the id in UserInfo
   guildId               String
-  level                 Int         @default(0)
-  exp                   Int         @default(0)
-  notificationChannelId String?     // New field for notification channel ID
+  level                 Int     @default(0)
+  exp                   Int     @default(0)
+  notificationChannelId String? // New field for notification channel ID
+
   @@unique([userId, guildId])
 }
 
 model WorkerStats {
-  id String @id
-  ordersBrewed Int
+  id              String   @id
+  ordersBrewed    Int
   ordersDelivered Int
-  lastUsed DateTime
-  lastCommand String?
+  lastUsed        DateTime
+  lastCommand     String?
 }
-
 
 model MenuItem {
-  id          String     @id @default(uuid()) // You can use a UUID for the ID
-  name        String     // Name of the menu item
-  description String     // Description of the menu item
-  price       Float      // Price of the menu item
-  category    String     // Category of the menu item (e.g., appetizer, main course, dessert)
+  id          String @id @default(uuid()) // You can use a UUID for the ID
+  name        String // Name of the menu item
+  description String // Description of the menu item
+  price       Float // Price of the menu item
+  category    String // Category of the menu item (e.g., appetizer, main course, dessert)
 }
 
-
 model ShopItem {
-  id          String   @id @default(uuid())
+  id          String  @id @default(uuid())
   name        String
   price       Int
   description String
   type        String
-  roleId      String?  // Optional: If purchasing grants a role
+  roleId      String? // Optional: If purchasing grants a role
 }
 
 model InventoryItem {
-  id        String  @id @default(uuid())
-  itemId    String
-  userId    String
-  quantity  Int
+  id       String @id @default(uuid())
+  itemId   String
+  userId   String
+  quantity Int
   // Add more properties as needed, such as item name, description, etc.
 }
