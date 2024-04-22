@@ -27,6 +27,7 @@ model UserInfo {
   tabLimit   Float    @default(0)
   tab        Tab?
   donuts     Int      @default(0)
+  authUser    AuthUser?
 }
 
 model Tree {
@@ -175,4 +176,12 @@ model InventoryItem {
   userId   String
   quantity Int
   // Add more properties as needed, such as item name, description, etc.
+}
+
+model AuthUser {
+  id Int @id @default(autoincrement())
+  token String
+  expiry DateTime
+  user UserInfo @relation(fields: [userID], references: [id])
+  userID String @unique
 }
