@@ -1,12 +1,12 @@
-import type {Orders} from "@prisma/client";
-import {CafeOrders, CafeStatus, PrismaClient} from "@prisma/client";
-import type {Channel, Client, User, UserResolvable} from "discord.js";
-import {EmbedBuilder, GuildChannel} from "discord.js";
-import {client} from "../providers/client";
-import {text} from "../providers/config";
-import {resolveUserId} from "../utils/id";
-import {format} from "../utils/string";
-import {db} from "./database";
+import type { CafeOrders } from "@prisma/client"; // Update to CafeOrders
+import { CafeStatus, PrismaClient } from "@prisma/client"; // Update to CafeStatus
+import type { Channel, Client, User, UserResolvable } from "discord.js";
+import { EmbedBuilder, GuildChannel } from "discord.js";
+import { client } from "../providers/client";
+import { text } from "../providers/config";
+import { resolveUserId } from "../utils/id";
+import { format } from "../utils/string";
+import { db } from "./database";
 
 const prisma = new PrismaClient();
 export const activeCafeStatus = [
@@ -16,6 +16,7 @@ export const activeCafeStatus = [
 	CafeStatus.Fermenting,
 	CafeStatus.PendingDelivery,
 	CafeStatus.Delivering,
+	CafeStatus.Claimed
 ];
 
 export const hasActiveOrder = async (user: UserResolvable) =>
@@ -89,7 +90,7 @@ export const getLatestOrder = async (user: UserResolvable) =>
 const embedText = text.common.orderEmbed;
 const embedFields = text.common.orderEmbed.fields;
 
-const rawOrderEmbed = (order: Orders) =>
+const rawOrderEmbed = (order: CafeOrders) => // Update to CafeOrders
 	new EmbedBuilder()
 		.setTitle(format(embedText.title, order.id))
 		.setDescription(format(embedText.description, order.id))
@@ -113,7 +114,7 @@ const formatChannel = (channel: Channel | string) =>
 				: channel.id
 	);
 
-export const orderEmbedSync = async (order: CafeOrders, client: Client) => {
+export const orderEmbedSync = async (order: CafeOrders, client: Client) => { // Update to CafeOrders
 	const embed = rawOrderEmbed(order)
 		.addFields({ name: embedFields.customer, value: formatUser((await client.users.fetch(order.user).catch(() => null)) ?? order.user), inline: true })
 		.addFields({ name: embedFields.channel, value: formatChannel((await client.channels.fetch(order.channel).catch(() => null)) ?? order.channel), inline: true })
@@ -125,7 +126,7 @@ export const orderEmbedSync = async (order: CafeOrders, client: Client) => {
 
 const nulli = () => null;
 
-export const orderEmbedAsync = async (order: CafeOrders, client: Client<boolean>): Promise<EmbedBuilder> => {
+export const orderEmbedAsync = async (order: CafeOrders, client: Client<boolean>): Promise<EmbedBuilder> => { // Update to CafeOrders
 	const user = await client.users.fetch(order.user).catch(() => null);
 	const channel = await client.channels.fetch(order.channel).catch(() => null);
 	const guild = await client.guilds.fetch(order.guild).catch(() => null);
@@ -154,7 +155,7 @@ export const orderEmbedAsync = async (order: CafeOrders, client: Client<boolean>
 };
 export const requiredOrderPlaceholders = ["mention", "image"];
 
-export const orderPlaceholders = async (order: CafeOrders) => Object.assign(Object.create(null), {
+export const orderPlaceholders = async (order: CafeOrders) => Object.assign(Object.create(null), { // Update to CafeOrders
 	preparer: order.claimer ? formatUser((await client.users.fetch(order.claimer).catch(nulli)) ?? order.claimer) : "Unknown",
 	deliverer: order.deliverer ? formatUser((await client.users.fetch(order.deliverer).catch(nulli)) ?? order.deliverer) : "Unknown",
 	id: order.id,

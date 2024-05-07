@@ -1,7 +1,7 @@
 {
 	token: "" 
 	mainServer: "snowflake"
-	
+	dashboardUrl: "https://your-dashboard-url.com",
 	databaseUrl: postgresql://user:password@localhost:/mydb?schema=public
 	developers: []
 	emojis: {

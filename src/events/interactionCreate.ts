@@ -1,9 +1,9 @@
-import {client} from "../providers/client";
-import {commandRegistry} from "../providers/commandManager";
-import {text} from "../providers/config";
-import {blacklist} from "../database/blacklist";
-import {StopCommandExecution} from "../utils/error";
-import {ChatInputCommandInteraction} from "discord.js";
+import { client } from "../providers/client";
+import { commandRegistry } from "../providers/commandManager";
+import { text } from "../providers/config";
+import { blacklist } from "../database/blacklist";
+import { StopCommandExecution } from "../utils/error";
+import { ChatInputCommandInteraction } from "discord.js";
 
 // Custom logging functions
 function logInteractionAlreadyReplied() {
@@ -22,12 +22,10 @@ function logException(message: string) {
 client.on("interactionCreate", async (int) => {
 	try {
 		if (!int.inCachedGuild()) {
-			if (int.isCommand()) {
-				logInteractionAlreadyReplied();
-				await int.reply("Error B417");
-			}
+			if (int.isCommand()) await int.reply("Error B417");
 			return;
 		}
+
 		if (int.isCommand()) {
 			if (blacklist.has(int.user.id)) {
 				await int.reply(text.errors.blacklisted);
@@ -36,20 +34,15 @@ client.on("interactionCreate", async (int) => {
 
 			const command = commandRegistry.get(int.commandName);
 			if (!command) throw new Error(`Unregistered command ${int.commandName}`);
-			// TODO remove this and use discord builtin when permissions get better
+
+			// TODO remove this and use Discord's built-in permissions when permissions get better
 			for (const perm of command.permissions) await perm.check(int);
-			// TODO we're assuming this is a ChatInputCommandInteraction, implement other types later.
-			if (!(int instanceof ChatInputCommandInteraction)) throw new Error("Unsupported interaction type, please use a chat input command.");
+
 			await command.executor(int as ChatInputCommandInteraction<"cached">);
 		}
 	} catch (e) {
 		if (!(e instanceof StopCommandExecution)) {
-			if (int.isCommand()) {
-				logException((e as typeof e & {
-					message: any
-				}).message); // pretend everything is fine and message exists...
-				int.reply({ content: text.errors.exception, ephemeral: true }).catch();
-			}
+			if (int.isCommand()) await int.reply({ content: text.errors.exception, ephemeral: true });
 			console.error(e);
 		}
 	}

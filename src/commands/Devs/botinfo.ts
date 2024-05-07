@@ -4,8 +4,10 @@ import os from "os";
 import { client } from "../../providers/client";
 import { permissions } from "../../providers/permissions";
 import { Command } from "../../structures/Command";
+import { ExtendedCommand } from "../../structures/extendedCommand";
+import { config } from "../../providers/config";
 
-export const command = new Command("botinfo", "Displays information about the bot.")
+export const command = new ExtendedCommand({ name: "botinfo", description: "Displays information about the bot.", local: true })
     .addPermission(permissions.developer)
     .setExecutor(async (interaction: CommandInteraction) => {
         // Get the number of guilds (servers) the bot is in
@@ -27,7 +29,7 @@ export const command = new Command("botinfo", "Displays information about the bo
             .setTitle("Bot Information")
             .addFields(
                 { name: "Name", value: client.user?.username || "Unknown", inline: true },
-                { name: "Version", value: "1.0.0", inline: true },
+                { name: "Version", value: "1.3.5", inline: true },
                 { name: "Guilds", value: guildsSize, inline: true },
                 { name: "Uptime", value: uptimeString, inline: true },
                 { name: "Memory Usage", value: `${memoryUsage} MB`, inline: true },

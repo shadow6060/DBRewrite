@@ -1,22 +1,22 @@
 /* eslint-disable quotes */
-import {basename, join, posix, win32} from "path";
-import {sync} from "fast-glob";
-import {Command} from "../structures/Command";
-import {Routes} from "discord-api-types/v10";
-import {client, rest} from "./client";
-import {development} from "./env";
-import {config} from "./config";
+import { basename, join, posix, win32 } from "path";
+import { sync } from "fast-glob";
+import { Command } from "../structures/Command";
+import { Routes } from "discord-api-types/v10";
+import { client, rest } from "./client";
+import { development } from "./env";
+import { config } from "./config";
 import type {
 	ApplicationCommand,
 	ApplicationCommandManager,
 	GuildApplicationCommandManager,
 	GuildResolvable,
 } from "discord.js";
-import {Collection} from "discord.js";
-import {notInitialized} from "../utils/utils";
+import { Collection } from "discord.js";
+import { notInitialized } from "../utils/utils";
 import "./permissions";
-import {ExtendedCommand} from "../structures/extendedCommand"; // Import the ExtendedCommand class
-import {mainGuild} from "./discord";
+import { ExtendedCommand } from "../structures/extendedCommand"; // Import the ExtendedCommand class
+import { mainGuild } from "./discord";
 
 const commandFolder = join(__dirname, "../commands/**/*.js").replaceAll(win32.sep, posix.sep);
 const extendedCommandFolder = join(__dirname, "../extendedCommands/**/*.js").replaceAll(win32.sep, posix.sep);
@@ -70,7 +70,7 @@ const registerCommands = async (commands: (Command | ExtendedCommand)[]) => {
 	console.log(`Registered local commands for the main server: ${localCommands.map((x) => x.name).join(", ")}`);
 };
 
-let commandNames: string[] = [];
+const commandNames: string[] = [];
 
 export const loadCommands = async (): Promise<(Command | ExtendedCommand)[]> => {
 	const commands: (Command | ExtendedCommand)[] = []; // Ensure commands array is of type Command or ExtendedCommand

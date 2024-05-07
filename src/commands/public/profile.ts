@@ -19,15 +19,20 @@ export const command = new Command("profile", "Shows your profile.")
             const guildId = int.guild.id;
 
             // Check if the user exists in the userInfo table
-            const userInfo = await prisma.userInfo.findUnique({
+            let userInfo = await prisma.userInfo.findUnique({
                 where: {
                     id: userId,
                 },
             });
 
+            // Create user info if it doesn't exist
             if (!userInfo) {
-                await int.reply("You don't have a profile yet.");
-                return;
+                userInfo = await prisma.userInfo.create({
+                    data: {
+                        id: userId,
+                        // Add any additional fields you want to initialize
+                    },
+                });
             }
 
             // Check if the user's guildsXP data exists in the database
