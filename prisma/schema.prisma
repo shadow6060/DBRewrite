@@ -9,24 +9,25 @@ datasource db {
 }
 
 model WorkerInfo {
-  id                    String   @id @db.VarChar(20)
-  createdAt             DateTime @default(now())
-  preparations          Int      @default(0)
-  deliveries            Int      @default(0)
-  deliveryMessage       String?
-  commandUsageCount     Int      // New field to track the command usage count
-  lastCommandName       String?   // New field to track the last command name
+  id                  String   @id @db.VarChar(20)
+  createdAt           DateTime @default(now())
+  preparations        Int      @default(0)
+  deliveries          Int      @default(0)
+  deliveryMessage     String?
+  commandUsageCount   Int
+  lastCommandName     String?
   cafeDeliveryMessage String?
-} 
+}
 
 model UserInfo {
-  id                    String     @id @db.VarChar(30)
-  createdAt             DateTime   @default(now())
-  balance               Int        @default(0)
-  newBalance            Int?
-  tabLimit              Float      @default(0)
-  tab                   Tab?
-  donuts                Int        @default(0)
+  id         String    @id @db.VarChar(30)
+  createdAt  DateTime  @default(now())
+  balance    Int       @default(0)
+  newBalance Int?
+  tabLimit   Float     @default(0)
+  donuts     Int       @default(0)
+  authUser   AuthUser?
+  tab        Tab?
 }
 
 model Tree {
@@ -35,7 +36,7 @@ model Tree {
   water  DateTime
   maxAge Int
 
-  @@map(name: "trees")
+  @@map("trees")
 }
 
 model Tab {
@@ -97,6 +98,7 @@ model Orders {
   flags          Int         @default(0)
   putOnTab       Boolean?
   amount         Float?
+  orderFor       String?     @db.VarChar(20)
 }
 
 model dishes {
@@ -104,6 +106,56 @@ model dishes {
   status    Int
   createdAt DateTime @db.Timestamp(6)
   updatedAt DateTime @db.Timestamp(6)
+}
+
+model GuildsXP {
+  userId                String
+  guildId               String
+  level                 Int     @default(0)
+  exp                   Int     @default(0)
+  notificationChannelId String?
+
+  @@unique([userId, guildId])
+}
+
+model WorkerStats {
+  id              String   @id
+  ordersBrewed    Int
+  ordersDelivered Int
+  lastUsed        DateTime
+  lastCommand     String?
+}
+
+model MenuItem {
+  id          String @id @default(uuid())
+  name        String
+  description String
+  price       Float
+  category    String
+}
+
+model ShopItem {
+  id          String  @id @default(uuid())
+  name        String
+  price       Int
+  description String
+  type        String
+  roleId      String?
+}
+
+model InventoryItem {
+  id       String @id @default(uuid())
+  itemId   String
+  userId   String
+  quantity Int
+}
+
+model AuthUser {
+  id     Int      @id @default(autoincrement())
+  token  String
+  expiry DateTime
+  userID String   @unique
+  user   UserInfo @relation(fields: [userID], references: [id])
 }
 
 enum CafeStatus {
@@ -134,46 +186,3 @@ enum OrderStatus {
   Claimed
 }
 
-model GuildsXP {
-  userId                String      // References the id in UserInfo
-  guildId               String
-  level                 Int         @default(0)
-  exp                   Int         @default(0)
-  notificationChannelId String?     // New field for notification channel ID
-  @@unique([userId, guildId])
-}
-
-model WorkerStats {
-  id String @id
-  ordersBrewed Int
-  ordersDelivered Int
-  lastUsed DateTime
-  lastCommand String?
-}
-
-
-model MenuItem {
-  id          String     @id @default(uuid()) // You can use a UUID for the ID
-  name        String     // Name of the menu item
-  description String     // Description of the menu item
-  price       Float      // Price of the menu item
-  category    String     // Category of the menu item (e.g., appetizer, main course, dessert)
-}
-
-
-model ShopItem {
-  id          String   @id @default(uuid())
-  name        String
-  price       Int
-  description String
-  type        String
-  roleId      String?  // Optional: If purchasing grants a role
-}
-
-model InventoryItem {
-  id        String  @id @default(uuid())
-  itemId    String
-  userId    String
-  quantity  Int
-  // Add more properties as needed, such as item name, description, etc.
-}

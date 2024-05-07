@@ -89,7 +89,7 @@ export const getLatestOrder = async (user: UserResolvable) =>
 const embedText = text.common.orderEmbed;
 const embedFields = text.common.orderEmbed.fields;
 
-const rawOrderEmbed = (order: Orders) =>
+const rawOrderEmbed = (order: Orders) => 
 	new EmbedBuilder()
 		.setTitle(format(embedText.title, order.id))
 		.setDescription(format(embedText.description, order.id))

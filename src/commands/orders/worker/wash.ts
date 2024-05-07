@@ -1,11 +1,16 @@
-import {PrismaClient} from "@prisma/client";
-import {permissions} from "../../../providers/permissions";
-import {Command} from "../../../structures/Command";
-import {getUserBalance, updateBalance} from "../../../database/userInfo";
+/* eslint-disable indent */
+/* eslint-disable quotes */
+import { PrismaClient } from "@prisma/client";
+import { permissions } from "../../../providers/permissions";
+import { Command } from "../../../structures/Command";
+import { getUserBalance, updateBalance } from "../../../database/userInfo";
+import { ExtendedCommand } from "../../../structures/extendedCommand";
 
 const prisma = new PrismaClient();
+export const command = new ExtendedCommand(
+    { name: "wash", description: "Wash a dish.", local: true }
+)
 
-export const command = new Command('wash', 'Wash a dish.')
     .addAlias('clean')
     .addPermission(permissions.employee)
     .addOption("string", (o) => o

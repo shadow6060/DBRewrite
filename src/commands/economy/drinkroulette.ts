@@ -1,10 +1,11 @@
-import {db} from "../../database/database";
-import {generateOrderId, hasActiveOrder,} from "../../database/orders";
-import {text} from "../../providers/config";
-import {mainChannels, mainRoles} from "../../providers/discord";
-import {Command} from "../../structures/Command";
-import {format} from "../../utils/string";
-import {sampleArray} from "../../utils/utils";
+/* eslint-disable linebreak-style */
+import { db } from "../../database/database";
+import { generateOrderId, hasActiveOrder, } from "../../database/orders";
+import { text } from "../../providers/config";
+import { mainChannels, mainRoles } from "../../providers/discord";
+import { Command } from "../../structures/Command";
+import { format } from "../../utils/string";
+import { sampleArray } from "../../utils/utils";
 
 export const command = new Command("drinkroullete", "Get a random drink ordered!")
 	.setExecutor(async int => {

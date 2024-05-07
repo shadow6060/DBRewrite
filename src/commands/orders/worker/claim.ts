@@ -8,8 +8,7 @@ import { client } from "../../../providers/client";
 import { CommandInteraction, StringSelectMenuBuilder, ComponentType, EmbedBuilder } from "discord.js";
 import { ExtendedCommand } from "../../../structures/extendedCommand";
 
-const claimedOrderLocks = new Map<string, boolean>();
-const claimedOrders = new Set<string>();
+const claimedOrders = new Map<string, string>(); // Map to store claimed orders with user IDs
 
 export const command = new ExtendedCommand(
     { name: "claim", description: "Claims an order.", local: true }
@@ -87,13 +86,6 @@ client.on("interactionCreate", async (interaction) => {
             return;
         }
 
-        if (claimedOrderLocks.has(orderId) && claimedOrderLocks.get(orderId)) {
-            await interaction.reply({ content: "Another user is currently claiming this order. Please try again later.", ephemeral: true });
-            return;
-        }
-
-        claimedOrderLocks.set(orderId, true);
-
         const order = await db.orders.findUnique({
             where: {
                 id: orderId,
@@ -106,32 +98,46 @@ client.on("interactionCreate", async (interaction) => {
         });
 
         if (!order) {
-            claimedOrderLocks.delete(orderId);
             await interaction.reply({ content: "Invalid order selected.", ephemeral: true });
             return;
         }
 
         if (order.user === interaction.user.id && !permissions.developer.hasPermission(interaction.user)) {
-            claimedOrderLocks.delete(orderId);
             await interaction.reply({ content: text.common.interactOwn, ephemeral: true });
             return;
         }
 
+        // Check if another user is claiming the order at the same time
+        if (claimedOrders.has(orderId)) {
+            const existingClaimerId = claimedOrders.get(orderId);
+            if (existingClaimerId) {
+                // Auto-select one of the users to successfully claim the order
+                const selectedClaimerId = Math.random() < 0.5 ? existingClaimerId : interaction.user.id;
+                // Update the claimedOrders map with the selected user ID
+                claimedOrders.set(orderId, selectedClaimerId);
+                // Update the order in the database with the selected user ID
+                await db.orders.update({
+                    where: { id: orderId },
+                    data: { claimer: selectedClaimerId, status: OrderStatus.Preparing },
+                });
+                // Inform the users about the result
+                await interaction.reply({
+                    content: `${text.commands.claim.success.replace("{id}", order.id)}`,
+                    ephemeral: false,
+                });
+                return;
+            }
+        }
+
+        // If no other user is claiming the order at the same time, proceed as usual
+        claimedOrders.set(orderId, interaction.user.id);
         await db.orders.update({
             where: { id: orderId },
             data: { claimer: interaction.user.id, status: OrderStatus.Preparing },
         });
-
-        claimedOrders.add(orderId);
-        claimedOrderLocks.delete(orderId);
-
-        try {
-            await interaction.reply({
-                content: `${text.commands.claim.success.replace("{id}", order.id)}`,
-                ephemeral: false,
-            });
-        } catch (error) {
-            console.error("Error replying to interaction:", error);
-        }
+        await interaction.reply({
+            content: `${text.commands.claim.success.replace("{id}", order.id)}`,
+            ephemeral: false,
+        });
     }
 });

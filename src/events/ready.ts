@@ -1,12 +1,12 @@
-import type {GuildEmoji, TextBasedChannel} from "discord.js";
-import {client} from "../providers/client";
-import {loadCommands} from "../providers/commandManager";
-import {config, text} from "../providers/config";
-import {mainChannels, mainEmojis, mainGuild, setMainGuild, setMainRoles} from "../providers/discord";
-import {startOrderTimeoutChecks} from "../providers/orderManager";
-import {IllegalStateError} from "../utils/error";
-import {parseText} from "../utils/string";
-import {isNotInitialized, typedEntries, typedFromEntries} from "../utils/utils";
+import type { GuildEmoji, TextBasedChannel } from "discord.js";
+import { client } from "../providers/client";
+import { loadCommands } from "../providers/commandManager";
+import { config, text } from "../providers/config";
+import { mainChannels, mainEmojis, mainGuild, setMainGuild, setMainRoles } from "../providers/discord";
+import { startOrderTimeoutChecks } from "../providers/orderManager";
+import { IllegalStateError } from "../utils/error";
+import { parseText } from "../utils/string";
+import { isNotInitialized, typedEntries, typedFromEntries } from "../utils/utils";
 
 type TextObject = {
 	[k: string]: string | string[] | TextObject;
@@ -23,9 +23,9 @@ client.on("ready", async () => {
 				typedEntries(config.roles).map(async x => [
 					x[0],
 					(await mainGuild.roles.fetch(x[1])) ??
-						(() => {
-							throw new IllegalStateError(`Role ${x[0]} was not found.`);
-						})(),
+					(() => {
+						throw new IllegalStateError(`Role ${x[0]} was not found.`);
+					})(),
 				])
 			)
 		)
@@ -48,6 +48,7 @@ client.on("ready", async () => {
 			else if (typeof texts[k] === "object") parseTexts(texts[k] as TextObject);
 		}
 	};
+	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 	// @ts-ignore todo
 	parseTexts(text.commands);
 	parseTexts(text.errors);

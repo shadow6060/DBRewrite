@@ -1,5 +1,3 @@
-/* eslint-disable quotes */
-/* eslint-disable indent */
 import { upsertWorkerInfo } from "../../../database/workerInfo";
 import { Command } from "../../../structures/Command";
 import { permissions } from "../../../providers/permissions";
@@ -10,7 +8,6 @@ import { client } from "../../../providers/client";
 import { CommandInteraction, StringSelectMenuBuilder, ComponentType, EmbedBuilder } from "discord.js";
 import { ExtendedCommand } from "../../../structures/extendedCommand";
 
-const claimedOrderLocks = new Map<string, boolean>();  // Map to store claim locks for each order ID
 const claimedOrders = new Set<string>();  // Set to store claimed order IDs
 
 export const command = new ExtendedCommand(
@@ -24,17 +21,33 @@ export const command = new ExtendedCommand(
 			return;
 		}
 
-		const orders = await db.orders.findMany({
-			where: {
-				claimer: int.user.id,
-				status: OrderStatus.Preparing,
-			},
-			select: {
-				id: true,
-				user: true,
-				details: true,
-			},
-		});
+		let orders;
+		if (await permissions.admin.hasPermission(int.user)) {
+			// If the user is an admin, fetch all claimed orders
+			orders = await db.orders.findMany({
+				where: {
+					status: OrderStatus.Preparing,
+				},
+				select: {
+					id: true,
+					user: true,
+					details: true,
+				},
+			});
+		} else {
+			// If the user is not an admin, fetch only their own claimed orders
+			orders = await db.orders.findMany({
+				where: {
+					claimer: int.user.id,
+					status: OrderStatus.Preparing,
+				},
+				select: {
+					id: true,
+					user: true,
+					details: true,
+				},
+			});
+		}
 
 		if (orders.length === 0) {
 			await int.reply({ content: "You don't have any orders to unclaim.", ephemeral: true });
@@ -89,52 +102,49 @@ client.on("interactionCreate", async (interaction) => {
 
 		for (const orderId of orderIds) {
 			try {
-				// Check if the order is claimed by the user
-				const order = await db.orders.findFirst({
-					where: {
-						id: orderId,
-						claimer: interaction.user.id,
-						status: OrderStatus.Preparing,
-					},
-				});
+				if (await permissions.admin.hasPermission(interaction.user)) {
+					// If the user is an admin, forcefully unclaim the order
+					await db.orders.update({
+						where: { id: orderId },
+						data: { claimer: null, status: OrderStatus.Unprepared },
+					});
 
-				if (!order) {
-					unclaimedOrderMessages.push(`Order ${orderId} is not claimed by you.`);
-					continue;
+					unclaimedOrderMessages.push(`Order ${orderId} forcefully unclaimed by admin.`);
+				} else {
+					// Check if the order is claimed by the user
+					const order = await db.orders.findFirst({
+						where: {
+							id: orderId,
+							claimer: interaction.user.id,
+							status: OrderStatus.Preparing,
+						},
+					});
+
+					if (!order) {
+						unclaimedOrderMessages.push(`Order ${orderId} is not claimed by you.`);
+						continue;
+					}
+
+					// Update the claimed order
+					await db.orders.update({
+						where: { id: orderId },
+						data: { claimer: null, status: OrderStatus.Unprepared },
+					});
+
+					unclaimedOrderMessages.push(`Order ${orderId} unclaimed successfully.`);
 				}
 
-				// Check if a claim lock exists for this order
-				if (claimedOrderLocks.has(orderId) && claimedOrderLocks.get(orderId)) {
-					unclaimedOrderMessages.push(`Another process is currently unclaiming Order ${orderId}. Please try again later.`);
-					continue;
-				}
-
-				// Set an unclaim lock for this order
-				claimedOrderLocks.set(orderId, true);
-
-				// Update the claimed order and release the unclaim lock
-				await db.orders.update({
-					where: { id: orderId },
-					data: { claimer: null, status: OrderStatus.Unprepared },
-				});
-
+				// Remove the order from claimed orders set
 				claimedOrders.delete(orderId);
-
-				// Release the unclaim lock for this order
-				claimedOrderLocks.delete(orderId);
-
-				unclaimedOrderMessages.push(`Order ${orderId} unclaimed successfully.`);
 			} catch (error) {
 				console.error(`Error processing Order ${orderId}:`, error);
 				unclaimedOrderMessages.push(`Error processing Order ${orderId}`);
-			} finally {
-				claimedOrderLocks.delete(orderId);
 			}
 		}
 
 		// Send a single reply summarizing the unclaimed orders
 		await interaction.reply({
-			content: `Unclaiming results:\n${unclaimedOrderMessages.join('\n')}`,
+			content: `Unclaiming results:\n${unclaimedOrderMessages.join("\n")}`,
 			ephemeral: false,
 		});
 	}
