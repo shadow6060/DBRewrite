@@ -27,7 +27,6 @@ model UserInfo {
   tabLimit   Float     @default(0)
   donuts     Int       @default(0)
   authUser   AuthUser?
-  tab        Tab?
 }
 
 model Tree {
@@ -37,18 +36,6 @@ model Tree {
   maxAge Int
 
   @@map("trees")
-}
-
-model Tab {
-  id              Int       @id @default(autoincrement())
-  userId          String    @unique @db.VarChar(20)
-  createdAt       DateTime  @default(now())
-  paidAt          DateTime?
-  amount          Float
-  tabLimit        Float     @default(0)
-  amountNeeded    Float     @default(0)
-  amountRemaining Float     @default(0)
-  user            UserInfo  @relation(fields: [userId], references: [id])
 }
 
 model Blacklist {
@@ -158,6 +145,16 @@ model AuthUser {
   user   UserInfo @relation(fields: [userID], references: [id])
 }
 
+model Quest {
+  id        Int      @id @default(autoincrement())
+  userId    String
+  description String
+  completed Boolean   @default(false)
+  resources Int
+  rewards   Int?      // Add the rewards property
+  number      Int?      // Add the number property
+}
+
 enum CafeStatus {
   Unprepared
   Preparing
@@ -185,4 +182,3 @@ enum OrderStatus {
   Failed
   Claimed
 }
-
