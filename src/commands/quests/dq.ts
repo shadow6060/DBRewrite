@@ -2,8 +2,8 @@
 import { CommandInteraction, EmbedBuilder } from "discord.js";
 import { Command } from "../../structures/Command";
 import { db } from "../../database/database";
-
-export const command = new Command("dq", "View your daily quests.")
+import { ExtendedCommand } from "../../structures/extendedCommand";
+export const command = new ExtendedCommand({name: "qe", description: "Edit or remove an existing quest."})
     .setExecutor(async (interaction: CommandInteraction) => {
         try {
             const userId = interaction.user.id;
