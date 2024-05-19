@@ -146,15 +146,24 @@ model AuthUser {
 }
 
 model Quest {
-  id        Int      @id @default(autoincrement())
-  userId    String
+  id        Int     @id @default(autoincrement())
   description String
-  completed Boolean   @default(false)
-  resources Int
-  rewards   Int?      // Add the rewards property
-  number      Int?      // Add the number property
+  goal        Int    // Number of tasks to complete for this quest
+  reward      String // Reward for completing the quest
+  credits     Int
+  progressBarLength Int    // Add this field
 }
 
+model UserQuestProgress {
+  id         Int      @id @default(autoincrement())
+  userId     String   // Discord user ID or any unique identifier
+  questId    Int      // ID of the quest in progress
+  progress   Int      // Current progress towards completing the quest
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  expReceived Boolean  @default(false) // Indicates whether exp has been received for this quest
+
+}
 enum CafeStatus {
   Unprepared
   Preparing
