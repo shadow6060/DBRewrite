@@ -1,11 +1,11 @@
 /* eslint-disable quotes */
 /* eslint-disable indent */
 import { SlashCommandBuilder } from "@discordjs/builders";
-import type { CommandInteraction } from "discord.js";
+import type { ChatInputCommandInteraction } from "discord.js";
 import type { Permission } from "../providers/permissions";
 import { capitalize } from "../utils/string";
 
-export type CommandExecutor = (interaction: CommandInteraction<"cached">) => void | Promise<void>;
+export type CommandExecutor = (interaction: ChatInputCommandInteraction<"cached">) => void | Promise<void>;
 
 export type CommandOptionType = Extract<
 	keyof SlashCommandBuilder,
@@ -52,6 +52,15 @@ export class Command {
 		return this;
 	}
 
+	addNumberOption(name: string, description: string, required: boolean) {
+		this.#slash.addNumberOption(option =>
+			option
+				.setName(name)
+				.setDescription(description)
+				.setRequired(required)
+		);
+		return this;
+	}
 	// Add this method to add user options
 	addUserOption(...args: Parameters<SlashCommandBuilder['addUserOption']>) {
 		this.#slash.addUserOption(...args);
@@ -84,6 +93,11 @@ export class Command {
 	addSubcommandGroup(...args: Parameters<SlashCommandBuilder["addSubcommandGroup"]>) {
 		this.#slash.addSubcommandGroup(...args);
 		return this;
+	}
+
+	getSubcommand(...args: any[]): any {
+		// Use type assertion to bypass TypeScript's type checking
+		return (this.#slash as any).getSubcommand(...args);
 	}
 
 	addPermission(permission: Permission) {

@@ -13,13 +13,13 @@ export const snowflake = z.union([
 ]);
 
 const pFormattable = <T extends number = 1>(n: T = 1 as T) =>
-	z.string().refine(x => x.split("{}").length - 1 === n, {
+	z.string().refine((x) => x.split("{}").length - 1 === n, {
 		message: `Formattable must contain ${n} placeholders`,
 	}) as z.ZodType<PositionalFormattable<T>>;
 
 const nFormattable = <T extends string[]>(...keys: T) =>
 	z.string().refine(
-		x => {
+		(x) => {
 			for (const key of keys) {
 				if (!x.includes(`{${key}}`)) {
 					return false;
@@ -29,19 +29,31 @@ const nFormattable = <T extends string[]>(...keys: T) =>
 		},
 		{
 			message: `Formattable must contain ${keys.join(", ")}`,
-		},
-	) as z.ZodType<NamedFormattable<T>>;;
+		}
+	) as z.ZodType<NamedFormattable<T>>;
 
 const textSchema = z
 	.object({
 		bot: z.object({
 			status: z.object({
-				type: z.enum(["PLAYING", "STREAMING", "LISTENING", "WATCHING", "COMPETING"]),
+				type: z.enum([
+					"PLAYING",
+					"STREAMING",
+					"LISTENING",
+					"WATCHING",
+					"COMPETING",
+				]),
 				name: z.string(),
 			}),
 		}),
 		statuses: z.record(
-			z.union([z.never(), z.never(), ...Object.values(OrderStatus).map(x => z.literal(x))]).optional(),
+			z
+				.union([
+					z.never(),
+					z.never(),
+					...Object.values(OrderStatus).map((x) => z.literal(x)),
+				])
+				.optional(),
 			z.string()
 		),
 		common: z.object({
@@ -78,8 +90,11 @@ const textSchema = z
 				success2: nFormattable("details", "id", "price"),
 				success_tab: nFormattable("details", "id"),
 				customOrderSuccess: nFormattable("customOrderDetails", "id"),
-				customOrderSuccess1: nFormattable("customOrderDetails", "id", "price"),
-
+				customOrderSuccess1: nFormattable(
+					"customOrderDetails",
+					"id",
+					"price"
+				),
 			}),
 			list: z.object({
 				title: z.string(),
@@ -108,6 +123,7 @@ const textSchema = z
 				invalidUrl: z.string(),
 				success: z.string(),
 				ready: pFormattable(4),
+				ready2: nFormattable( "dutyd", "id"),
 			}),
 			deliver: z.object({
 				noMessage: z.string(),
@@ -115,7 +131,6 @@ const textSchema = z
 				success: z.string(),
 				default: z.string(),
 				multiSuccess: z.string(),
-
 			}),
 			deliverymessage: z.object({
 				get: z.string(),
@@ -151,7 +166,6 @@ const textSchema = z
 					title: pFormattable(),
 					footer: pFormattable(),
 				}),
-
 			}),
 			tip: z.object({
 				success: pFormattable(2),
@@ -175,11 +189,13 @@ const textSchema = z
 				successNoDm: z.string(),
 			}),
 
-			rate: z.object({
-				success: z.string(),
-				alreadyRated: z.string(),
-				invalidRating: z.string(),
-			}).passthrough(),
+			rate: z
+				.object({
+					success: z.string(),
+					alreadyRated: z.string(),
+					invalidRating: z.string(),
+				})
+				.passthrough(),
 
 			drinkingr: z.object({
 				drinks: z.array(pFormattable()),
@@ -207,6 +223,7 @@ const configSchema = z
 		token: z.string(),
 		mainServer: snowflake,
 		developers: snowflake.array(),
+		dashboardUrl: z.string().url(),
 		databaseUrl: z.string().url(),
 		emojis: z.record(z.string(), snowflake),
 		roles: z.object({
@@ -221,6 +238,9 @@ const configSchema = z
 			delivery: snowflake,
 			feedback: snowflake,
 			tips: snowflake,
+		}),
+		servers: z.object({
+			extraServer: snowflake, // Add the extra server here
 		}),
 	})
 	.strict();
@@ -248,9 +268,19 @@ const constantsSchema = z
 export const configFolder = path.join(__dirname, "../../config/");
 
 export const parseHjson = <T>(schema: z.ZodType<T>, file: string) => {
-	const sp = schema.safeParse(HJSON.parse(fs.readFileSync(path.join(configFolder, file), "utf-8")));
+	const sp = schema.safeParse(
+		HJSON.parse(fs.readFileSync(path.join(configFolder, file), "utf-8"))
+	);
 	if (sp.success) return sp.data;
-	console.error(pc.bgRed(pc.yellow(`Issue(s) found when scanning config ${pc.white(pc.bold(file))}.`)));
+	console.error(
+		pc.bgRed(
+			pc.yellow(
+				`Issue(s) found when scanning config ${pc.white(
+					pc.bold(file)
+				)}.`
+			)
+		)
+	);
 	console.error(formatZodError(sp.error));
 	throw new IllegalStateError(`${file} is invalid.`);
 };

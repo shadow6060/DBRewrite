@@ -1,9 +1,8 @@
-import { REST } from "@discordjs/rest";
-import { Client, GatewayIntentBits, Partials } from "discord.js";
-import { config } from "./config";
-import { join } from "path";
-import { sync } from "fast-glob";
-import fs from "fs/promises";
+import {REST} from "@discordjs/rest";
+import {Client, GatewayIntentBits, Partials} from "discord.js";
+import {config} from "./config";
+import {join} from "path";
+import {sync} from "fast-glob";
 
 if (globalThis._$clientLoaded) throw new Error("The client was loaded twice. This should never happen.");
 globalThis._$clientLoaded = true;
@@ -13,7 +12,8 @@ export const client = new Client({
 		GatewayIntentBits.Guilds,
 		GatewayIntentBits.GuildMessages,
 		GatewayIntentBits.GuildMembers,
-		GatewayIntentBits.MessageContent
+		// GatewayIntentBits.MessageContent
+		// ^ This intent is not needed for slash commands and will cry like a baby if you try to use it
 	],
 	partials: [Partials.User, Partials.Channel, Partials.GuildMember, Partials.Message],
 });

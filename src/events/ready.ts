@@ -23,9 +23,9 @@ client.on("ready", async () => {
 				typedEntries(config.roles).map(async x => [
 					x[0],
 					(await mainGuild.roles.fetch(x[1])) ??
-						(() => {
-							throw new IllegalStateError(`Role ${x[0]} was not found.`);
-						})(),
+					(() => {
+						throw new IllegalStateError(`Role ${x[0]} was not found.`);
+					})(),
 				])
 			)
 		)
@@ -48,6 +48,8 @@ client.on("ready", async () => {
 			else if (typeof texts[k] === "object") parseTexts(texts[k] as TextObject);
 		}
 	};
+	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+	// @ts-ignore todo
 	parseTexts(text.commands);
 	parseTexts(text.errors);
 	parseTexts(text.common);

@@ -2,7 +2,7 @@ import { CafeStatus } from "@prisma/client";
 import { db } from "../database/database";
 import { format } from "../utils/string";
 import { text } from "./config";
-import { mainChannels } from "./discord";
+import { mainChannels, mainRoles } from "./discord";
 import { OrderStatus } from "../database/orders";
 
 export const startOrderTimeoutChecks = () => {
@@ -16,11 +16,11 @@ export const startOrderTimeoutChecks = () => {
 			const plural = brewFinished.length > 1;
 			await mainChannels.delivery.send(
 				format(
-					text.commands.brew.ready,
-					plural ? "s" : "",
-					brewFinished.map(x => `\`${x.id}\``).join(", "),
-					plural ? "have" : "has",
-					plural ? "are" : "is"
+					text.commands.brew.ready2,
+					{
+						dutyd: mainRoles.dutyd.toString(), // Placeholder for {dutyd}
+						id: brewFinished.map(x => `\`${x.id}\``).join(", "), // Placeholder for {id}
+					}
 				)
 			);
 		}
