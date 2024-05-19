@@ -1,19 +1,21 @@
 /* eslint-disable indent */
 /* eslint-disable quotes */
-import {OrderStatus} from "@prisma/client";
-import {db} from "../../../database/database";
-import {getClaimedOrder} from "../../../database/orders";
-import {upsertWorkerInfo} from "../../../database/workerInfo";
-import {constants} from "../../../providers/config";
-import {permissions} from "../../../providers/permissions";
-import {randRange} from "../../../utils/utils";
-import {CollectedMessageInteraction, ComponentType, EmbedBuilder, StringSelectMenuBuilder} from "discord.js";
-import {upsertWorkerStats} from "../../../database/workerstats"; // Import the workerstats functions
-import {ExtendedCommand} from "../../../structures/extendedCommand";
-import {IllegalStateError} from "../../../utils/error";
-
+import { OrderStatus } from "@prisma/client";
+import { db } from "../../../database/database";
+import { getClaimedOrder } from "../../../database/orders";
+import { upsertWorkerInfo } from "../../../database/workerInfo";
+import { constants } from "../../../providers/config";
+import { permissions } from "../../../providers/permissions";
+import { randRange } from "../../../utils/utils";
+import { CollectedMessageInteraction, ComponentType, EmbedBuilder, StringSelectMenuBuilder } from "discord.js";
+import { upsertWorkerStats } from "../../../database/workerstats"; // Import the workerstats functions
+import { ExtendedCommand } from "../../../structures/extendedCommand";
+import { IllegalStateError } from "../../../utils/error";
+import { mainChannels, mainRoles } from "../../../providers/discord";
+import { text } from "../../../providers/config";
+import { format } from "../../../utils/string";
 export const command = new ExtendedCommand(
-	{name: "brew", description: "Brews your claimed order.", local: true}
+	{ name: "brew", description: "Brews your claimed order.", local: true }
 )
 	.addSubCommand((subcommand) =>
 		subcommand
@@ -41,12 +43,12 @@ export const command = new ExtendedCommand(
 	.setExecutor(async (int) => {
 		const order = await getClaimedOrder(int.user);
 		if (!order) {
-			await int.reply({content: "You don't have a claimed order."});
+			await int.reply({ content: "You don't have a claimed order." });
 			return;
 		}
 
 		// Set last command to "brew" when brewing
-		await upsertWorkerStats(int.user, {ordersBrewed: 1, lastCommand: "brew"});
+		await upsertWorkerStats(int.user, { ordersBrewed: 1, lastCommand: "brew" });
 
 		const subcommand = int.options.getSubcommand(true);
 		let imageUrl: string | undefined;
@@ -54,7 +56,7 @@ export const command = new ExtendedCommand(
 		if (subcommand === "attach") {
 			const attachment = int.options.get("attachment", true)?.attachment;
 			if (!attachment) {
-				await int.reply({content: "Attachment is missing or not valid."});
+				await int.reply({ content: "Attachment is missing or not valid." });
 				return;
 			}
 			imageUrl = attachment.url;
@@ -98,7 +100,7 @@ export const command = new ExtendedCommand(
 			if (!int.channel) throw new IllegalStateError("Channel is not available.");
 
 			const confirmFilter = (i: CollectedMessageInteraction) => i.customId === "confirm_brew" && i.user.id === int.user.id;
-			const confirmCollector = int.channel.createMessageComponentCollector({filter: confirmFilter, time: 15000});
+			const confirmCollector = int.channel.createMessageComponentCollector({ filter: confirmFilter, time: 15000 });
 
 			confirmCollector.on("collect", async (confirmInteraction) => {
 				if (confirmInteraction.isStringSelectMenu()) {
@@ -122,8 +124,15 @@ export const command = new ExtendedCommand(
 						});
 						await int.followUp({
 							content: "Brewing process started.",
-							files: imageUrl ? [{attachment: imageUrl}] : undefined,
+							files: imageUrl ? [{ attachment: imageUrl }] : undefined,
 						});
+
+						await mainChannels.brewery.send(
+							format(text.commands.brew.ready2, {
+								dutyd: mainRoles.dutyd.toString(),
+								id: order.id,
+							})
+						);
 					} else if (selectedValue === "no") {
 						await confirmInteraction.update({
 							content: "You chose to cancel the brewing process.",
@@ -182,7 +191,7 @@ export const command = new ExtendedCommand(
 			if (!int.channel) throw new IllegalStateError("Channel is not available.");
 
 			const confirmFilter = (i: CollectedMessageInteraction) => i.customId === "confirm_brew_url" && i.user.id === int.user.id;
-			const confirmCollector = int.channel.createMessageComponentCollector({filter: confirmFilter, time: 15000});
+			const confirmCollector = int.channel.createMessageComponentCollector({ filter: confirmFilter, time: 15000 });
 
 			confirmCollector.on("collect", async (confirmInteraction) => {
 				if (confirmInteraction.isStringSelectMenu()) {
@@ -212,13 +221,21 @@ export const command = new ExtendedCommand(
 								id: int.user.id,
 							},
 							data: {
-								preparations: {increment: 1},
+								preparations: { increment: 1 },
 							},
 						});
 						await int.followUp({
 							content: "Brewing process started.",
-							files: imageUrl ? [{attachment: imageUrl}] : undefined,
+							files: imageUrl ? [{ attachment: imageUrl }] : undefined,
 						});
+
+						await mainChannels.brewery.send(
+							format(text.commands.brew.ready2, {
+								dutyd: mainRoles.dutyd.toString(),
+								id: order.id,
+
+							})
+						);
 					} else if (selectedValue === "no") {
 						await confirmInteraction.update({
 							content: "You chose to cancel the brewing process.",

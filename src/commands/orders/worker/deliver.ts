@@ -10,7 +10,6 @@ import { upsertWorkerInfo } from "../../../database/workerInfo";
 import { client } from "../../../providers/client";
 import { text } from "../../../providers/config";
 import { permissions } from "../../../providers/permissions";
-import { Command } from "../../../structures/Command";
 import { format } from "../../../utils/string";
 import { upsertWorkerStats } from "../../../database/workerstats";
 import { ExtendedCommand } from "../../../structures/extendedCommand";

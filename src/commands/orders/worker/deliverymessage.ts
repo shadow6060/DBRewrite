@@ -22,6 +22,11 @@ export const command = new ExtendedCommand(
 	.addSubCommand(s => s.setName("get").setDescription("Checks your current delivery message."))
 	.addSubCommand(s => s.setName("placeholders").setDescription("Shows the list of delivery placeholders."))
 	.addSubCommand(s =>
+		s.setName("check")
+			.setDescription("Checks the format of a delivery message.")
+			.addStringOption(o => o.setName("message").setDescription("The delivery message to check.").setRequired(true))
+	)
+	.addSubCommand(s =>
 		s
 			.setName("set")
 			.setDescription("Sets your current delivery message.")
@@ -47,6 +52,28 @@ export const command = new ExtendedCommand(
 						})
 					)
 				);
+				break;
+			}
+			case "check": {
+				const message = int.options.get("message", true).value as string;
+
+				// Check if the message exceeds a certain length limit
+				const maxLength = 1940; // Define your maximum message length here
+				if (message.length > maxLength) {
+					await int.reply(`The delivery message is too long. Please limit it to ${maxLength} characters.`);
+					return;
+				}
+
+				// Check if all required placeholders are included in the message
+				const missingPlaceholders = requiredOrderPlaceholders.filter(placeholder => !message.includes(`{${placeholder}}`));
+				if (missingPlaceholders.length > 0) {
+					await int.reply(
+						`The following placeholders are missing in the delivery message: ${missingPlaceholders.join(", ")}.`
+					);
+					return;
+				}
+
+				await int.reply("The delivery message format is correct.");
 				break;
 			}
 			case "set": {
