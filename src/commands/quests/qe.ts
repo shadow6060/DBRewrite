@@ -56,16 +56,16 @@ export const command = new Command("qe", "Edit or remove an existing quest.")
 			.setDescription("List all existing quests.")
 	)
 	.setExecutor(async (interaction: CommandInteraction) => {
-		const subCommand = interaction.options.getSubcommand(true);
-
 		try {
+			const subCommand = interaction.options.getSubcommand(true);
+
 			if (subCommand === "edit") {
-				const questId = interaction.options.getInteger("id", true);
-				const newDescription = interaction.options.getString("description");
-				const newCredits = interaction.options.getInteger("credits");
-				const newGoal = interaction.options.getInteger("goal");
-				const newReward = interaction.options.getString("reward");
-				const newProgressBarLength = interaction.options.getInteger("progressbarlength");
+				const questId = parseInt(interaction.options.get("id")?.value?.toString() ?? "0", 10);
+				const newDescription = interaction.options.get("description")?.value?.toString();
+				const newCredits = parseInt(interaction.options.get("credits")?.value?.toString() ?? "0", 10);
+				const newGoal = parseInt(interaction.options.get("goal")?.value?.toString() ?? "0", 10);
+				const newReward = interaction.options.get("reward")?.value?.toString();
+				const newProgressBarLength = parseInt(interaction.options.get("progressbarlength")?.value?.toString() ?? "0", 10);
 
 				// Prepare data to update
 				const dataToUpdate: any = {};
@@ -82,9 +82,8 @@ export const command = new Command("qe", "Edit or remove an existing quest.")
 				});
 
 				await interaction.reply(`Quest ${questId} updated successfully.`);
-
 			} else if (subCommand === "delete") {
-				const questId = interaction.options.getInteger("id", true);
+				const questId = parseInt(interaction.options.get("id")?.value?.toString() ?? "0", 10);
 
 				// Delete quest from database
 				await db.quest.delete({
@@ -92,7 +91,6 @@ export const command = new Command("qe", "Edit or remove an existing quest.")
 				});
 
 				await interaction.reply(`Quest ${questId} deleted successfully.`);
-
 			} else if (subCommand === "list") {
 				const quests = await db.quest.findMany();
 
@@ -110,7 +108,6 @@ export const command = new Command("qe", "Edit or remove an existing quest.")
 				});
 
 				await interaction.reply({ embeds: [embed] });
-
 			} else {
 				await interaction.reply("Invalid subcommand.");
 			}

@@ -4,6 +4,7 @@ import { Command } from "../../structures/Command";
 import { db } from "../../database/database";
 import { permissions } from "../../providers/permissions";
 import { ExtendedCommand } from "../../structures/extendedCommand";
+import { CommandInteractionOptionResolver } from "discord.js";
 
 export const command = new ExtendedCommand(
     { name: "questadd", description: "Add a new quest.", local: true }
@@ -16,11 +17,17 @@ export const command = new ExtendedCommand(
     .addNumberOption("progressbarlength", "Length of the progress bar for this quest.", true) // Add the progressBarLength option
     .setExecutor(async (interaction: CommandInteraction) => {
         try {
-            const description = interaction.options.getString("description");
-            const credits = interaction.options.getNumber("credits") || 0;
-            const goal = interaction.options.getNumber("goal") || 0;
-            const reward = interaction.options.getString("reward") || "";
-            const progressBarLength = interaction.options.getNumber("progressbarlength") || 10; // Default to 10 if not provided
+            const options = interaction.options as CommandInteractionOptionResolver; // Type assertion
+
+            const description = options.getString("description");
+            const creditsOption = options.getNumber("credits");
+            const credits = creditsOption !== null ? parseInt(creditsOption.toString(), 10) : 0;
+            const goalOption = options.getNumber("goal");
+            const goal = goalOption !== null ? parseInt(goalOption.toString(), 10) : 0;
+            const rewardOption = options.getString("reward");
+            const reward = rewardOption !== null ? rewardOption : "";
+            const progressBarLengthOption = options.getNumber("progressbarlength");
+            const progressBarLength = progressBarLengthOption !== null ? parseInt(progressBarLengthOption.toString(), 10) : 10;
 
             await db.quest.create({
                 data: {
