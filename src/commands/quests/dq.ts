@@ -8,7 +8,7 @@ export const command = new Command("dq", "View your daily quests.")
         try {
             const userId = interaction.user.id;
             const questId = 1; // ID of the quest for which exp is granted
-            const expAmount = 50; // Custom amount of exp to grant
+            const expAmount = 5; // Custom amount of exp to grant
 
             console.log(`User ID: ${userId}`);
 
@@ -17,7 +17,7 @@ export const command = new Command("dq", "View your daily quests.")
                 orderBy: { id: "asc" }  // Order by ID in ascending order
             });
 
-            console.log("Quests fetched:", quests);
+            //console.log("Quests fetched:", quests);
 
             // Retrieve user-specific quest progress from the database
             let userQuestProgressRecords = await db.userQuestProgress.findMany({
@@ -26,7 +26,7 @@ export const command = new Command("dq", "View your daily quests.")
                 }
             });
 
-            console.log("User quest progress records fetched:", userQuestProgressRecords);
+           // console.log("User quest progress records fetched:", userQuestProgressRecords);
 
             // If no progress records are found for the user, create them
             if (userQuestProgressRecords.length === 0) {
@@ -61,7 +61,7 @@ export const command = new Command("dq", "View your daily quests.")
                 if (userQuest1Progress) {
                     // Update user's progress
                     const updatedProgress = Math.min(userQuest1Progress.progress + expAmount, quests[questId - 1].goal);
-                    console.log(`Updating progress for user ${userId}, quest ${questId} to ${updatedProgress}`);
+                    //console.log(`Updating progress for user ${userId}, quest ${questId} to ${updatedProgress}`);
 
                     await db.userQuestProgress.update({
                         where: {
@@ -75,8 +75,16 @@ export const command = new Command("dq", "View your daily quests.")
                         id: userQuest1Progress.id,
                         progress: updatedProgress
                     });
-
-                    await interaction.channel?.send(`You have received ${expAmount} exp for running the command!`);
+                    // Send the message
+                    const reply = await interaction.channel?.send(`You have received ${expAmount} exp for running the command!`);
+                    // Can't use ephemeral So, the other option is this..
+                    // Delete the message after 5 seconds
+                    setTimeout(async () => {
+                        if (reply) {
+                            await reply.delete();
+                        }
+                    }, 5000);
+                    
                 }
             }
 
@@ -100,7 +108,7 @@ export const command = new Command("dq", "View your daily quests.")
             // Send the embed to the user
             await interaction.reply({ embeds: [embed] });
         } catch (error) {
-            console.error("Error fetching quests:", error);
+            //console.error("Error fetching quests:", error);
             await interaction.reply("An error occurred while fetching quests.");
         }
     });
