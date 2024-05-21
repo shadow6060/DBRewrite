@@ -108,9 +108,9 @@ const textSchema = z
 					unclaimed: z.string(),
 				}),
 			}),
-			claim: z.object({
+			claim: z.object({ 
 				existing: z.string(),
-				success: nFormattable("id"),
+				success: nFormattable("id", "user"),
 			}),
 			unclaim: z.object({
 				success: nFormattable("id"),
@@ -123,6 +123,7 @@ const textSchema = z
 				invalidUrl: z.string(),
 				success: z.string(),
 				ready: pFormattable(4),
+				ready2: nFormattable("dutyd","id"),
 			}),
 			deliver: z.object({
 				noMessage: z.string(),
