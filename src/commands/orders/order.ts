@@ -1,3 +1,4 @@
+import { CommandInteractionOptionResolver } from "discord.js";
 import { db } from "../../database/database";
 import { generateOrderId, hasActiveOrder } from "../../database/orders";
 import { text } from "../../providers/config";
@@ -26,7 +27,18 @@ export const command = new Command("order", "Orders a drink.")
 		}
 		*/
 
-		const drink = int.options.getString("drink", true);
+		const options = int.options as CommandInteractionOptionResolver;
+		const drink = options.getString("drink", true).toLowerCase();
+
+		// Check if the drink is blacklisted
+		const blacklistedItem = await db.blacklistItem.findUnique({
+			where: { name: drink },
+		});
+
+		if (blacklistedItem) {
+			await int.reply("You can't order this.");
+			return;
+		}
 
 		// Check the length of the drink description
 		const maxDescriptionLength = 100; // Adjust this value as needed

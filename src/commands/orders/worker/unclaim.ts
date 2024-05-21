@@ -1,3 +1,4 @@
+//unclaim
 import { upsertWorkerInfo } from "../../../database/workerInfo";
 import { Command } from "../../../structures/Command";
 import { permissions } from "../../../providers/permissions";
@@ -8,19 +9,11 @@ import { client } from "../../../providers/client";
 import { CommandInteraction, StringSelectMenuBuilder, ComponentType, EmbedBuilder } from "discord.js";
 import { ExtendedCommand } from "../../../structures/extendedCommand";
 
-const claimedOrders = new Set<string>();  // Set to store claimed order IDs
-
 export const command = new ExtendedCommand(
 	{ name: "unclaim", description: "Allows you to unclaim an order.", local: true }
 )
 	.addPermission(permissions.employee)
 	.setExecutor(async (int: CommandInteraction) => {
-		const claimedOrder = await getClaimedOrder(int.user);
-		if (!claimedOrder) {
-			await int.reply({ content: text.commands.unclaim.notClaimed, ephemeral: true });
-			return;
-		}
-
 		let orders;
 		if (await permissions.admin.hasPermission(int.user)) {
 			// If the user is an admin, fetch all claimed orders
@@ -48,6 +41,8 @@ export const command = new ExtendedCommand(
 				},
 			});
 		}
+
+		console.log("Fetched orders: ", orders); // Debug log
 
 		if (orders.length === 0) {
 			await int.reply({ content: "You don't have any orders to unclaim.", ephemeral: true });
@@ -133,9 +128,6 @@ client.on("interactionCreate", async (interaction) => {
 
 					unclaimedOrderMessages.push(`Order ${orderId} unclaimed successfully.`);
 				}
-
-				// Remove the order from claimed orders set
-				claimedOrders.delete(orderId);
 			} catch (error) {
 				console.error(`Error processing Order ${orderId}:`, error);
 				unclaimedOrderMessages.push(`Error processing Order ${orderId}`);

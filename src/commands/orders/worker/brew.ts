@@ -13,7 +13,8 @@ import { ExtendedCommand } from "../../../structures/extendedCommand";
 import { IllegalStateError } from "../../../utils/error";
 import { mainChannels, mainRoles } from "../../../providers/discord";
 import { text } from "../../../providers/config";
-import { format } from "../../../utils/string";
+import { format, format2, format3 } from "../../../utils/string";
+
 export const command = new ExtendedCommand(
 	{ name: "brew", description: "Brews your claimed order.", local: true }
 )
@@ -127,11 +128,12 @@ export const command = new ExtendedCommand(
 							files: imageUrl ? [{ attachment: imageUrl }] : undefined,
 						});
 
-						await mainChannels.brewery.send(
-							format(text.commands.brew.ready2, {
-								dutyd: mainRoles.dutyd.toString(),
-								id: order.id,
-							})
+						await mainChannels.delivery.send(
+							format2(
+								text.commands.brew.ready2,
+								mainRoles.dutyd.toString(),
+								order.id
+							)
 						);
 					} else if (selectedValue === "no") {
 						await confirmInteraction.update({
@@ -229,13 +231,14 @@ export const command = new ExtendedCommand(
 							files: imageUrl ? [{ attachment: imageUrl }] : undefined,
 						});
 
-						await mainChannels.brewery.send(
-							format(text.commands.brew.ready2, {
-								dutyd: mainRoles.dutyd.toString(),
-								id: order.id,
-
-							})
+						await mainChannels.delivery.send(
+							format2(
+								text.commands.brew.ready2,
+								mainRoles.dutyd.toString(),
+								order.id,
+							)
 						);
+
 					} else if (selectedValue === "no") {
 						await confirmInteraction.update({
 							content: "You chose to cancel the brewing process.",

@@ -1,21 +1,25 @@
 /* eslint-disable indent */
 import { Command } from "../../../structures/Command";
 import { permissions } from "../../../providers/permissions";
-import { OrderStatus, getClaimedOrder } from "../../../database/orders";
+import { OrderStatus } from "../../../database/orders";
 import { db } from "../../../database/database";
 import { text } from "../../../providers/config";
 import { client } from "../../../providers/client";
 import { CommandInteraction, StringSelectMenuBuilder, ComponentType, EmbedBuilder } from "discord.js";
 import { ExtendedCommand } from "../../../structures/extendedCommand";
 
-const claimedOrders = new Map<string, string>(); // Map to store claimed orders with user IDs
-
 export const command = new ExtendedCommand(
     { name: "claim", description: "Claims an order.", local: true }
 )
     .addPermission(permissions.employee)
     .setExecutor(async (int: CommandInteraction) => {
-        const existingOrder = await getClaimedOrder(int.user);
+        const existingOrder = await db.orders.findFirst({
+            where: {
+                claimer: int.user.id,
+                status: OrderStatus.Preparing
+            }
+        });
+
         if (existingOrder) {
             await int.reply({ content: text.commands.claim.existing, ephemeral: true });
             return;
@@ -81,11 +85,6 @@ client.on("interactionCreate", async (interaction) => {
     if (componentId === "claim_order") {
         const orderId = interaction.values[0];
 
-        if (claimedOrders.has(orderId)) {
-            await interaction.reply({ content: "This order has already been claimed.", ephemeral: true });
-            return;
-        }
-
         const order = await db.orders.findUnique({
             where: {
                 id: orderId,
@@ -107,37 +106,18 @@ client.on("interactionCreate", async (interaction) => {
             return;
         }
 
-        // Check if another user is claiming the order at the same time
-        if (claimedOrders.has(orderId)) {
-            const existingClaimerId = claimedOrders.get(orderId);
-            if (existingClaimerId) {
-                // Auto-select one of the users to successfully claim the order
-                const selectedClaimerId = Math.random() < 0.5 ? existingClaimerId : interaction.user.id;
-                // Update the claimedOrders map with the selected user ID
-                claimedOrders.set(orderId, selectedClaimerId);
-                // Update the order in the database with the selected user ID
-                await db.orders.update({
-                    where: { id: orderId },
-                    data: { claimer: selectedClaimerId, status: OrderStatus.Preparing },
-                });
-                // Inform the users about the result
-                await interaction.reply({
-                    content: `${text.commands.claim.success.replace("{id}", order.id)}`,
-                    ephemeral: false,
-                });
-                return;
-            }
+        try {
+            await db.orders.update({
+                where: { id: orderId },
+                data: { claimer: interaction.user.id, status: OrderStatus.Preparing },
+            });
+            await interaction.reply({
+                content: text.commands.claim.success.replace("{id}", order.id).replace("{user}", interaction.user.username),
+                ephemeral: false,
+            });
+        } catch (error) {
+            console.error("Error claiming order:", error);
+            await interaction.reply({ content: "An error occurred while claiming the order.", ephemeral: true });
         }
-
-        // If no other user is claiming the order at the same time, proceed as usual
-        claimedOrders.set(orderId, interaction.user.id);
-        await db.orders.update({
-            where: { id: orderId },
-            data: { claimer: interaction.user.id, status: OrderStatus.Preparing },
-        });
-        await interaction.reply({
-            content: `${text.commands.claim.success.replace("{id}", order.id)}`,
-            ephemeral: false,
-        });
     }
 });
