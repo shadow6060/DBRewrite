@@ -1,28 +1,26 @@
-import { CafeStatus } from "@prisma/client";
+import { OrderStatus } from "@prisma/client";
 import { db } from "../database/database";
-import { format } from "../utils/string";
+import { format2 } from "../utils/string";
 import { text } from "./config";
-import { mainChannels } from "./discord";
-import { OrderStatus } from "../database/orders";
+import { mainRoles } from "./discord";
 
 export const startOrderTimeoutChecks = () => {
 	setInterval(async () => {
-		const brewFinished = await db.orders.findMany({ where: { timeout: { lte: new Date() }, status: OrderStatus.Brewing } });
-		await db.orders.updateMany({
-			where: { id: { in: brewFinished.map(x => x.id) } },
-			data: { timeout: null, status: OrderStatus.PendingDelivery },
+		const brewFinished = await db.orders.findMany({
+			where: {
+				timeout: { lte: new Date() },
+				status: OrderStatus.Brewing,
+			},
 		});
-		if (brewFinished.length) {
-			const plural = brewFinished.length > 1;
-			await mainChannels.delivery.send(
-				format(
-					text.commands.brew.ready,
-					plural ? "s" : "",
-					brewFinished.map(x => `\`${x.id}\``).join(", "),
-					plural ? "have" : "has",
-					plural ? "are" : "is"
-				)
-			);
+
+		if (brewFinished.length > 0) {
+			await db.orders.updateMany({
+				where: { id: { in: brewFinished.map(x => x.id) } },
+				data: {
+					timeout: null,
+					status: OrderStatus.PendingDelivery,
+				},
+			});
 		}
-	}, 5000);
+	}, 3000);
 };
