@@ -1,0 +1,198 @@
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "windows"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model WorkerInfo {
+  id                  String   @id @db.VarChar(20)
+  createdAt           DateTime @default(now())
+  preparations        Int      @default(0)
+  deliveries          Int      @default(0)
+  deliveryMessage     String?
+  commandUsageCount   Int
+  lastCommandName     String?
+  cafeDeliveryMessage String?
+}
+
+model UserInfo {
+  id         String    @id @db.VarChar(30)
+  createdAt  DateTime  @default(now())
+  balance    Int       @default(0)
+  newBalance Int?
+  tabLimit   Float     @default(0)
+  donuts     Int       @default(0)
+  authUser   AuthUser?
+}
+
+model Tree {
+  id     String   @id
+  age    Int
+  water  DateTime
+  maxAge Int
+
+  @@map("trees")
+}
+
+model Blacklist {
+  id          String   @id @db.VarChar(20)
+  createdAt   DateTime @default(now())
+  reason      String
+  blacklister String   @db.VarChar(20)
+}
+
+model CafeOrders {
+  id             String     @id @db.VarChar(10)
+  createdAt      DateTime   @default(now())
+  user           String     @db.VarChar(20)
+  details        String
+  status         CafeStatus @default(Unprepared)
+  channel        String     @db.VarChar(20)
+  guild          String     @db.VarChar(20)
+  claimer        String?    @db.VarChar(20)
+  deliverer      String?    @db.VarChar(20)
+  image          String?
+  timeout        DateTime?
+  deleteReason   String?
+  bakeRating     Int?
+  prepRating     Int?
+  deliveryRating Int?
+  flags          Int        @default(0)
+  putOnTab       Boolean?
+  amount         Float?
+}
+
+model Orders {
+  id             String      @id @db.VarChar(10)
+  createdAt      DateTime    @default(now())
+  user           String      @db.VarChar(20)
+  details        String
+  status         OrderStatus @default(Unprepared)
+  channel        String      @db.VarChar(20)
+  guild          String      @db.VarChar(20)
+  claimer        String?     @db.VarChar(20)
+  deliverer      String?     @db.VarChar(20)
+  image          String?
+  timeout        DateTime?
+  deleteReason   String?
+  bakeRating     Int?
+  prepRating     Int?
+  deliveryRating Int?
+  flags          Int         @default(0)
+  putOnTab       Boolean?
+  amount         Float?
+  orderFor       String?     @db.VarChar(20)
+}
+
+model BlacklistItem {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  createdAt DateTime @default(now())
+}
+model dishes {
+  id        String   @id @db.VarChar(1234)
+  status    Int
+  createdAt DateTime @db.Timestamp(6)
+  updatedAt DateTime @db.Timestamp(6)
+}
+
+model GuildsXP {
+  userId                String
+  guildId               String
+  level                 Int     @default(0)
+  exp                   Int     @default(0)
+  notificationChannelId String?
+
+  @@unique([userId, guildId])
+}
+
+model WorkerStats {
+  id              String   @id
+  ordersBrewed    Int
+  ordersDelivered Int
+  lastUsed        DateTime
+  lastCommand     String?
+}
+
+model MenuItem {
+  id          String @id @default(uuid())
+  name        String
+  description String
+  price       Float
+  category    String
+}
+
+model ShopItem {
+  id          String  @id @default(uuid())
+  name        String
+  price       Int
+  description String
+  type        String
+  roleId      String?
+}
+
+model InventoryItem {
+  id       String @id @default(uuid())
+  itemId   String
+  userId   String
+  quantity Int
+}
+
+model AuthUser {
+  id     Int      @id @default(autoincrement())
+  token  String
+  expiry DateTime
+  userID String   @unique
+  user   UserInfo @relation(fields: [userID], references: [id])
+}
+
+model Quest {
+  id        Int     @id @default(autoincrement())
+  description String
+  goal        Int    // Number of tasks to complete for this quest
+  reward      String // Reward for completing the quest
+  credits     Int
+  progressBarLength Int    // Add this field
+}
+
+model UserQuestProgress {
+  id         Int      @id @default(autoincrement())
+  userId     String   // Discord user ID or any unique identifier
+  questId    Int      // ID of the quest in progress
+  progress   Int      // Current progress towards completing the quest
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  expReceived Boolean  @default(false) // Indicates whether exp has been received for this quest
+
+}
+enum CafeStatus {
+  Unprepared
+  Preparing
+  Brewing
+  Fermenting
+  PendingDelivery
+  Delivering
+  Delivered
+  Cancelled
+  Deleted
+  Failed
+  Claimed
+}
+
+enum OrderStatus {
+  Unprepared
+  Preparing
+  Brewing
+  Fermenting
+  PendingDelivery
+  Delivering
+  Delivered
+  Cancelled
+  Deleted
+  Failed
+  Claimed
+}
