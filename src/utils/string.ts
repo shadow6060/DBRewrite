@@ -1,8 +1,8 @@
+/* eslint-disable indent */
 import type { L, A, N, S } from "ts-toolbelt";
 import { mainEmojis } from "../providers/discord";
 
 export const capitalize = <T extends string>(str?: T) => str ? (str.charAt(0).toUpperCase() + str.slice(1)) as Capitalize<T> : str;
-
 
 export type PositionalFormattable<T extends number = 1> = `${string}${S.Join<L.Repeat<"{}", T>, string>}${string}`;
 export type NamedFormattable<T extends string[]> = `${string}${S.Join<{ [k in keyof T]: T[k] extends string ? `{${T[k]}}` : never }, string>}${string}`;
@@ -31,3 +31,20 @@ export const format = <T extends string>(str: T, ...arr: FormatArguments<T>): st
 			: str;
 
 export const parseText = (str: string) => str.replaceAll(/\[(\w+)\]/g, (_, key) => mainEmojis[key]?.toString() ?? _);
+
+// New section for exactly 2 placeholders
+type FormatArguments2 = [Placeholder, Placeholder];
+
+export const format2 = <T extends string>(
+	str: T,
+	arg1: Placeholder,
+	arg2: Placeholder
+): string =>
+	str
+		.replaceAll("{dutyd}", arg1.toString())
+		.replaceAll("{id}", arg2.toString());
+
+export const format3 = (str: string, ...args: [Placeholder, Placeholder, Placeholder]): string =>
+	str.includes("{}")
+		? str.split("{}").reduce((l, c, i, a) => l + c + (i + 1 === a.length ? "" : args[i] ?? "{}"), "")
+		: str;
