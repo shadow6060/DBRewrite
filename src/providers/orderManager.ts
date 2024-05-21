@@ -1,8 +1,5 @@
 import { OrderStatus } from "@prisma/client";
 import { db } from "../database/database";
-import { format2 } from "../utils/string";
-import { text } from "./config";
-import { mainRoles } from "./discord";
 
 export const startOrderTimeoutChecks = () => {
 	setInterval(async () => {
@@ -13,14 +10,17 @@ export const startOrderTimeoutChecks = () => {
 			},
 		});
 
-		if (brewFinished.length > 0) {
-			await db.orders.updateMany({
-				where: { id: { in: brewFinished.map(x => x.id) } },
-				data: {
-					timeout: null,
-					status: OrderStatus.PendingDelivery,
-				},
-			});
+		if (brewFinished.length > 1) {
+			await Promise.all(brewFinished.map(async (order) => {
+				// Update the status to PendingDelivery
+				await db.orders.update({
+					where: { id: order.id },
+					data: {
+						status: OrderStatus.PendingDelivery,
+						timeout: null, // Clear the timeout
+					},
+				});
+			}));
 		}
-	}, 3000);
+	}, 1000); // Check every second
 };
