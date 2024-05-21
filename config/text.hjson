@@ -45,7 +45,7 @@
 		success2: "[yes] Your Custom order for **{details}** has been placed! The price is `{price}`. The order ID is `{id}`."
 		success_tab: "Your tab order has been placed. Order ID: {id}, Details: {details}."
 		customOrderSuccess: "[yes] Your custom order for **{customOrderDetails}** has been placed! The order ID is `{id}`.",
-         customOrderSuccess1: "[yes] Your custom order for **{customOrderDetails}** has been placed! The price is `{price}`. The order ID is `{id}`."
+        customOrderSuccess1: "[yes] Your custom order for **{customOrderDetails}** has been placed! The price is `{price}`. The order ID is `{id}`."
 		}
 		list: {
 			title: **__Current Orders__**
@@ -61,7 +61,7 @@
 		}
 		claim: {
 			existing: "[no] You already have an order claimed."
-			success: "[yes] You have successfully claimed the order `{id}`."
+			success: "[yes] **{user}**, has successfully claimed the order `{id}`."
 		}
 		unclaim: {
     		success: "[yes] You have successfully unclaimed the order `{id}` . ",
@@ -75,8 +75,9 @@
 		brew: {
 			invalidUrl: "[no] Please specify a valid URL."
 			success: "[yes] The order is now brewing."
-			ready:  <@&1053887156701118485>the order{} {} {} finished brewing and {} now available for delivery.
-		}
+			ready: <@&1053887156701118485>the order{} {} {} finished brewing and {} now available for delivery
+			ready2: "{dutyd} the order `{id}` has finished brewing and now is available for delivery."
+		}	
 		deliver: {
 			noMessage: ⚠️ You do not have a delivery message set, and the default message was used. Make to set one with `/deliverymessage`!
 			noChannel: "[no] I wasn't able to access the channel for the order, and the order failed to deliver."
