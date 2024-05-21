@@ -15,10 +15,11 @@ import type {
 import { Collection } from "discord.js";
 import { notInitialized } from "../utils/utils";
 import "./permissions";
-import { ExtendedCommand } from "../structures/extendedCommand"; // Import the ExtendedCommand class
+import { ExtendedCommand } from "../structures/extendedCommand";
 import { mainGuild } from "./discord";
 
 const commandFolder = join(__dirname, "../commands/**/*.js").replaceAll(win32.sep, posix.sep);
+const questCommandFolder = join(__dirname, "../quests/**/*.js").replaceAll(win32.sep, posix.sep); // Updated folder for quest commands
 const extendedCommandFolder = join(__dirname, "../extendedCommands/**/*.js").replaceAll(win32.sep, posix.sep);
 
 export const commandRegistry = new Collection<string, Command | ExtendedCommand>();
@@ -74,6 +75,8 @@ const commandNames: string[] = [];
 
 export const loadCommands = async (): Promise<(Command | ExtendedCommand)[]> => {
 	const commands: (Command | ExtendedCommand)[] = []; // Ensure commands array is of type Command or ExtendedCommand
+
+	// Load standard commands
 	const commandFiles = sync(commandFolder);
 	for (const file of commandFiles) {
 		const data = (await import(file)) as { command: Command | ExtendedCommand }; // Load as Command or ExtendedCommand
@@ -85,6 +88,21 @@ export const loadCommands = async (): Promise<(Command | ExtendedCommand)[]> => 
 			continue;
 		} else commandNames.push(data.command.name);
 		console.log(`Registered command ${basename(file, ".js")}.`);
+		commands.push(data.command);
+	}
+
+	// Load quest commands
+	const questCommandFiles = sync(questCommandFolder);
+	for (const file of questCommandFiles) {
+		const data = (await import(file)) as { command: Command | ExtendedCommand }; // Load as Command or ExtendedCommand
+		if (!(data.command instanceof Command || (data.command as any) instanceof ExtendedCommand)) {
+			throw new Error(`File ${file} does not export 'command'.`);
+		}
+		if (commandNames.includes(data.command.name)) {
+			console.log(`Duplicate command name found: ${data.command.name}. Skipping...`);
+			continue;
+		} else commandNames.push(data.command.name);
+		console.log(`Registered quest command ${basename(file, ".js")}.`);
 		commands.push(data.command);
 	}
 
