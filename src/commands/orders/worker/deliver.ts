@@ -122,7 +122,9 @@ client.on("interactionCreate", async (interaction) => {
 			return;
 		}
 
-		await interaction.reply({ content: `${text.commands.deliver.success}${info?.deliveryMessage ? "" : `\n${text.commands.deliver.noMessage}`}`, ephemeral: false });
+		await interaction.reply({
+			content: `${text.commands.deliver.success.replace("{user}", interaction.user.username)}${info?.deliveryMessage ? "" : `\n${text.commands.deliver.noMessage}`}`,ephemeral: false
+		});
 		// unable to send to partial group dm channel, workaround by checking if the channel is a partial group dm channel
 		if (!(channel instanceof PartialGroupDMChannel)) channel.send(format(info?.deliveryMessage || text.commands.deliver.default, await orderPlaceholders(order)));
 	}
