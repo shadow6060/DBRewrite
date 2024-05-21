@@ -201,13 +201,13 @@ export const command = new ExtendedCommand(
 				return;
 			}
 			imageUrl = attachment.url;
-			console.log(`Brewing process started for order ${order.id} at ${new Date().toISOString()}`);
+			//console.log(`Brewing process started for order ${order.id} at ${new Date().toISOString()}`);
 
 			await createConfirmationMessage("confirm_brew_attach", imageUrl);
 		} else if (subcommand === "url") {
 			const url = int.options.getString("url", true);
 			imageUrl = url;
-			console.log(`Brewing process started for order ${order.id} at ${new Date().toISOString()}`);
+			//console.log(`Brewing process started for order ${order.id} at ${new Date().toISOString()}`);
 
 			await createConfirmationMessage("confirm_brew_url", imageUrl);
 		}
