@@ -22,8 +22,10 @@ export const command = new ExtendedCommand({ name: "list", description: "Lists a
 	.setExecutor(async int => {
 		const orders = await getAllActiveOrders();
 		const txt = text.commands.list;
+		const orderCount = orders.length;
+
 		await int.reply(
-			`>>> ${txt.title}\n${orders
+			`>>> ${txt.title}\nTotal Orders: ${orderCount}\n${orders
 				.map(x => `${format(txt.parts.id, x.id)}: \
 ${format(txt.parts.status, text.statuses[x.status] ?? x.status)}\
  - ${format(txt.parts.details, x.details)}\
