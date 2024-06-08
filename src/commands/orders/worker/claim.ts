@@ -7,6 +7,7 @@ import { text } from "../../../providers/config";
 import { client } from "../../../providers/client";
 import { CommandInteraction, StringSelectMenuBuilder, ComponentType, EmbedBuilder } from "discord.js";
 import { ExtendedCommand } from "../../../structures/extendedCommand";
+import { subHours } from "date-fns"; // Importing date-fns for date manipulation
 
 export const command = new ExtendedCommand(
     { name: "claim", description: "Claims an order.", local: true }
@@ -25,15 +26,26 @@ export const command = new ExtendedCommand(
             return;
         }
 
+        // Calculate the threshold time
+        const thresholdTime = subHours(new Date(), 12); // Changeable threshold (e.g., 12 hours)
+
         const orders = await db.orders.findMany({
             where: {
                 status: OrderStatus.Unprepared,
+                createdAt: {
+                    lt: thresholdTime, // Only select orders older than the threshold
+                },
             },
             select: {
                 id: true,
                 user: true,
                 details: true,
+                createdAt: true, // Make sure to select the creation time
             },
+            orderBy: {
+                createdAt: "asc", // Order by creation time ascending
+            },
+            take: 25, // Cap of 25 orders
         });
 
         if (orders.length === 0) {
