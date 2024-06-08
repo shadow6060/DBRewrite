@@ -27,7 +27,7 @@ export const command = new ExtendedCommand(
         }
 
         // Calculate the threshold time
-        const thresholdTime = subHours(new Date(), 12); // Changeable threshold (e.g., 12 hours)
+        const thresholdTime = subHours(new Date(), 5); // Changeable threshold (e.g., 12 hours)
 
         const orders = await db.orders.findMany({
             where: {
