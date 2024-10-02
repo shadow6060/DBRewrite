@@ -1,34 +1,48 @@
-/* eslint-disable indent */
+import { User } from "discord.js";
 import { db } from "../../database/database";
-import { getUserInfo } from "../../database/userInfo";
+import { getUserInfo, updateBalance } from "../../database/userInfo";
 import { text } from "../../providers/config";
 import { Command } from "../../structures/Command";
 
 export const command = new Command("give", "Give someone some money.")
+	.addUserOption(o => o.setName("receiver").setDescription("Select the user you want to give money to.").setRequired(true))
 	.addOption("integer", o => o.setName("money").setDescription("The amount to give.").setRequired(true))
-	.addOption("string", o => o.setName("receiver").setDescription("Please use their id").setRequired(true))
 	.setExecutor(async int => {
 		const user = int.user;
+		const receiver = int.options.getUser("receiver") as User; // Extract user directly from the option
 		const tip = int.options.get("money", true).value as number;
-		const receiver = int.options.get("receiver", true).value as string;
-		const info = await getUserInfo(int.user);
-		if (!info || info.balance < tip) {
+
+		const userInfo = await getUserInfo(int.user);
+		if (!userInfo || userInfo.balance < tip) {
 			await int.reply(text.common.notEnoughBalance);
 			return;
 		}
+
 		if (tip > 5000) {
 			await int.reply("Funny this safety thing stopping your transaction of 5000+");
 			return;
 		}
+
 		await db.userInfo.update({
 			where: { id: int.user.id },
 			data: { balance: { decrement: tip } }
 		});
-		await db.userInfo.update({
-			where: { id: receiver },
-			data: { balance: { increment: tip } }
-		});
 
-		await int.reply(`You successfully transferred ${tip} to <@${receiver}>`);
-		return; // Ensure the function returns Promise<void>
+		const receiverUserInfo = await getUserInfo(receiver.id);
+		if (receiverUserInfo) {
+			await db.userInfo.update({
+				where: { id: receiver.id },
+				data: {
+					balance: { increment: tip },
+					...(receiverUserInfo.donuts !== undefined && { donuts: receiverUserInfo.donuts })
+				}
+			});
+		} else {
+			await db.userInfo.update({
+				where: { id: receiver.id },
+				data: { balance: { increment: tip } }
+			});
+		}
+
+		await int.reply(`You successfully transferred ${tip} to <@${receiver.id}>`);
 	});

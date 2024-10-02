@@ -1,14 +1,6 @@
-import { development } from "../../providers/env";
-import { execSync } from "child_process";
-import { format } from "../../utils/string";
-import { transpile } from "typescript";
-import { permissions } from "../../providers/permissions";
-import { Command } from "../../structures/Command";
-import { client } from "../../providers/client";
-import { channel } from "diagnostics_channel";
-import { ButtonBuilder } from "discord.js";
-import { ButtonStyle, ActionRowBuilder } from "discord.js";
-import { ExtendedCommand } from "../../structures/extendedCommand";
+import {permissions} from "../../providers/permissions";
+import {ActionRowBuilder, ButtonBuilder, ButtonStyle} from "discord.js";
+import {ExtendedCommand} from "../../structures/extendedCommand";
 
 export const command = new ExtendedCommand(
 	{ name: "but", description: "hm.", local: true }
@@ -30,8 +22,8 @@ export const command = new ExtendedCommand(
 			.setStyle(ButtonStyle.Success)
 			.setCustomId("3");
 
-		const row = new ActionRowBuilder()
-			.addComponents(button1, button2, button3,);
+		const row = new ActionRowBuilder<ButtonBuilder>()
+			.addComponents(button1, button2, button3);
 
 		await int.reply({
 			content: "Here are three buttons:",

@@ -25,13 +25,13 @@ export const command = new Command("crime", "Try your chances on doing crime!")
 		];
 		const awnser = result[Math.floor(Math.random() * result.length)];
 		if (awnser === "Failure") {
-			const info = await upsertUserInfo(int.user, int.guild?.id || '');
+			const info = await upsertUserInfo(int.user);
 			const obtained = randRange(...constants.crime.amountRange);
 			cooldowns[int.user.id] = Date.now() + constants.crime.cooldownMs;
 			await db.userInfo.update({ where: { id: info.id }, data: { balance: { decrement: obtained } } });
 			await int.reply(format(sampleArray(text.commands.crime.failure), `\`$${-obtained}\``));
 		} else {
-			const info = await upsertUserInfo(int.user, int.guild?.id || '');
+			const info = await upsertUserInfo(int.user);
 			const obtained = randRange(...constants.crime.amountRange);
 			cooldowns[int.user.id] = Date.now() + constants.crime.cooldownMs;
 			await db.userInfo.update({ where: { id: info.id }, data: { balance: { increment: obtained } } });

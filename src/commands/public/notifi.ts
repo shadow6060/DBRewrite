@@ -23,7 +23,6 @@ export const command = new Command("notifi",
             return;
         }
 
-        // Update the notification channel in the database
         await prisma.guildsXP.upsert({
             where: {
                 userId_guildId: {
@@ -34,12 +33,10 @@ export const command = new Command("notifi",
             create: {
                 userId: int.user.id,
                 guildId: int.guild.id,
-                userName: int.user.username,
                 level: 0,
                 exp: 0,
-                location: 'default',
                 notificationChannelId: channelId, // Set the notification channel ID
-            },
+            } as any, // Explicitly specifying the type of 'data'
             update: {
                 notificationChannelId: channelId, // Update the notification channel ID
             },
