@@ -8,30 +8,14 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model WorkerInfo {
-  id                    String   @id @db.VarChar(20)
-  createdAt             DateTime @default(now())
-  preparations          Int      @default(0)
-  deliveries            Int      @default(0)
-  deliveryMessage       String?
-  lastCommandUsage      DateTime?  // New field to track the last command usage time
-  commandUsageCount     Int      // New field to track the command usage count
-  lastCommandName       String?    // New field to track the last command name
-  claimUsageCount       Int @default(0)   // Usage count for "claim" command
-  brewUsageCount        Int @default(0)    // Usage count for "brew" command
-} 
-
 model UserInfo {
-  id                    String     @id @db.VarChar(30)
-  createdAt             DateTime   @default(now())
-  balance               Int        @default(0)
-  newBalance            Int?
-  tabLimit              Float      @default(0)
-  tab                   Tab?
-  donuts                Int        @default(0)
-  guildsxp              Json       @default("{}")
-  guildsxpData          GuildsXP[]
-
+  id         String    @id @db.VarChar(30)
+  createdAt  DateTime  @default(now())
+  balance    Int       @default(0)
+  newBalance Int?
+  tabLimit   Float     @default(0)
+  donuts     Int       @default(0)
+  authUser   AuthUser?
 }
 
 model Tree {
@@ -40,19 +24,7 @@ model Tree {
   water  DateTime
   maxAge Int
 
-  @@map(name: "trees")
-}
-
-model Tab {
-  id              Int       @id @default(autoincrement())
-  userId          String    @unique @db.VarChar(20)
-  createdAt       DateTime  @default(now())
-  paidAt          DateTime?
-  amount          Float
-  tabLimit        Float     @default(0)
-  amountNeeded    Float     @default(0)
-  amountRemaining Float     @default(0)
-  user            UserInfo  @relation(fields: [userId], references: [id])
+  @@map("trees")
 }
 
 model Blacklist {
@@ -70,19 +42,21 @@ model CafeOrders {
   status         CafeStatus @default(Unprepared)
   channel        String     @db.VarChar(20)
   guild          String     @db.VarChar(20)
-  claimer        String?    @db.VarChar(20)
-  deliverer      String?    @db.VarChar(20)
   image          String?
   timeout        DateTime?
   deleteReason   String?
   bakeRating     Int?
-  prepRating     Int?
   deliveryRating Int?
   flags          Int        @default(0)
   putOnTab       Boolean?
   amount         Float?
 }
-
+model DrinkImage {
+  id        String   @id @default(cuid())
+  drinkName String   @unique
+  url       String
+  orders    Orders[] // Relation to Orders
+}
 model Orders {
   id             String      @id @db.VarChar(10)
   createdAt      DateTime    @default(now())
@@ -102,8 +76,16 @@ model Orders {
   flags          Int         @default(0)
   putOnTab       Boolean?
   amount         Float?
+  orderFor       String?     @db.VarChar(20)
+
+  DrinkImage DrinkImage[]
 }
 
+model BlacklistItem {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  createdAt DateTime @default(now())
+}
 model dishes {
   id        String   @id @db.VarChar(1234)
   status    Int
@@ -111,16 +93,68 @@ model dishes {
   updatedAt DateTime @db.Timestamp(6)
 }
 
-model Drink {
-  id        Int      @id @default(autoincrement())
-  name      String   @unique
-  type      String
-  price     Float
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+model GuildsXP {
+  userId                String
+  guildId               String
+  level                 Int     @default(0)
+  exp                   Int     @default(0)
+  notificationChannelId String?
+
+  @@unique([userId, guildId])
 }
 
 
+model MenuItem {
+  id          String @id @default(uuid())
+  name        String
+  description String
+  price       Float
+  category    String
+}
+
+model ShopItem {
+  id          String  @id @default(uuid())
+  name        String
+  price       Int
+  description String
+  type        String
+  roleId      String?
+}
+
+model InventoryItem {
+  id       String @id @default(uuid())
+  itemId   String
+  userId   String
+  quantity Int
+}
+
+model AuthUser {
+  id     Int      @id @default(autoincrement())
+  token  String
+  expiry DateTime
+  userID String   @unique
+  user   UserInfo @relation(fields: [userID], references: [id])
+}
+
+model Quest {
+  id        Int     @id @default(autoincrement())
+  description String
+  goal        Int    // Number of tasks to complete for this quest
+  reward      String // Reward for completing the quest
+  credits     Int
+  progressBarLength Int    // Add this field
+}
+
+model UserQuestProgress {
+  id         Int      @id @default(autoincrement())
+  userId     String   // Discord user ID or any unique identifier
+  questId    Int      // ID of the quest in progress
+  progress   Int      // Current progress towards completing the quest
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  expReceived Boolean  @default(false) // Indicates whether exp has been received for this quest
+
+}
 enum CafeStatus {
   Unprepared
   Preparing
@@ -147,33 +181,4 @@ enum OrderStatus {
   Deleted
   Failed
   Claimed
-}
-
-model GuildsXP {
-  userId   String
-  guildId  String
-  userName String // Add the userName field
-  level    Int      @default(0)
-  exp      Int      @default(0)
-  user     UserInfo @relation(fields: [userId], references: [id])
-  location              String?
-  notificationChannelId String? // New field for notification channel ID
-  @@unique([userId, guildId])
-}
-
-model WorkerStats {
-  id String @id
-  ordersBrewed Int
-  ordersDelivered Int
-  lastUsed DateTime
-  lastCommand String?
-}
-
-
-model MenuItem {
-  id          String     @id @default(uuid()) // You can use a UUID for the ID
-  name        String     // Name of the menu item
-  description String     // Description of the menu item
-  price       Float      // Price of the menu item
-  category    String     // Category of the menu item (e.g., appetizer, main course, dessert)
 }
