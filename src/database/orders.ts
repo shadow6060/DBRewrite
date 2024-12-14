@@ -75,6 +75,5 @@ export const getLatestOrder = async (user: UserResolvable) =>
 // Order flags for tracking feedback, tipping, and rating
 export const OrderFlags = {
 	FeedbackGiven: 0b1, // Binary flag for feedback given
-	Tipped: 0b10, // Binary flag for tipping
 	Rated: 0b100, // Binary flag for rating
 };
