@@ -167,15 +167,6 @@ const textSchema = z
 					footer: pFormattable(),
 				}),
 			}),
-			tip: z.object({
-				success: pFormattable(2),
-				alreadyTipped: z.string(),
-				embed: z.object({
-					title: z.string(),
-					description: pFormattable(4),
-					footer: pFormattable(),
-				}),
-			}),
 			duty: z.object({
 				enabled: z.string(),
 				disabled: z.string(),
@@ -237,7 +228,6 @@ const configSchema = z
 			brewery: snowflake,
 			delivery: snowflake,
 			feedback: snowflake,
-			tips: snowflake,
 		}),
 		servers: z.object({
 			extraServer: snowflake, // Add the extra server here
