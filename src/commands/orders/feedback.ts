@@ -17,7 +17,7 @@ export const command = new Command("feedback", "Give feedback on your last order
 		if (lastOrder.flags & OrderFlags.FeedbackGiven) {
 			await int.reply(text.commands.feedback.alreadyGiven);
 			return;
-		}
+		} 
 
 		const feedback = int.options.get("feedback", true).value as string;
 		await int.reply(format(text.commands.feedback.success, lastOrder.details));

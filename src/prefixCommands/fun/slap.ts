@@ -1,25 +1,25 @@
 /* eslint-disable linebreak-style */
 import { EmbedBuilder } from "discord.js";
 import { text } from "../../providers/config";
-import { Command } from "../../structures/Command";
+import { PrefixCommand } from "../../structures/prefixCommand";
 import { format } from "../../utils/string";
 import Client from "nekos.life";
- 
-export const command = new Command("slap", "Give your friends a good slap.")
+
+export const command = new PrefixCommand("slap", "Give your friends a good slap.")
 	.addOption("user", o => o.setName("slap").setDescription("Slap your friends.").setRequired(true))
-	.setExecutor(async int => {
+	.setCategory("fun")
+	.setPrefixExecutor(async (message, args) => {
 		const nekos = new Client();
 		const yeeeee = await nekos.slap();
-		const slapped = int.options.getUser("slap", true);
+		const slapped = message.mentions.users.first();
 		const tcfe = text.commands.feedback.embed;
-		await int.reply({
+		await message.reply({
 			embeds: [
 				new EmbedBuilder()
 					.setTitle("Bam someone got slapped")
 					.setImage(yeeeee.url)
-					.setDescription(`${slapped} got slapped by ${int.user.tag}`)
-					.setFooter({ text: format(tcfe.footer, int.user.tag), iconURL: int.user.displayAvatarURL() }),
-
+					.setDescription(`${slapped} got slapped by ${message.author.tag}`)
+					.setFooter({ text: format(tcfe.footer, message.author.tag), iconURL: message.author.displayAvatarURL() }),
 			],
 		});
-	}); 
+	});
