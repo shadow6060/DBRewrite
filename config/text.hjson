@@ -61,7 +61,7 @@
 		}
 		claim: {
 			existing: "[no] You already have an order claimed."
-			success: "[yes] You have successfully claimed the order `{id}`."
+			success: "[yes] **{user}**, has successfully claimed the order `{id}`."
 		}
 		unclaim: {
     		success: "[yes] You have successfully unclaimed the order `{id}` . ",
@@ -75,14 +75,15 @@
 		brew: {
 			invalidUrl: "[no] Please specify a valid URL."
 			success: "[yes] The order is now brewing."
-			ready:  <@&1053887156701118485>the order{} {} {} finished brewing and {} now available for delivery.
-			ready2: "{dutyd} the order `{id}`has finished{} {} {} brewing and now available for delivery."
+			ready: <@&1053887156701118485>the order{} {} {} finished brewing and {} now available for delivery
+			ready2: "{dutyd} the order `{id}` has finished brewing and now is available for delivery."
 		}	
 		deliver: {
 			noMessage: ⚠️ You do not have a delivery message set, and the default message was used. Make to set one with `/deliverymessage`!
 			noChannel: "[no] I wasn't able to access the channel for the order, and the order failed to deliver."
-			success: "[yes] The order has been successfully delivered."
+			success: "[yes] **{user}** The order has been successfully delivered."
 			multiSuccess: "Successfully delivered {count} orders."
+			delivered: "Your order {orderId} has been delivered! Here is your drink: {image}",
 			default:
 				'''
 				Hi, {mention}! Here is your {details}, delivered by {preparer}. Make sure to give feedback with `/feedback` and tip with `/tip`!
@@ -193,16 +194,6 @@
   		success: "[yes] You have successfully rated the bake/prep/delivery process of your last order.",
   		alreadyRated: "[no] You have already rated the bake/prep/delivery process of your previous order. Try ordering another.",
   		invalidRating: "[no] Invalid rating. Please provide a rating between 1 and 5 for each process."
-		}
-
-		tip: {
-			success: "[yes] You have successfully tipped `${}` on your order of `{}`."
-			alreadyTipped: "[no] You have already tipped your previous order. Try ordering another."
-			embed: {
-				title: Tip Received!
-				description: The order `{}` was tipped `${}`. The tip has been added to {} and {}'s balances.
-				footer: By {}
-			}
 		}
 		duty: {
 			enabled: "[yes] You are now on duty!"

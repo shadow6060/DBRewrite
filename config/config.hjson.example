@@ -14,6 +14,7 @@
 		duty: ""
 		dutyd: ""
 		admin: ""
+
 	}
 	channels: {
 		brewery: "" 
@@ -21,4 +22,8 @@
 		feedback: ""
 		tips: ""
 	}
+servers: {
+    extraServer: ""
+},
+	"prefix": "d!"  // Added prefix here
 }
