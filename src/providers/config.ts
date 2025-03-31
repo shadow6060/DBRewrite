@@ -108,9 +108,9 @@ const textSchema = z
 					unclaimed: z.string(),
 				}),
 			}),
-			claim: z.object({
+			claim: z.object({ 
 				existing: z.string(),
-				success: nFormattable("id"),
+				success: nFormattable("id", "user"),
 			}),
 			unclaim: z.object({
 				success: nFormattable("id"),
@@ -123,14 +123,14 @@ const textSchema = z
 				invalidUrl: z.string(),
 				success: z.string(),
 				ready: pFormattable(4),
-				ready2: nFormattable( "dutyd", "id"),
+				ready2: nFormattable("dutyd","id"),
 			}),
 			deliver: z.object({
 				noMessage: z.string(),
 				noChannel: z.string(),
 				success: z.string(),
 				default: z.string(),
-				multiSuccess: z.string(),
+				delivered: z.string(),
 			}),
 			deliverymessage: z.object({
 				get: z.string(),
@@ -164,15 +164,6 @@ const textSchema = z
 				alreadyGiven: z.string(),
 				embed: z.object({
 					title: pFormattable(),
-					footer: pFormattable(),
-				}),
-			}),
-			tip: z.object({
-				success: pFormattable(2),
-				alreadyTipped: z.string(),
-				embed: z.object({
-					title: z.string(),
-					description: pFormattable(4),
 					footer: pFormattable(),
 				}),
 			}),
@@ -237,11 +228,11 @@ const configSchema = z
 			brewery: snowflake,
 			delivery: snowflake,
 			feedback: snowflake,
-			tips: snowflake,
 		}),
 		servers: z.object({
-			extraServer: snowflake, // Add the extra server here
+			extraServer: snowflake,
 		}),
+		prefix: z.string().min(1), // Added prefix field
 	})
 	.strict();
 

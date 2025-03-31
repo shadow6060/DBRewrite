@@ -33,8 +33,6 @@ export class Command {
 		// Initialize other properties as needed
 	}
 
-
-
 	setAccessible(accessible: boolean) {
 		this.accessible = accessible;
 		this.#slash.setDefaultPermission(accessible);
@@ -61,12 +59,12 @@ export class Command {
 		);
 		return this;
 	}
+
 	// Add this method to add user options
 	addUserOption(...args: Parameters<SlashCommandBuilder['addUserOption']>) {
 		this.#slash.addUserOption(...args);
 		return this;
 	}
-
 
 	// Add this method to add string options
 	addStringOption(name: string, description: string, required: boolean) {
@@ -78,7 +76,6 @@ export class Command {
 		);
 		return this;
 	}
-
 
 	addAttachment<T extends CommandOptionType>(type: T, ...args: CommandOptionArgs<T>) {
 		const fn = this.#slash[`add${capitalize(type) as Capitalize<T>}Option`].bind(this.#slash) as (...a: typeof args) => void;
@@ -95,6 +92,7 @@ export class Command {
 		return this;
 	}
 
+	// Modify this method to ensure TypeScript compatibility
 	getSubcommand(...args: any[]): any {
 		// Use type assertion to bypass TypeScript's type checking
 		return (this.#slash as any).getSubcommand(...args);
