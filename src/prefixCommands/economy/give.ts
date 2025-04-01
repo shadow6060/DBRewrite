@@ -30,8 +30,13 @@ export const command = new PrefixCommand("give", "Give someone some money.")
 		}
 
 		// Get sender's balance
-		const userInfo = await getUserInfo(message.author);
-		if (!userInfo || userInfo.balance < tip) {
+		let userInfo = await getUserInfo(message.author.id);
+		if (!userInfo) {
+			await db.userInfo.create({ data: { id: message.author.id, balance: 0, donuts: 0 } });
+			userInfo = (await getUserInfo(message.author.id))!;
+		}
+
+		if (userInfo.balance < tip) {
 			await message.reply(text.common.notEnoughBalance);
 			return;
 		}
@@ -43,27 +48,16 @@ export const command = new PrefixCommand("give", "Give someone some money.")
 		}
 
 		// Deduct money from sender
-		await db.userInfo.update({
-			where: { id: message.author.id },
-			data: { balance: { decrement: tip } },
-		});
+		await db.userInfo.update({ where: { id: message.author.id }, data: { balance: { decrement: tip } } });
 
 		// Add money to receiver
-		const receiverUserInfo = await getUserInfo(receiver.id);
-		if (receiverUserInfo) {
-			await db.userInfo.update({
-				where: { id: receiver.id },
-				data: {
-					balance: { increment: tip },
-					...(receiverUserInfo.donuts !== undefined && { donuts: receiverUserInfo.donuts }),
-				},
-			});
-		} else {
-			await db.userInfo.update({
-				where: { id: receiver.id },
-				data: { balance: { increment: tip } },
-			});
+		let receiverUserInfo = await getUserInfo(receiver.id);
+		if (!receiverUserInfo) {
+			await db.userInfo.create({ data: { id: receiver.id, balance: 0, donuts: 0 } });
+			receiverUserInfo = (await getUserInfo(receiver.id))!;
 		}
+
+		await db.userInfo.update({ where: { id: receiver.id }, data: { balance: { increment: tip } } });
 
 		await message.reply(`You successfully transferred \`$${tip}\` to <@${receiver.id}>`);
 	});

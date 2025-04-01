@@ -4,41 +4,34 @@ import { constants, text } from "../../providers/config";
 import { PrefixCommand } from "../../structures/prefixCommand";
 import { format } from "../../utils/string";
 import pms from "pretty-ms";
+import { getCooldownTimeRemaining, isOnCooldown, setCooldown } from "../../utils/cooldownManager";
 import { randRange, sampleArray } from "../../utils/utils";
-
-const cooldowns: Record<string, number> = {};
 
 export const command = new PrefixCommand("daily", "Get your daily income!")
 	.setCategory("economy")
 	.setPrefixExecutor(async (message) => {
 		const userId = message.author.id;
 
-		// Check if the user is on cooldown
-		if (cooldowns[userId] && cooldowns[userId] >= Date.now()) {
+		// Cooldown check
+		if (isOnCooldown(userId, "daily")) {
+			const cooldownTime = getCooldownTimeRemaining(userId, "daily");
 			await message.reply(
-				format(
-					text.errors.cooldown,
-					pms(cooldowns[userId] - Date.now(), {
-						compact: true,
-						secondsDecimalDigits: 1,
-					})
-				)
+				format(text.errors.cooldown, pms(cooldownTime, { compact: true, secondsDecimalDigits: 1 }))
 			);
 			return;
 		}
 
-		// Update user balance
+		// Ensure user exists
 		const info = await upsertUserInfo(message.author);
 		const obtained = randRange(...constants.daily.amountRange);
-		cooldowns[userId] = Date.now() + constants.daily.cooldownMs;
+
+		// Set cooldown
+		setCooldown(userId, "daily");
 
 		await db.userInfo.update({
 			where: { id: info.id },
 			data: { balance: { increment: obtained } },
 		});
 
-		// Reply with formatted message
-		await message.reply(
-			format(sampleArray(text.commands.daily.responses), `\`$${obtained}\``)
-		);
+		await message.reply(format(sampleArray(text.commands.daily.responses), `\`$${obtained}\``));
 	});

@@ -12,8 +12,17 @@ export const command = new Command("give", "Give someone some money.")
 		const receiver = int.options.getUser("receiver") as User; // Extract user directly from the option
 		const tip = int.options.get("money", true).value as number;
 
-		const userInfo = await getUserInfo(int.user);
-		if (!userInfo || userInfo.balance < tip) {
+		// Ensure the sender exists in the database
+		let userInfo = await getUserInfo(user.id);
+		if (!userInfo) {
+			await db.userInfo.create({
+				data: { id: user.id, balance: 0, donuts: 0 }
+			});
+			userInfo = (await getUserInfo(user.id))!; // Assert it's not null
+		}
+
+		// Check if the sender has enough balance
+		if (userInfo.balance < tip) {
 			await int.reply(text.common.notEnoughBalance);
 			return;
 		}
@@ -23,26 +32,29 @@ export const command = new Command("give", "Give someone some money.")
 			return;
 		}
 
+		// Deduct balance from sender
 		await db.userInfo.update({
-			where: { id: int.user.id },
+			where: { id: user.id },
 			data: { balance: { decrement: tip } }
 		});
 
-		const receiverUserInfo = await getUserInfo(receiver.id);
-		if (receiverUserInfo) {
-			await db.userInfo.update({
-				where: { id: receiver.id },
-				data: {
-					balance: { increment: tip },
-					...(receiverUserInfo.donuts !== undefined && { donuts: receiverUserInfo.donuts })
-				}
+		// Ensure the receiver exists in the database
+		let receiverUserInfo = await getUserInfo(receiver.id);
+		if (!receiverUserInfo) {
+			await db.userInfo.create({
+				data: { id: receiver.id, balance: 0, donuts: 0 }
 			});
-		} else {
-			await db.userInfo.update({
-				where: { id: receiver.id },
-				data: { balance: { increment: tip } }
-			});
+			receiverUserInfo = (await getUserInfo(receiver.id))!; // Assert it's not null
 		}
+
+		// Add balance to receiver
+		await db.userInfo.update({
+			where: { id: receiver.id },
+			data: {
+				balance: { increment: tip },
+				...(receiverUserInfo.donuts !== undefined && { donuts: receiverUserInfo.donuts })
+			}
+		});
 
 		await int.reply(`You successfully transferred ${tip} to <@${receiver.id}>`);
 	});
