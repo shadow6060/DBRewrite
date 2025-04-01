@@ -10,44 +10,46 @@ import { isOnCooldown, getCooldownTimeRemaining, setCooldown } from "../../utils
 export const command = new Command(
 	"daily",
 	"Get your daily income!"
-).setExecutor(async (int) => {
-	const userId = int.user.id;
+)
+	.setExecutor(async (int) => {
+		// Check if the command is disabled
+		const userId = int.user.id;
 
-	// Check cooldown
-	if (isOnCooldown(userId, "daily")) {
-		const cooldownTime = getCooldownTimeRemaining(userId, "daily");
-		await int.reply(
-			format(
-				text.errors.cooldown,
-				pms(cooldownTime, { compact: true, secondsDecimalDigits: 1 })
-			)
-		);
-		return;
-	}
+		// Check cooldown
+		if (isOnCooldown(userId, "daily")) {
+			const cooldownTime = getCooldownTimeRemaining(userId, "daily");
+			await int.reply(
+				format(
+					text.errors.cooldown,
+					pms(cooldownTime, { compact: true, secondsDecimalDigits: 1 })
+				)
+			);
+			return;
+		}
 
-	// Ensure user exists in the database
-	let info = await getUserInfo(userId);
-	if (!info) {
-		await db.userInfo.create({
-			data: { id: userId, balance: 0, donuts: 0 }
+		// Ensure user exists in the database
+		let info = await getUserInfo(userId);
+		if (!info) {
+			await db.userInfo.create({
+				data: { id: userId, balance: 0, donuts: 0 }
+			});
+			info = (await getUserInfo(userId))!; // Ensure it's not null
+		}
+
+		// Calculate earnings
+		const obtained = randRange(...constants.daily.amountRange);
+
+		// Set cooldown
+		setCooldown(userId, "daily");
+
+		// Update balance
+		await db.userInfo.update({
+			where: { id: info.id },
+			data: { balance: { increment: obtained } },
 		});
-		info = (await getUserInfo(userId))!; // Ensure it's not null
-	}
 
-	// Calculate earnings
-	const obtained = randRange(...constants.daily.amountRange);
-
-	// Set cooldown
-	setCooldown(userId, "daily");
-
-	// Update balance
-	await db.userInfo.update({
-		where: { id: info.id },
-		data: { balance: { increment: obtained } },
+		// Send response
+		await int.reply(
+			format(sampleArray(text.commands.daily.responses), `\`$${obtained}\``)
+		);
 	});
-
-	// Send response
-	await int.reply(
-		format(sampleArray(text.commands.daily.responses), `\`$${obtained}\``)
-	);
-});
