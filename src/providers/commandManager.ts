@@ -87,14 +87,27 @@ export const loadCommands = async (): Promise<void> => {
 			throw new Error(`File ${file} does not export a valid Command instance.`);
 		}
 
+		// Check if all slash commands are disabled
+		if (Command.disableSlashCommands) {
+			data.setDisabled(true);
+			//console.warn(`All slash commands are disabled. Skipping command: ${data.name}`);
+			continue;
+		}
+
+		// Check if the individual slash command is disabled
+		if (data.disabled) {
+			console.warn(`Skipping disabled slash command: ${data.name}`);
+			continue;
+		}
+
 		if (slashCommandRegistry.has(data.name)) {
 			console.warn(`Duplicate slash command found: ${data.name}. Skipping...`);
 			continue;
 		}
+
 		slashCommandRegistry.set(data.name, data);
 		slashCommands.push(data);
 	}
-
 	// 🔹 Store prefix and extended commands in their registries
 	prefixCommands.forEach(cmd => prefixCommandRegistry.set(cmd.name, cmd));
 	extendedCommands.forEach(cmd => extendedCommandRegistry.set(cmd.name, cmd));
