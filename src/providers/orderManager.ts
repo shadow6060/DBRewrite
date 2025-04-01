@@ -8,7 +8,7 @@ const orderMessages = new Map<string, Message>();
 
 export const startOrderTimeoutChecks = () => {
 	setInterval(async () => {
-		console.log("Checking for processing orders...");
+		//console.log("Checking for processing orders...");
 
 		const processingOrders = await db.orders.findMany({
 			where: {
@@ -66,7 +66,7 @@ const handleOrderStatus = async (order: any) => {
 // Generate a random brewing time between 15 and 30 seconds
 const getRandomBrewTime = () => {
 	const brewTime = Math.floor(Math.random() * (30 - 15 + 1)) + 15;
-	console.log(`Random brew time selected: ${brewTime} seconds`);
+	//console.log(`Random brew time selected: ${brewTime} seconds`);
 	return brewTime * 1000;
 };
 
@@ -111,7 +111,7 @@ const updateOrderStatusWithDelay = async (
 			orderMessages.set(order.id, sentMessage); // Store the sent message
 		}
 	} catch (error) {
-		console.error(`Error updating order #${order.id} status to ${newStatus}:`, error);
+		//console.error(`Error updating order #${order.id} status to ${newStatus}:`, error);
 	}
 };
 
@@ -156,14 +156,14 @@ const deliverOrder = async (order: any, user: any) => {
 				.setTimestamp()
 				.setFooter({ text: "Thanks for ordering with us!" });
 
-			console.log(`Sending delivery message for order #${order.id}...`);
+			//console.log(`Sending delivery message for order #${order.id}...`);
 			await channel.send({ embeds: [embed] });
-			console.log(`Delivery message sent for order #${order.id}.`);
+			//console.log(`Delivery message sent for order #${order.id}.`);
 
 			// Remove order from tracking to allow new messages in the future
 			orderMessages.delete(order.id);
 		} else {
-			console.error(`The channel for order #${order.id} does not support sending messages.`);
+			//console.error(`The channel for order #${order.id} does not support sending messages.`);
 		}
 	} catch (error) {
 		console.error(`Error delivering order #${order.id}:`, error);
