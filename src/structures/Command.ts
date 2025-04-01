@@ -27,10 +27,20 @@ export class Command {
 	aliases: string[] = [];
 	shortcuts: string[] = [];
 	syntax: { name: string; type: CommandOptionType; require: boolean }[] = [];
+	static disableSlashCommands = false; // NEW: Global toggle for all slash commands
+	disabled = false; // NEW: Per-command toggle
 
 	constructor(public readonly name: string, public readonly description: string = "", options: any = {}) {
 		this.#slash.setName(this.name).setDescription(this.description).setDefaultPermission(true);
-		// Initialize other properties as needed
+	}
+
+	static disableAllSlashCommands(disable: boolean) {
+		this.disableSlashCommands = disable;
+	}
+ 
+	setDisabled(disable: boolean) {
+		this.disabled = disable;
+		return this;
 	}
 
 	setAccessible(accessible: boolean) {
@@ -60,13 +70,11 @@ export class Command {
 		return this;
 	}
 
-	// Add this method to add user options
 	addUserOption(...args: Parameters<SlashCommandBuilder['addUserOption']>) {
 		this.#slash.addUserOption(...args);
 		return this;
 	}
 
-	// Add this method to add string options
 	addStringOption(name: string, description: string, required: boolean) {
 		this.#slash.addStringOption(option =>
 			option
@@ -92,9 +100,7 @@ export class Command {
 		return this;
 	}
 
-	// Modify this method to ensure TypeScript compatibility
 	getSubcommand(...args: any[]): any {
-		// Use type assertion to bypass TypeScript's type checking
 		return (this.#slash as any).getSubcommand(...args);
 	}
 
