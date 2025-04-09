@@ -89,12 +89,6 @@ const textSchema = z
 				success1: nFormattable("details", "id"),
 				success2: nFormattable("details", "id", "price"),
 				success_tab: nFormattable("details", "id"),
-				customOrderSuccess: nFormattable("customOrderDetails", "id"),
-				customOrderSuccess1: nFormattable(
-					"customOrderDetails",
-					"id",
-					"price"
-				),
 			}),
 			list: z.object({
 				title: z.string(),
@@ -179,14 +173,6 @@ const textSchema = z
 				userNotFound: z.string(),
 				successNoDm: z.string(),
 			}),
-
-			rate: z
-				.object({
-					success: z.string(),
-					alreadyRated: z.string(),
-					invalidRating: z.string(),
-				})
-				.passthrough(),
 
 			drinkingr: z.object({
 				drinks: z.array(pFormattable()),

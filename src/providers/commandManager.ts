@@ -74,8 +74,9 @@ const registerCommands = async (commands: (Command | ExtendedCommand)[]) => {
 
 export const loadCommands = async (): Promise<void> => {
 	const slashCommands: Command[] = [];
+	const extendedCommands: ExtendedCommand[] = [];
 	const prefixCommands = await loadPrefixCommands(); // ✅ Load prefix commands
-	const extendedCommands = await loadExtendedCommands(); // ✅ Load extended commands
+	const allCommands = [...await loadExtendedCommands(), ...slashCommands];
 
 	// 🔹 Load Slash Commands
 	const commandFiles = sync(commandFolder);
@@ -87,27 +88,14 @@ export const loadCommands = async (): Promise<void> => {
 			throw new Error(`File ${file} does not export a valid Command instance.`);
 		}
 
-		// Check if all slash commands are disabled
-		if (Command.disableSlashCommands) {
-			data.setDisabled(true);
-			//console.warn(`All slash commands are disabled. Skipping command: ${data.name}`);
-			continue;
-		}
-
-		// Check if the individual slash command is disabled
-		if (data.disabled) {
-			console.warn(`Skipping disabled slash command: ${data.name}`);
-			continue;
-		}
-
 		if (slashCommandRegistry.has(data.name)) {
 			console.warn(`Duplicate slash command found: ${data.name}. Skipping...`);
 			continue;
 		}
-
 		slashCommandRegistry.set(data.name, data);
 		slashCommands.push(data);
 	}
+
 	// 🔹 Store prefix and extended commands in their registries
 	prefixCommands.forEach(cmd => prefixCommandRegistry.set(cmd.name, cmd));
 	extendedCommands.forEach(cmd => extendedCommandRegistry.set(cmd.name, cmd));
@@ -115,52 +103,49 @@ export const loadCommands = async (): Promise<void> => {
 	// 🔹 Register commands with Discord API
 	await registerCommands([...slashCommands, ...extendedCommands]);
 
-	// 🚀 FINAL SUMMARY LOG (Newly Added)
-	console.log(`Loaded ${slashCommands.length} Slash Commands: [${slashCommands.map(cmd => cmd.name).join(", ")}]`); // Slash Commands
-	console.log(`Loaded ${prefixCommands.length} Prefix Commands: [${prefixCommands.map(cmd => cmd.name).join(", ")}]`); // Prefix Commands
-	console.log(`Loaded ${extendedCommands.length} Extended Commands: [${extendedCommands.map(cmd => cmd.name).join(", ")}]`); // Extended Commands
+	// Unregister extended commands from global after loading all commands
+	await unregisterExtendedCommandsFromGlobal();
 
+	// 🚀 FINAL SUMMARY LOG (Newly Added)
+	const extendedCommandsCount = extendedCommands.length;
+	const slashCommandsCount = slashCommands.length;
+	const prefixCommandsCount = prefixCommands.length;
+
+	// Separate commands: log extended and slash ones
+	console.log("───────────── Slash Commands ─────────────");
+	console.log(`Loaded ${slashCommandsCount}: [${slashCommands.map(cmd => cmd.name).join(", ")}]\n`);
+
+	console.log("───────────── Prefix Commands ─────────────");
+	console.log(`Loaded ${prefixCommandsCount}: [${prefixCommands.map(cmd => cmd.name).join(", ")}]\n`);
+
+	// Add Extended Commands to the log
+	if (extendedCommandsCount > 0) {
+		console.log(`Moved ${extendedCommandsCount} Extended Commands out of Slash Commands.`);
+	}
 };
 
 // Load prefix commands
 const loadPrefixCommands = async (): Promise<PrefixCommand[]> => {
 	const commands: PrefixCommand[] = [];
 	const commandFiles = sync(prefixCommandFolder);
-
 	for (const file of commandFiles) {
 		const module = await import(file);
 		const data = module?.command;
 
-		// Ensure the command is an instance of PrefixCommand
 		if (!data || typeof data !== "object" || !(data instanceof PrefixCommand)) {
 			throw new Error(`File ${file} does not export a valid PrefixCommand instance.`);
 		}
 
-		// Store the command in prefix registry
+		// Store in prefix registry
 		if (prefixCommandRegistry.has(data.name)) {
 			console.warn(`Duplicate prefix command found: ${data.name}. Skipping...`);
 			continue;
 		}
-
-		// Register the main command name
 		prefixCommandRegistry.set(data.name, data);
-
-		// Register aliases (if any)
-		for (const alias of data.aliases) {
-			if (prefixCommandRegistry.has(alias)) {
-				console.warn(`Duplicate alias found: ${alias}. Skipping...`);
-			} else {
-				// Store the alias in the registry
-				prefixCommandRegistry.set(alias, data);
-			}
-		}
-
 		commands.push(data);
 	}
-
 	return commands;
 };
-
 
 // Load extended commands
 const loadExtendedCommands = async (): Promise<ExtendedCommand[]> => {
@@ -183,4 +168,20 @@ const loadExtendedCommands = async (): Promise<ExtendedCommand[]> => {
 		commands.push(data);
 	}
 	return commands;
+};
+
+// Unregister extended commands from global commands registry
+const unregisterExtendedCommandsFromGlobal = async (): Promise<void> => {
+	const extendedCommandNames = [...extendedCommandRegistry.keys()];
+
+	for (const name of extendedCommandNames) {
+		const command = extendedCommandRegistry.get(name);
+
+		if (command) {
+			// Remove from global registry
+			await rest.delete(Routes.applicationCommand(client.application!.id, command.id));
+			extendedCommandRegistry.delete(name); // Remove from registry
+			//console.log(`Unregistered global command: ${name}`);
+		}
+	}
 };
