@@ -5,7 +5,7 @@ import { db } from "../../database/database"; // Prisma database functions
 import { permissions } from "../../providers/permissions"; // Assuming you have permissions defined
 import { ExtendedCommand } from "../../structures/extendedCommand";
 
-export const command = new ExtendedCommand({ name: "dadd", description: "Manage drink images.", local: true })
+export const command = new ExtendedCommand({ name: "addP", description: "Manage drink images.", local: true })
     .addPermission(permissions.developer)
     .addSubCommand(subcommand =>
         subcommand
