@@ -4,8 +4,9 @@ import { text } from "../../providers/config";
 import { permissions } from "../../providers/permissions";
 import { Command } from "../../structures/Command";
 import { blacklist, createBlacklist } from "../../database/blacklist";
-
-export const command = new Command("blacklist", "Blacklists a user, server, or channel.")
+import { ExtendedCommand } from "../../structures/extendedCommand";
+//export const command = new Command("blacklist", "Blacklists a user, server, or channel.") (Command)
+export const command = new ExtendedCommand({ name: "blacklist", description: "Blacklists a user, server, or channel.", local: true })
 	.addPermission(permissions.moderator)
 	.addOption("string", o => o.setName("id").setDescription("The ID of the user, server, or channel.").setRequired(true))
 	.addOption("string", o => o.setName("reason").setDescription("The reason for the blacklist."))

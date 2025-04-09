@@ -5,7 +5,8 @@ import { db } from "../../database/database"; // Prisma database functions
 import { permissions } from "../../providers/permissions"; // Assuming you have permissions defined
 import { ExtendedCommand } from "../../structures/extendedCommand";
 
-export const command = new ExtendedCommand({ name: "dadd", description: "Manage drink images." })
+export const command = new ExtendedCommand({ name: "dadd", description: "Manage drink images.", local: true })
+    .addPermission(permissions.developer)
     .addSubCommand(subcommand =>
         subcommand
             .setName("add")
@@ -48,7 +49,6 @@ export const command = new ExtendedCommand({ name: "dadd", description: "Manage 
                 option.setName("category").setDescription("The category of the drink.").setRequired(true)  // Added category
             )
     )
-    .addPermission(permissions.developer)
     .setExecutor(async (interaction: CommandInteraction) => {
         try {
             const subCommand = (interaction.options as CommandInteractionOptionResolver).getSubcommand(true);

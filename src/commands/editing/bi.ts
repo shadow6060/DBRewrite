@@ -1,35 +1,35 @@
 /* eslint-disable indent */
-import { CommandInteraction, CommandInteractionOptionResolver, EmbedBuilder } from "discord.js";
+import { CommandInteraction, CommandInteractionOptionResolver } from "discord.js";
 import { Command } from "../../structures/Command";
 import { db } from "../../database/database"; // Replace with your database functions
 import { permissions } from "../../providers/permissions"; // Assuming you have permissions defined
 import { ExtendedCommand } from "../../structures/extendedCommand";
 
 export const command = new ExtendedCommand({ name: "bi", description: "Manage blacklisted items.", local: true })
-    .addSubCommand(subcommand =>
+    .addPermission(permissions.developer)
+    .addSubCommand((subcommand) =>
         subcommand
             .setName("add")
             .setDescription("Add an item to the blacklist.")
-            .addStringOption(option =>
+            .addStringOption((option) =>
                 option.setName("item").setDescription("The item to blacklist.").setRequired(true)
             )
     )
-    .addSubCommand(subcommand =>
+    .addSubCommand((subcommand) =>
         subcommand
             .setName("remove")
             .setDescription("Remove an item from the blacklist.")
-            .addStringOption(option =>
+            .addStringOption((option) =>
                 option.setName("item").setDescription("The item to remove from blacklist.").setRequired(true)
             )
     )
-    .addPermission(permissions.developer)
     .setExecutor(async (interaction: CommandInteraction) => {
         try {
-            const subCommand = (interaction.options as any).getSubcommand(true);
+            const subCommand = (interaction.options as CommandInteractionOptionResolver).getSubcommand(true);
 
             switch (subCommand) {
                 case "add": {
-                    const item = (interaction.options as CommandInteractionOptionResolver<never>).getString("item", true).toLowerCase();
+                    const item = (interaction.options as CommandInteractionOptionResolver).getString("item", true).toLowerCase();
 
                     // Check if the item is already in the blacklist
                     const existingItem = await db.blacklistItem.findUnique({
@@ -49,7 +49,7 @@ export const command = new ExtendedCommand({ name: "bi", description: "Manage bl
                     break;
                 }
                 case "remove": {
-                    const item = (interaction.options as CommandInteractionOptionResolver<never>).getString("item", true).toLowerCase();
+                    const item = (interaction.options as CommandInteractionOptionResolver).getString("item", true).toLowerCase();
 
                     // Check if the item is in the blacklist
                     const existingItem = await db.blacklistItem.findUnique({

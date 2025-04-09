@@ -33,7 +33,7 @@ app.get("/login", async (req, res) => {
 	const pin = z
 		.string()
 		.length(6)
-		.regex(/^[0-9a-z]*$/)
+		.regex(/^[\da-z]*$/)
 		.safeParse(req.query.pin);
 	if (!pin.success) {
 		return res.status(400).send("Invalid pin");
