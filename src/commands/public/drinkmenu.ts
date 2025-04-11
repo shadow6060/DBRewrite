@@ -65,7 +65,7 @@ export const command = new Command("drinkmenu", "Shows the drink menu.")
 		// Function to generate drink list for a category
 		const generateCategoryEmbed = (category: string): EmbedBuilder => {
 			const drinksInCategory = drinkCategories[category] || [];
-			const drinkList = drinksInCategory.map(d => `• ${d}`).join("\n") || "No drinks available.";
+			const drinkList = drinksInCategory.map(d => `\`${d}\``).join("\n") || "No drinks available."; // Wrap drink names in code blocks
 
 			return new EmbedBuilder()
 				.setTitle(`🥤 ${category} Drinks`)
