@@ -39,13 +39,8 @@
 		order: {
   		success: "[yes] Your order for **{details}** has been placed! The order ID is `{id}`."
   		exists: "[no] You already have an active order.",
-  		created: "{duty} An order with the id `{id}` for **{details}** has been placed by {tag}."
-		created1: "{duty} An order with the id `{id}` for **{customOrderDetails}** has been placed by {tag}."
   		success1: "[yes] Your order for **{details}** has been placed! The price is `{price}`. The order ID is `{id}`."
-		success2: "[yes] Your Custom order for **{details}** has been placed! The price is `{price}`. The order ID is `{id}`."
 		success_tab: "Your tab order has been placed. Order ID: {id}, Details: {details}."
-		customOrderSuccess: "[yes] Your custom order for **{customOrderDetails}** has been placed! The order ID is `{id}`.",
-        customOrderSuccess1: "[yes] Your custom order for **{customOrderDetails}** has been placed! The price is `{price}`. The order ID is `{id}`."
 		}
 		list: {
 			title: **__Current Orders__**
@@ -59,14 +54,6 @@
 				unclaimed: **UNCLAIMED**
 			}
 		}
-		claim: {
-			existing: "[no] You already have an order claimed."
-			success: "[yes] **{user}**, has successfully claimed the order `{id}`."
-		}
-		unclaim: {
-    		success: "[yes] You have successfully unclaimed the order `{id}` . ",
-   			notClaimed: "[no] You haven't claimed any order.", // Add this line for the error message
-		},
 		cancel: {
 			success: "[yes] Your order has been successfully cancelled."
 			canned: "An order with the id `{id}` was cancelled!\n Order desc `{details}`\nPlaced by {tag}."
@@ -190,15 +177,6 @@
 				footer: By {}
 			}
 		}
-		rate: {
-  		success: "[yes] You have successfully rated the bake/prep/delivery process of your last order.",
-  		alreadyRated: "[no] You have already rated the bake/prep/delivery process of your previous order. Try ordering another.",
-  		invalidRating: "[no] Invalid rating. Please provide a rating between 1 and 5 for each process."
-		}
-		duty: {
-			enabled: "[yes] You are now on duty!"
-			disabled: "[yes] You are no longer on duty!"
-		}
 		delete: {
 			success: "[yes] The order was successfully deleted with the provided reason."
 			dm: "[no] Your order of `{}` was deleted for `{}`. If you feel that this was a mistake, please contact us."
@@ -224,6 +202,17 @@
 				"`Rum`{}"
 				"`Gin`{}"
 				"`Tequila`{}"
+				"`Bacardi`{}"
+                "`Jaegermeister`{}"
+                "`Martini`{}"
+                "`Espresso Martini`{}"
+                "`Pornstar Martini`{}"
+                "`Sex on the Beach`{}"
+                "`Godfather`{}"
+                "`Purple Rain`{}"
+                "`Blue Lagoon`{}"
+                "`Zombie`{}"
+				"`Test`{}"
 			]
 		}
 	}
