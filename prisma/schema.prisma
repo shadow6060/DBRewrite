@@ -44,9 +44,6 @@ model CafeOrders {
   guild          String     @db.VarChar(20)
   image          String?
   timeout        DateTime?
-  deleteReason   String?
-  bakeRating     Int?
-  deliveryRating Int?
   flags          Int        @default(0)
   putOnTab       Boolean?
   amount         Float?
@@ -66,14 +63,8 @@ model Orders {
   status         OrderStatus @default(Unprepared)
   channel        String      @db.VarChar(20)
   guild          String      @db.VarChar(20)
-  claimer        String?     @db.VarChar(20)
-  deliverer      String?     @db.VarChar(20)
   image          String?
   timeout        DateTime?
-  deleteReason   String?
-  bakeRating     Int?
-  prepRating     Int?
-  deliveryRating Int?
   flags          Int         @default(0)
   putOnTab       Boolean?
   amount         Float?
