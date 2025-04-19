@@ -85,9 +85,7 @@ const textSchema = z
 			order: z.object({
 				exists: z.string(),
 				success: nFormattable("details", "id"),
-				created: nFormattable("details", "duty", "id", "tag"),
 				success1: nFormattable("details", "id"),
-				success2: nFormattable("details", "id", "price"),
 				success_tab: nFormattable("details", "id"),
 			}),
 			list: z.object({
@@ -102,14 +100,6 @@ const textSchema = z
 					unclaimed: z.string(),
 				}),
 			}),
-			claim: z.object({ 
-				existing: z.string(),
-				success: nFormattable("id", "user"),
-			}),
-			unclaim: z.object({
-				success: nFormattable("id"),
-				notClaimed: z.string(), // Add this line for the error message
-			}),
 			cancel: z.object({
 				success: z.string(),
 			}),
@@ -117,7 +107,6 @@ const textSchema = z
 				invalidUrl: z.string(),
 				success: z.string(),
 				ready: pFormattable(4),
-				ready2: nFormattable("dutyd","id"),
 			}),
 			deliver: z.object({
 				noMessage: z.string(),
@@ -161,10 +150,6 @@ const textSchema = z
 					footer: pFormattable(),
 				}),
 			}),
-			duty: z.object({
-				enabled: z.string(),
-				disabled: z.string(),
-			}),
 			delete: z.object({
 				success: z.string(),
 				dm: z.string(),
@@ -205,9 +190,7 @@ const configSchema = z
 		emojis: z.record(z.string(), snowflake),
 		roles: z.object({
 			employee: snowflake,
-			duty: snowflake,
 			moderator: snowflake,
-			dutyd: snowflake,
 			admin: snowflake,
 		}),
 		channels: z.object({
@@ -216,7 +199,7 @@ const configSchema = z
 			feedback: snowflake,
 		}),
 		servers: z.object({
-			extraServer: snowflake,
+			local: z.string().length(18)
 		}),
 		prefix: z.string().min(1), // Added prefix field
 	})
