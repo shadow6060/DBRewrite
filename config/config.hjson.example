@@ -23,7 +23,7 @@
 		tips: ""
 	}
 servers: {
-    extraServer: ""
+    local: "" //Testing Server ID 
 },
 	"prefix": "d!"  // Added prefix here
 }
