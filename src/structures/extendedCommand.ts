@@ -16,7 +16,7 @@ export class ExtendedCommand extends Command {
     // Add new properties specific to your modifications
     global: boolean;
     local: boolean; // New property to specify whether the command should be registered locally
-    servers: string[] | undefined; // New property to specify servers where the command should be registered locally
+    servers: string[] ; // New property to specify servers where the command should be registered locally
 
     // Constructor
     constructor({ name, description, local = false, servers, ...options }: CommandOptions) {
@@ -25,6 +25,6 @@ export class ExtendedCommand extends Command {
         this.local = local;
 
         // Ensure servers is an array and set it to the provided value, or set it as undefined if not provided
-        this.servers = Array.isArray(servers) ? servers : undefined;
+        this.servers = Array.isArray(servers) ? servers : [];
     }
 }
