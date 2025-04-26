@@ -4,7 +4,10 @@ import {getUserInfo, updateBalance} from "../../database/userInfo";
 import {ExtendedCommand} from "../../structures/extendedCommand";
 import {config} from "../../providers/config";
 
-export const command = new ExtendedCommand({ name: "currencyedit", description: "Manage user balance.", servers: [config.servers.extraServer], local: true })
+export const command = new ExtendedCommand({
+    name: "currencyedit", description: "Manage user balance.", servers: [config.servers.local], // or just hardcode your server ID
+    local: true
+})
     .addPermission(permissions.developer)
     .addSubCommand((subcommand) =>
         subcommand
