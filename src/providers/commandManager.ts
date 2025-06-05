@@ -1,5 +1,5 @@
 /* eslint-disable quotes */
-import { Message } from "discord.js"; // Import Message type
+import { Message } from "discord.js";
 import { basename, join, posix, win32 } from "path";
 import { sync } from "fast-glob";
 import { Command } from "../structures/Command";
@@ -29,7 +29,7 @@ const extendedCommandFolder = join(__dirname, "../extendedCommands/**/*.js").rep
 export const prefixCommandRegistry = new Collection<string, PrefixCommand>();
 export const slashCommandRegistry = new Collection<string, Command>();
 export const extendedCommandRegistry = new Collection<string, ExtendedCommand>();
-export const applicationCommandRegistry = new Collection<string, ApplicationCommand>(); // For stored Discord slash commands
+export const applicationCommandRegistry = new Collection<string, ApplicationCommand>();
 
 export let applicationCommandManager:
 	| GuildApplicationCommandManager
@@ -43,6 +43,86 @@ export let applicationCommandManager:
 		null
 	> = notInitialized("applicationCommandManager");
 
+// 🔹 Load Slash Commands
+const loadSlashCommands = async (): Promise<Command[]> => {
+	const commands: Command[] = [];
+	const commandFiles = sync(commandFolder);
+
+	for (const file of commandFiles) {
+		const module = await import(file);
+		const data = module?.command;
+
+		if (!data || typeof data !== "object" || !(data instanceof Command)) {
+			throw new Error(`File ${file} does not export a valid Command instance.`);
+		}
+
+		if (slashCommandRegistry.has(data.name)) {
+			console.warn(`⚠️ Duplicate slash command found: ${data.name}. Skipping...`);
+			continue;
+		}
+
+		slashCommandRegistry.set(data.name, data);
+		commands.push(data);
+	}
+
+	return commands;
+};
+
+// ⬇ Prefix and extended loaders unchanged ⬇
+const loadPrefixCommands = async (): Promise<PrefixCommand[]> => {
+	const commands: PrefixCommand[] = [];
+	const commandFiles = sync(prefixCommandFolder);
+	for (const file of commandFiles) {
+		const module = await import(file);
+		const data = module?.command;
+
+		if (!data || typeof data !== "object" || !(data instanceof PrefixCommand)) {
+			throw new Error(`File ${file} does not export a valid PrefixCommand instance.`);
+		}
+
+		if (prefixCommandRegistry.has(data.name)) {
+			console.warn(`⚠️ Duplicate prefix command found: ${data.name}. Skipping...`);
+			continue;
+		}
+		commands.push(data);
+	}
+	return commands;
+};
+
+const loadExtendedCommands = async (): Promise<ExtendedCommand[]> => {
+	const commands: ExtendedCommand[] = [];
+	const commandFiles = sync(extendedCommandFolder);
+	for (const file of commandFiles) {
+		const module = await import(file);
+		const data = module?.command;
+
+		if (!data || typeof data !== "object" || !(data instanceof ExtendedCommand)) {
+			throw new Error(`File ${file} does not export a valid ExtendedCommand instance.`);
+		}
+
+		if (extendedCommandRegistry.has(data.name)) {
+			console.warn(`⚠️ Duplicate extended command found: ${data.name}. Skipping...`);
+			continue;
+		}
+		commands.push(data);
+	}
+	return commands;
+};
+
+// Unregister extended commands from global commands registry
+const unregisterExtendedCommandsFromGlobal = async (): Promise<void> => {
+	const extendedCommandNames = [...extendedCommandRegistry.keys()];
+
+	for (const name of extendedCommandNames) {
+		const command = extendedCommandRegistry.get(name);
+		if (command) {
+			await rest.delete(Routes.applicationCommand(client.application!.id, command.id));
+			extendedCommandRegistry.delete(name);
+		}
+	}
+};
+
+// Register commands
 const registerCommands = async (commands: (Command | ExtendedCommand)[]) => {
 	if (!client.isReady()) throw new Error("registerCommands called before client was ready.");
 	applicationCommandManager = development ? mainGuild.commands : client.application!.commands;
@@ -61,10 +141,12 @@ const registerCommands = async (commands: (Command | ExtendedCommand)[]) => {
 
 	// Register server commands for specific servers
 	for (const serverId of Object.values(config.servers)) {
-		await rest.put(Routes.applicationGuildCommands(client.application.id, serverId), {
-			body: serverCommands.map((x) => x.toJSON()),
-		});
+		await rest.put(
+			Routes.applicationGuildCommands(client.application.id, serverId),
+			{ body: serverCommands.map((x) => x.toJSON()) }
+		);
 	}
+
 
 	// Populate application command registry
 	for (const cmd of (await applicationCommandManager.fetch({})).values()) {
@@ -73,40 +155,35 @@ const registerCommands = async (commands: (Command | ExtendedCommand)[]) => {
 };
 
 export const loadCommands = async (): Promise<void> => {
-	const slashCommands: Command[] = [];
-	const extendedCommands: ExtendedCommand[] = [];
-	const prefixCommands = await loadPrefixCommands(); // ✅ Load prefix commands
-	const allCommands = [...await loadExtendedCommands(), ...slashCommands];
+	const slashCommands: Command[] = await loadSlashCommands(); // ✅ Now works!
+	const extendedCommands: ExtendedCommand[] = await loadExtendedCommands();
+	const prefixCommands: PrefixCommand[] = await loadPrefixCommands();
 
-	// 🔹 Load Slash Commands
-	const commandFiles = sync(commandFolder);
-	for (const file of commandFiles) {
-		const module = await import(file);
-		const data = module?.command;
-
-		if (!data || typeof data !== "object" || !(data instanceof Command)) {
-			throw new Error(`File ${file} does not export a valid Command instance.`);
-		}
-
-		if (slashCommandRegistry.has(data.name)) {
-			console.warn(`Duplicate slash command found: ${data.name}. Skipping...`);
-			continue;
-		}
-		slashCommandRegistry.set(data.name, data);
-		slashCommands.push(data);
-	}
-
-	// 🔹 Store prefix and extended commands in their registries
+	// 🔹 Store all in registries
 	prefixCommands.forEach(cmd => prefixCommandRegistry.set(cmd.name, cmd));
 	extendedCommands.forEach(cmd => extendedCommandRegistry.set(cmd.name, cmd));
 
-	// 🔹 Register commands with Discord API
-	await registerCommands([...slashCommands, ...extendedCommands]);
+	// 📝 Logging before registration
+	//console.log("───────────── Preparing to Register Commands ─────────────");
+	//console.log(`📘 Slash Commands (${slashCommands.length}): ${slashCommands.map(c => c.name).join(", ")}`);
+	//console.log(`📗 Extended Commands (${extendedCommands.length}): ${extendedCommands.map(c => c.name).join(", ")}`);
+	//console.log(`📕 Prefix Commands (${prefixCommands.length}): ${prefixCommands.map(c => c.name).join(", ")}`);
 
-	// Unregister extended commands from global after loading all commands
+	// 🔐 Register to Discord
+	try {
+		await registerCommands([...slashCommands, ...extendedCommands]);
+		//console.log("✅ Commands registered successfully.");
+	} catch (error) {
+		//console.error("❌ Failed to register commands:", error);
+	}
+
+	// 🧼 Cleanup: unregister extended from global if needed
 	await unregisterExtendedCommandsFromGlobal();
 
-	// 🚀 FINAL SUMMARY LOG (Newly Added)
+	// ✅ Final logs
+	//console.log("───────────── Load Complete ─────────────");
+
+	// Separate registries and log the counts again for each type
 	const extendedCommandsCount = extendedCommands.length;
 	const slashCommandsCount = slashCommands.length;
 	const prefixCommandsCount = prefixCommands.length;
@@ -120,68 +197,6 @@ export const loadCommands = async (): Promise<void> => {
 
 	// Add Extended Commands to the log
 	if (extendedCommandsCount > 0) {
-		console.log(`Moved ${extendedCommandsCount} Extended Commands out of Slash Commands.`);
-	}
-};
-
-// Load prefix commands
-const loadPrefixCommands = async (): Promise<PrefixCommand[]> => {
-	const commands: PrefixCommand[] = [];
-	const commandFiles = sync(prefixCommandFolder);
-	for (const file of commandFiles) {
-		const module = await import(file);
-		const data = module?.command;
-
-		if (!data || typeof data !== "object" || !(data instanceof PrefixCommand)) {
-			throw new Error(`File ${file} does not export a valid PrefixCommand instance.`);
-		}
-
-		// Store in prefix registry
-		if (prefixCommandRegistry.has(data.name)) {
-			console.warn(`Duplicate prefix command found: ${data.name}. Skipping...`);
-			continue;
-		}
-		prefixCommandRegistry.set(data.name, data);
-		commands.push(data);
-	}
-	return commands;
-};
-
-// Load extended commands
-const loadExtendedCommands = async (): Promise<ExtendedCommand[]> => {
-	const commands: ExtendedCommand[] = [];
-	const commandFiles = sync(extendedCommandFolder);
-	for (const file of commandFiles) {
-		const module = await import(file);
-		const data = module?.command;
-
-		if (!data || typeof data !== "object" || !(data instanceof ExtendedCommand)) {
-			throw new Error(`File ${file} does not export a valid ExtendedCommand instance.`);
-		}
-
-		// Store in extended registry
-		if (extendedCommandRegistry.has(data.name)) {
-			console.warn(`Duplicate extended command found: ${data.name}. Skipping...`);
-			continue;
-		}
-		extendedCommandRegistry.set(data.name, data);
-		commands.push(data);
-	}
-	return commands;
-};
-
-// Unregister extended commands from global commands registry
-const unregisterExtendedCommandsFromGlobal = async (): Promise<void> => {
-	const extendedCommandNames = [...extendedCommandRegistry.keys()];
-
-	for (const name of extendedCommandNames) {
-		const command = extendedCommandRegistry.get(name);
-
-		if (command) {
-			// Remove from global registry
-			await rest.delete(Routes.applicationCommand(client.application!.id, command.id));
-			extendedCommandRegistry.delete(name); // Remove from registry
-			//console.log(`Unregistered global command: ${name}`);
-		}
+		//console.log(`Moved ${extendedCommandsCount} Extended Commands out of Slash Commands.`);
 	}
 };
