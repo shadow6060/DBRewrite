@@ -1,6 +1,7 @@
 generator client {
   provider      = "prisma-client-js"
   binaryTargets = ["native", "windows"]
+  //output        = "app/generated/prisma/client"
 }
 
 datasource db {
@@ -13,11 +14,29 @@ model UserInfo {
   createdAt  DateTime  @default(now())
   balance    Int       @default(0)
   newBalance Int?
-  tabLimit   Float     @default(0)
   donuts     Int       @default(0)
   authUser   AuthUser?
+  profileCreated    Boolean   @default(false) // Indicates if the profile has been created
+  profileCreationDate DateTime? // Optionally track when the profile was created
 }
 
+model Tab {
+  id            String   @id @default(cuid())
+  userId        String
+  guildId       String
+  amount        Float    @default(0.0) // Current tab balance
+  maxLimit      Float    @default(100.0) // Max allowed before blocking orders
+  isBlocked     Boolean  @default(false) // Auto-block once over limit
+  lastPaidAt    DateTime? // Timestamp when tab was last cleared
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  isPaid     Boolean  @default(false)
+  status     String   @default("active") // e.g., 'active', 'locked', 'overdue'
+  dueDate     DateTime? // This will store the payment due date for grace period checks
+  partialPayments Float @default(0.0) // This will track how much has been paid so far
+  
+  @@unique([userId, guildId])
+}
 model Tree {
   id     String   @id
   age    Int
@@ -34,27 +53,15 @@ model Blacklist {
   blacklister String   @db.VarChar(20)
 }
 
-model CafeOrders {
-  id             String     @id @db.VarChar(10)
-  createdAt      DateTime   @default(now())
-  user           String     @db.VarChar(20)
-  details        String
-  status         CafeStatus @default(Unprepared)
-  channel        String     @db.VarChar(20)
-  guild          String     @db.VarChar(20)
-  image          String?
-  timeout        DateTime?
-  flags          Int        @default(0)
-  putOnTab       Boolean?
-  amount         Float?
-}
 model DrinkImage {
-  id        String   @id @default(cuid())
-  drinkName String   // The name of the drink
-  url       String   // The image URL for the drink
-  category  String   // The category this drink belongs to
-  orders    Orders[] // Relation to Orders
-}
+  id Int @id @default(autoincrement())
+  drinkName String
+  url       String
+  category  String
+  orders    Orders[] // 1-to-many relationship
+  price      Int?     // Add this line (in cents or whole currency units)
+}// Relation to Orders
+
 model Orders {
   id             String      @id @db.VarChar(10)
   createdAt      DateTime    @default(now())
@@ -63,14 +70,14 @@ model Orders {
   status         OrderStatus @default(Unprepared)
   channel        String      @db.VarChar(20)
   guild          String      @db.VarChar(20)
-  image          String?
+  drinkImageId   Int?        // <-- Fix: must match DrinkImage.id type (Int)
+  drinkImage     DrinkImage? @relation(fields: [drinkImageId], references: [id])
   timeout        DateTime?
+  deliverer      String?     @db.VarChar(20)
+  claimer        String?     @db.VarChar(20)
   flags          Int         @default(0)
-  putOnTab       Boolean?
-  amount         Float?
-  orderFor       String?     @db.VarChar(20)
-
-  DrinkImage DrinkImage[]
+  deleteReason   String?
+  imageUrl       String?     // <-- Add this new field for direct image URL
 }
 
 model BlacklistItem {
@@ -90,12 +97,13 @@ model GuildsXP {
   guildId               String
   level                 Int     @default(0)
   exp                   Int     @default(0)
-  notificationChannelId String?
-
   @@unique([userId, guildId])
 }
 
-
+model Settings {
+  id              String  @id
+  manualModeEnabled Boolean @default(false)
+}
 model MenuItem {
   id          String @id @default(uuid())
   name        String
@@ -147,19 +155,7 @@ model UserQuestProgress {
   expReceived Boolean  @default(false) // Indicates whether exp has been received for this quest
 
 }
-enum CafeStatus {
-  Unprepared
-  Preparing
-  Brewing
-  Fermenting
-  PendingDelivery
-  Delivering
-  Delivered
-  Cancelled
-  Deleted
-  Failed
-  Claimed
-}
+
 
 enum OrderStatus {
   Unprepared
@@ -171,6 +167,35 @@ enum OrderStatus {
   Delivered
   Cancelled
   Deleted
-  Failed
+  Failed 
   Claimed
+  
+}
+
+model WorkerStats {
+  id              String   @id
+  ordersBrewed    Int
+  ordersDelivered Int
+  duty            Boolean   @default(false)
+}
+
+ model WorkerInfo {
+  id                    String   @id @db.VarChar(20)
+  createdAt             DateTime @default(now())
+  preparations          Int      @default(0)
+  deliveries            Int      @default(0)
+  deliveryMessage       String?
+}
+
+model ServerConfig {
+  guildId             String   @id
+  notificationChannel String?
+  welcomeChannel      String?
+  xpEnabledChannels   String[] @default([]) // Optional: list of channel IDs
+  //prefix              String? // Optional if you're using slash commands only
+  xpEnabled           Boolean  @default(true)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+  adminRoles      String[] @default([])
+  moderatorRoles  String[] @default([])
 }
