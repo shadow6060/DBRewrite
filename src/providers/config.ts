@@ -7,10 +7,7 @@ import { formatZodError } from "../utils/zod";
 import pc from "picocolors";
 import { IllegalStateError } from "../utils/error";
 import { OrderStatus } from "@prisma/client";
-export const snowflake = z.union([
-	z.string().length(18).regex(/^\d+$/),
-	z.string().length(19).regex(/^\d+$/),
-]);
+export const snowflake = z.string().regex(/^\d{18,19}$/);
 
 const pFormattable = <T extends number = 1>(n: T = 1 as T) =>
 	z.string().refine((x) => x.split("{}").length - 1 === n, {
@@ -80,13 +77,15 @@ const textSchema = z
 			notEnoughBalance: z.string(),
 			interactOwn: z.string(),
 			mainGuildOnly: z.string(),
+			noProfile: z.string(), // Added here
+			profileCreated: z.string(),
 		}),
 		commands: z.object({
 			order: z.object({
 				exists: z.string(),
 				success: nFormattable("details", "id"),
-				success1: nFormattable("details", "id"),
-				success_tab: nFormattable("details", "id"),
+				created: nFormattable("details", "duty", "id", "tag"),
+
 			}),
 			list: z.object({
 				title: z.string(),
@@ -100,6 +99,14 @@ const textSchema = z
 					unclaimed: z.string(),
 				}),
 			}),
+			claim: z.object({
+				existing: z.string(),
+				success: nFormattable("id", "user"),
+			}),
+			unclaim: z.object({
+				success: nFormattable("id"),
+				notClaimed: z.string(), // Add this line for the error message
+			}),
 			cancel: z.object({
 				success: z.string(),
 			}),
@@ -107,13 +114,13 @@ const textSchema = z
 				invalidUrl: z.string(),
 				success: z.string(),
 				ready: pFormattable(4),
+				ready2: nFormattable("dutyd", "id"),
 			}),
 			deliver: z.object({
 				noMessage: z.string(),
 				noChannel: z.string(),
 				success: z.string(),
-				default: z.string(),
-				delivered: z.string(),
+				default: z.string()
 			}),
 			deliverymessage: z.object({
 				get: z.string(),
@@ -150,6 +157,19 @@ const textSchema = z
 					footer: pFormattable(),
 				}),
 			}),
+			tip: z.object({
+				success: pFormattable(2),
+				alreadyTipped: z.string(),
+				embed: z.object({
+					title: z.string(),
+					description: pFormattable(4),
+					footer: pFormattable(),
+				}),
+			}),
+			duty: z.object({
+				enabled: z.string(),
+				disabled: z.string(),
+			}),
 			delete: z.object({
 				success: z.string(),
 				dm: z.string(),
@@ -158,6 +178,14 @@ const textSchema = z
 				userNotFound: z.string(),
 				successNoDm: z.string(),
 			}),
+
+			rate: z
+				.object({
+					success: z.string(),
+					alreadyRated: z.string(),
+					invalidRating: z.string(),
+				})
+				.passthrough(),
 
 			drinkingr: z.object({
 				drinks: z.array(pFormattable()),
@@ -190,18 +218,29 @@ const configSchema = z
 		emojis: z.record(z.string(), snowflake),
 		roles: z.object({
 			employee: snowflake,
+			duty: snowflake,
 			moderator: snowflake,
+			dutyd: snowflake,
 			admin: snowflake,
 		}),
+
 		channels: z.object({
 			brewery: snowflake,
 			delivery: snowflake,
 			feedback: snowflake,
 		}),
 		servers: z.object({
-			local: z.string().length(18)
+			local: snowflake
 		}),
 		prefix: z.string().min(1), // Added prefix field
+
+		tabConfig: z.object({
+			partialPaymentTimeout: z.number(), // Expecting a number directly
+			paymentWarningTimeout: z.number(), // Expecting a number directly
+			maxLimit: z.number(),           // Expecting a number directly
+			paymentGracePeriod: z.number(),  // Added paymentGracePeriod
+			// eslint-disable-next-line no-mixed-spaces-and-tabs
+		})
 	})
 	.strict();
 
