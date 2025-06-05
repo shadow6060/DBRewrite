@@ -15,6 +15,8 @@
 		noActiveOrder: "[no] You do not have an active order. Order one with `/order`!"
 		noClaimedOrder: "[no] You do not have an order claimed at the moment."
 		noOrders: "[no] You don't have any orders yet."
+		noProfile: "[no] You don't have a profile set up yet. Please use `/createprofile` to set one up!",
+		profileCreated: "[yes] Your profile has been successfully created! 🎉 Start using commands and enjoy!",
 		identified: **{name}** (`{id}`) 
 		orderEmbed: {
 			title: Order Information for `{}`
@@ -39,8 +41,8 @@
 		order: {
   		success: "[yes] Your order for **{details}** has been placed! The order ID is `{id}`."
   		exists: "[no] You already have an active order.",
-  		success1: "[yes] Your order for **{details}** has been placed! The price is `{price}`. The order ID is `{id}`."
-		success_tab: "Your tab order has been placed. Order ID: {id}, Details: {details}."
+  		created: "{duty} An order with the id `{id}` for **{details}** has been placed by {tag}."
+		
 		}
 		list: {
 			title: **__Current Orders__**
@@ -54,6 +56,14 @@
 				unclaimed: **UNCLAIMED**
 			}
 		}
+		claim: {
+			existing: "[no] You already have an order claimed."
+			success: "[yes] **{user}**, has successfully claimed the order `{id}`."
+		}
+		unclaim: {
+    		success: "[yes] You have successfully unclaimed the order `{id}` . ",
+   			notClaimed: "[no] You haven't claimed any order.", // Add this line for the error message
+		},
 		cancel: {
 			success: "[yes] Your order has been successfully cancelled."
 			canned: "An order with the id `{id}` was cancelled!\n Order desc `{details}`\nPlaced by {tag}."
@@ -70,7 +80,6 @@
 			noChannel: "[no] I wasn't able to access the channel for the order, and the order failed to deliver."
 			success: "[yes] **{user}** The order has been successfully delivered."
 			multiSuccess: "Successfully delivered {count} orders."
-			delivered: "Your order {orderId} has been delivered! Here is your drink: {image}",
 			default:
 				'''
 				Hi, {mention}! Here is your {details}, delivered by {preparer}. Make sure to give feedback with `/feedback` and tip with `/tip`!
@@ -175,7 +184,26 @@
 			embed: {
 				title: Feedback Given For `{}`
 				footer: By {}
+			} 
+		}
+		rate: {
+  		success: "[yes] You have successfully rated the bake/prep/delivery process of your last order.",
+  		alreadyRated: "[no] You have already rated the bake/prep/delivery process of your previous order. Try ordering another.",
+  		invalidRating: "[no] Invalid rating. Please provide a rating between 1 and 5 for each process."
+		}
+
+		tip: {
+			success: "[yes] You have successfully tipped `${}` on your order of `{}`."
+			alreadyTipped: "[no] You have already tipped your previous order. Try ordering another."
+			embed: {
+				title: Tip Received!
+				description: The order `{}` was tipped `${}`. The tip has been added to {} and {}'s balances.
+				footer: By {}
 			}
+		}
+		duty: {
+			enabled: "[yes] You are now on duty!"
+			disabled: "[yes] You are no longer on duty!"
 		}
 		delete: {
 			success: "[yes] The order was successfully deleted with the provided reason."
@@ -196,7 +224,7 @@
 		}
 		drinkingr: {
 				drinks: [
-				"`Vodka`{}"
+				`Vodka`{}"
 				"`Whiskey`{}"
 				"`Beer`{}"
 				"`Rum`{}"
@@ -212,7 +240,6 @@
                 "`Purple Rain`{}"
                 "`Blue Lagoon`{}"
                 "`Zombie`{}"
-				"`Test`{}"
 			]
 		}
 	}
