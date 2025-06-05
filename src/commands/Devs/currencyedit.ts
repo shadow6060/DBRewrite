@@ -9,6 +9,7 @@ export const command = new ExtendedCommand({
     local: true
 })
     .addPermission(permissions.developer)
+    .setCategory("🔐 Devs")
     .addSubCommand((subcommand) =>
         subcommand
             .setName("set")
