@@ -9,31 +9,18 @@
   dependencies:
     "@jridgewell/trace-mapping" "0.3.9"
 
-"@discordjs/builders@^1.5.0-dev.1677499471-ffdb197.0":
-  version "1.7.0"
-  resolved "https://registry.npmjs.org/@discordjs/builders/-/builders-1.7.0.tgz"
-  integrity sha512-GDtbKMkg433cOZur8Dv6c25EHxduNIBsxeHrsRoIM8+AwmEZ8r0tEpckx/sHwTLwQPOF3e2JWloZh9ofCaMfAw==
+"@discordjs/builders@^1.11.2":
+  version "1.11.2"
+  resolved "https://registry.yarnpkg.com/@discordjs/builders/-/builders-1.11.2.tgz#b96185d05d22f9d6bde89aada2decf45a5c982ce"
+  integrity sha512-F1WTABdd8/R9D1icJzajC4IuLyyS8f3rTOz66JsSI3pKvpCAtsMBweu8cyNYsIyvcrKAVn9EPK+Psoymq+XC0A==
   dependencies:
-    "@discordjs/formatters" "^0.3.3"
-    "@discordjs/util" "^1.0.2"
-    "@sapphire/shapeshift" "^3.9.3"
-    discord-api-types "0.37.61"
-    fast-deep-equal "^3.1.3"
-    ts-mixer "^6.0.3"
-    tslib "^2.6.2"
-
-"@discordjs/builders@^1.8.2":
-  version "1.8.2"
-  resolved "https://registry.npmjs.org/@discordjs/builders/-/builders-1.8.2.tgz"
-  integrity sha512-6wvG3QaCjtMu0xnle4SoOIeFB4y6fKMN6WZfy3BMKJdQQtPLik8KGzDwBVL/+wTtcE/ZlFjgEk74GublyEVZ7g==
-  dependencies:
-    "@discordjs/formatters" "^0.4.0"
-    "@discordjs/util" "^1.1.0"
-    "@sapphire/shapeshift" "^3.9.7"
-    discord-api-types "0.37.83"
+    "@discordjs/formatters" "^0.6.1"
+    "@discordjs/util" "^1.1.1"
+    "@sapphire/shapeshift" "^4.0.0"
+    discord-api-types "^0.38.1"
     fast-deep-equal "^3.1.3"
     ts-mixer "^6.0.4"
-    tslib "^2.6.2"
+    tslib "^2.6.3"
 
 "@discordjs/collection@1.5.3":
   version "1.5.3"
@@ -50,19 +37,17 @@
   resolved "https://registry.npmjs.org/@discordjs/collection/-/collection-2.1.0.tgz"
   integrity sha512-mLcTACtXUuVgutoznkh6hS3UFqYirDYAg5Dc1m8xn6OvPjetnUlf/xjtqnnc47OwWdaoCQnHmHh9KofhD6uRqw==
 
-"@discordjs/formatters@^0.3.3":
-  version "0.3.3"
-  resolved "https://registry.npmjs.org/@discordjs/formatters/-/formatters-0.3.3.tgz"
-  integrity sha512-wTcI1Q5cps1eSGhl6+6AzzZkBBlVrBdc9IUhJbijRgVjCNIIIZPgqnUj3ntFODsHrdbGU8BEG9XmDQmgEEYn3w==
-  dependencies:
-    discord-api-types "0.37.61"
+"@discordjs/collection@^2.1.1":
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/@discordjs/collection/-/collection-2.1.1.tgz#901917bc538c12b9c3613036d317847baee08cae"
+  integrity sha512-LiSusze9Tc7qF03sLCujF5iZp7K+vRNEDBZ86FT9aQAv3vxMLihUvKvpsCWiQ2DJq1tVckopKm1rxomgNUc9hg==
 
-"@discordjs/formatters@^0.4.0":
-  version "0.4.0"
-  resolved "https://registry.npmjs.org/@discordjs/formatters/-/formatters-0.4.0.tgz"
-  integrity sha512-fJ06TLC1NiruF35470q3Nr1bi95BdvKFAF+T5bNfZJ4bNdqZ3VZ+Ttg6SThqTxm6qumSG3choxLBHMC69WXNXQ==
+"@discordjs/formatters@^0.6.1":
+  version "0.6.1"
+  resolved "https://registry.yarnpkg.com/@discordjs/formatters/-/formatters-0.6.1.tgz#211bf3eb060d8fe7fa1f020b8be3c4adad00555a"
+  integrity sha512-5cnX+tASiPCqCWtFcFslxBVUaCetB0thvM/JyavhbXInP1HJIEU+Qv/zMrnuwSsX3yWH2lVXNJZeDK3EiP4HHg==
   dependencies:
-    discord-api-types "0.37.83"
+    discord-api-types "^0.38.1"
 
 "@discordjs/rest@^0.3.0":
   version "0.3.0"
@@ -77,45 +62,45 @@
     node-fetch "^2.6.5"
     tslib "^2.3.1"
 
-"@discordjs/rest@^2.3.0":
-  version "2.3.0"
-  resolved "https://registry.npmjs.org/@discordjs/rest/-/rest-2.3.0.tgz"
-  integrity sha512-C1kAJK8aSYRv3ZwMG8cvrrW4GN0g5eMdP8AuN8ODH5DyOCbHgJspze1my3xHOAgwLJdKUbWNVyAeJ9cEdduqIg==
+"@discordjs/rest@^2.5.0":
+  version "2.5.0"
+  resolved "https://registry.yarnpkg.com/@discordjs/rest/-/rest-2.5.0.tgz#fc4c5e23bee31f4df98e6e148e9d22f8eb031924"
+  integrity sha512-PWhchxTzpn9EV3vvPRpwS0EE2rNYB9pvzDU/eLLW3mByJl0ZHZjHI2/wA8EbH2gRMQV7nu+0FoDF84oiPl8VAQ==
   dependencies:
-    "@discordjs/collection" "^2.1.0"
-    "@discordjs/util" "^1.1.0"
-    "@sapphire/async-queue" "^1.5.2"
+    "@discordjs/collection" "^2.1.1"
+    "@discordjs/util" "^1.1.1"
+    "@sapphire/async-queue" "^1.5.3"
     "@sapphire/snowflake" "^3.5.3"
-    "@vladfrangu/async_event_emitter" "^2.2.4"
-    discord-api-types "0.37.83"
+    "@vladfrangu/async_event_emitter" "^2.4.6"
+    discord-api-types "^0.38.1"
     magic-bytes.js "^1.10.0"
-    tslib "^2.6.2"
-    undici "6.13.0"
-
-"@discordjs/util@^1.0.2":
-  version "1.0.2"
-  resolved "https://registry.npmjs.org/@discordjs/util/-/util-1.0.2.tgz"
-  integrity sha512-IRNbimrmfb75GMNEjyznqM1tkI7HrZOf14njX7tCAAUetyZM1Pr8hX/EK2lxBCOgWDRmigbp24fD1hdMfQK5lw==
+    tslib "^2.6.3"
+    undici "6.21.1"
 
 "@discordjs/util@^1.1.0":
   version "1.1.0"
   resolved "https://registry.npmjs.org/@discordjs/util/-/util-1.1.0.tgz"
   integrity sha512-IndcI5hzlNZ7GS96RV3Xw1R2kaDuXEp7tRIy/KlhidpN/BQ1qh1NZt3377dMLTa44xDUNKT7hnXkA/oUAzD/lg==
 
-"@discordjs/ws@^1.1.1":
+"@discordjs/util@^1.1.1":
   version "1.1.1"
-  resolved "https://registry.npmjs.org/@discordjs/ws/-/ws-1.1.1.tgz"
-  integrity sha512-PZ+vLpxGCRtmr2RMkqh8Zp+BenUaJqlS6xhgWKEZcgC/vfHLEzpHtKkB0sl3nZWpwtcKk6YWy+pU3okL2I97FA==
+  resolved "https://registry.yarnpkg.com/@discordjs/util/-/util-1.1.1.tgz#bafcde0faa116c834da1258d78ec237080bbab29"
+  integrity sha512-eddz6UnOBEB1oITPinyrB2Pttej49M9FZQY8NxgEvc3tq6ZICZ19m70RsmzRdDHk80O9NoYN/25AqJl8vPVf/g==
+
+"@discordjs/ws@^1.2.2":
+  version "1.2.2"
+  resolved "https://registry.yarnpkg.com/@discordjs/ws/-/ws-1.2.2.tgz#bab8d16ea2fe9eb205351bd8896e03307bf42fdb"
+  integrity sha512-dyfq7yn0wO0IYeYOs3z79I6/HumhmKISzFL0Z+007zQJMtAFGtt3AEoq1nuLXtcunUE5YYYQqgKvybXukAK8/w==
   dependencies:
     "@discordjs/collection" "^2.1.0"
-    "@discordjs/rest" "^2.3.0"
+    "@discordjs/rest" "^2.5.0"
     "@discordjs/util" "^1.1.0"
     "@sapphire/async-queue" "^1.5.2"
     "@types/ws" "^8.5.10"
     "@vladfrangu/async_event_emitter" "^2.2.4"
-    discord-api-types "0.37.83"
+    discord-api-types "^0.38.1"
     tslib "^2.6.2"
-    ws "^8.16.0"
+    ws "^8.17.0"
 
 "@eslint-community/eslint-utils@^4.2.0":
   version "4.4.0"
@@ -247,7 +232,7 @@
   dependencies:
     "@noble/hashes" "^1.1.5"
 
-"@prisma/client@latest":
+"@prisma/client@^5.15.0":
   version "5.15.0"
   resolved "https://registry.npmjs.org/@prisma/client/-/client-5.15.0.tgz"
   integrity sha512-wPTeTjbd2Q0abOeffN7zCDCbkp9C9cF+e9HPiI64lmpehyq2TepgXE+sY7FXr7Rhbb21prLMnhXX27/E11V09w==
@@ -298,10 +283,23 @@
   resolved "https://registry.npmjs.org/@sapphire/async-queue/-/async-queue-1.5.2.tgz"
   integrity sha512-7X7FFAA4DngXUl95+hYbUF19bp1LGiffjJtu7ygrZrbdCSsdDDBaSjB7Akw0ZbOu6k0xpXyljnJ6/RZUvLfRdg==
 
-"@sapphire/shapeshift@^3.8.1", "@sapphire/shapeshift@^3.9.3", "@sapphire/shapeshift@^3.9.7":
+"@sapphire/async-queue@^1.5.3":
+  version "1.5.5"
+  resolved "https://registry.yarnpkg.com/@sapphire/async-queue/-/async-queue-1.5.5.tgz#2b18d402bb920b65b13ad4ed8dfb6c386300dd84"
+  integrity sha512-cvGzxbba6sav2zZkH8GPf2oGk9yYoD5qrNWdu9fRehifgnFZJMV+nuy2nON2roRO4yQQ+v7MK/Pktl/HgfsUXg==
+
+"@sapphire/shapeshift@^3.8.1":
   version "3.9.7"
   resolved "https://registry.npmjs.org/@sapphire/shapeshift/-/shapeshift-3.9.7.tgz"
   integrity sha512-4It2mxPSr4OGn4HSQWGmhFMsNFGfFVhWeRPCRwbH972Ek2pzfGRZtb0pJ4Ze6oIzcyh2jw7nUDa6qGlWofgd9g==
+  dependencies:
+    fast-deep-equal "^3.1.3"
+    lodash "^4.17.21"
+
+"@sapphire/shapeshift@^4.0.0":
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/@sapphire/shapeshift/-/shapeshift-4.0.0.tgz#86c1b41002ff5d0b2ad21cbc3418b06834b89040"
+  integrity sha512-d9dUmWVA7MMiKobL3VpLF8P2aeanRTu6ypG2OIaEv/ZHH/SUQ2iHOVyi5wAPjQ+HmnMuL0whK9ez8I/raWbtIg==
   dependencies:
     fast-deep-equal "^3.1.3"
     lodash "^4.17.21"
@@ -593,6 +591,11 @@
   version "2.2.4"
   resolved "https://registry.npmjs.org/@vladfrangu/async_event_emitter/-/async_event_emitter-2.2.4.tgz"
   integrity sha512-ButUPz9E9cXMLgvAW8aLAKKJJsPu1dY1/l/E8xzLFuysowXygs6GBcyunK9rnGC4zTsnIc2mQo71rGw9U+Ykug==
+
+"@vladfrangu/async_event_emitter@^2.4.6":
+  version "2.4.6"
+  resolved "https://registry.yarnpkg.com/@vladfrangu/async_event_emitter/-/async_event_emitter-2.4.6.tgz#508b6c45b03f917112a9008180b308ba0e4d1805"
+  integrity sha512-RaI5qZo6D2CVS6sTHFKg1v5Ohq/+Bo2LZ5gzUEwZ/WkHhwtGTCB/sVLw8ijOkAUxasZ+WshN/Rzj4ywsABJ5ZA==
 
 abbrev@1:
   version "1.1.1"
@@ -953,6 +956,16 @@ cross-spawn@^7.0.1, cross-spawn@^7.0.2:
     shebang-command "^2.0.0"
     which "^2.0.1"
 
+csv-parse@^5.6.0:
+  version "5.6.0"
+  resolved "https://registry.yarnpkg.com/csv-parse/-/csv-parse-5.6.0.tgz#219beace2a3e9f28929999d2aa417d3fb3071c7f"
+  integrity sha512-l3nz3euub2QMg5ouu5U09Ew9Wf6/wQ8I++ch1loQ0ljmzhmfZYrH9fflS22i/PQEvsPvxCwxgz5q7UB8K1JO4Q==
+
+csv-stringify@^6.5.2:
+  version "6.5.2"
+  resolved "https://registry.yarnpkg.com/csv-stringify/-/csv-stringify-6.5.2.tgz#b51d61cd949906d5b5b790463f3055d95915193e"
+  integrity sha512-RFPahj0sXcmUyjrObAK+DOWtMvMIFV328n4qZJhgX3x2RqkQgOTU2mCUmiFR0CzM6AzChlRSUErjiJeEt8BaQA==
+
 date-fns@^3.6.0:
   version "3.6.0"
   resolved "https://registry.yarnpkg.com/date-fns/-/date-fns-3.6.0.tgz#f20ca4fe94f8b754951b24240676e8618c0206bf"
@@ -1025,38 +1038,39 @@ dir-glob@^3.0.1:
   dependencies:
     path-type "^4.0.0"
 
-discord-api-types@0.37.61, discord-api-types@^0.37.35:
-  version "0.37.61"
-  resolved "https://registry.npmjs.org/discord-api-types/-/discord-api-types-0.37.61.tgz"
-  integrity sha512-o/dXNFfhBpYHpQFdT6FWzeO7pKc838QeeZ9d91CfVAtpr5XLK4B/zYxQbYgPdoMiTDvJfzcsLW5naXgmHGDNXw==
-
-discord-api-types@0.37.83:
-  version "0.37.83"
-  resolved "https://registry.npmjs.org/discord-api-types/-/discord-api-types-0.37.83.tgz"
-  integrity sha512-urGGYeWtWNYMKnYlZnOnDHm8fVRffQs3U0SpE8RHeiuLKb/u92APS8HoQnPTFbnXmY1vVnXjXO4dOxcAn3J+DA==
-
 discord-api-types@^0.26.1:
   version "0.26.1"
   resolved "https://registry.npmjs.org/discord-api-types/-/discord-api-types-0.26.1.tgz"
   integrity sha512-T5PdMQ+Y1MEECYMV5wmyi9VEYPagEDEi4S0amgsszpWY0VB9JJ/hEvM6BgLhbdnKky4gfmZEXtEEtojN8ZKJQQ==
 
-discord.js@^14.15.3:
-  version "14.15.3"
-  resolved "https://registry.npmjs.org/discord.js/-/discord.js-14.15.3.tgz"
-  integrity sha512-/UJDQO10VuU6wQPglA4kz2bw2ngeeSbogiIPx/TsnctfzV/tNf+q+i1HlgtX1OGpeOBpJH9erZQNO5oRM2uAtQ==
+discord-api-types@^0.37.35:
+  version "0.37.61"
+  resolved "https://registry.npmjs.org/discord-api-types/-/discord-api-types-0.37.61.tgz"
+  integrity sha512-o/dXNFfhBpYHpQFdT6FWzeO7pKc838QeeZ9d91CfVAtpr5XLK4B/zYxQbYgPdoMiTDvJfzcsLW5naXgmHGDNXw==
+
+discord-api-types@^0.38.1:
+  version "0.38.2"
+  resolved "https://registry.yarnpkg.com/discord-api-types/-/discord-api-types-0.38.2.tgz#ded35082cadd4968cc8b2ad72f32807c8f139bab"
+  integrity sha512-GAPY1/Kv3aqEoBYgUYXB2tHdWJCZXfytlCzxZ4QMQ1/TIQn1JI+xUOukehl4iEa9m7fCURnMIOpOxpaTWqzX2w==
+
+discord.js@^14.19.3:
+  version "14.19.3"
+  resolved "https://registry.yarnpkg.com/discord.js/-/discord.js-14.19.3.tgz#ed08c61ad300efc3033ecf2b70f28a68d95b138a"
+  integrity sha512-lncTRk0k+8Q5D3nThnODBR8fR8x2fM798o8Vsr40Krx0DjPwpZCuxxTcFMrXMQVOqM1QB9wqWgaXPg3TbmlHqA==
   dependencies:
-    "@discordjs/builders" "^1.8.2"
+    "@discordjs/builders" "^1.11.2"
     "@discordjs/collection" "1.5.3"
-    "@discordjs/formatters" "^0.4.0"
-    "@discordjs/rest" "^2.3.0"
-    "@discordjs/util" "^1.1.0"
-    "@discordjs/ws" "^1.1.1"
+    "@discordjs/formatters" "^0.6.1"
+    "@discordjs/rest" "^2.5.0"
+    "@discordjs/util" "^1.1.1"
+    "@discordjs/ws" "^1.2.2"
     "@sapphire/snowflake" "3.5.3"
-    discord-api-types "0.37.83"
+    discord-api-types "^0.38.1"
     fast-deep-equal "3.1.3"
     lodash.snakecase "4.1.1"
-    tslib "2.6.2"
-    undici "6.13.0"
+    magic-bytes.js "^1.10.0"
+    tslib "^2.6.3"
+    undici "6.21.1"
 
 doctrine@^3.0.0:
   version "3.0.0"
@@ -1843,14 +1857,9 @@ lodash.merge@^4.6.2:
   resolved "https://registry.npmjs.org/lodash.merge/-/lodash.merge-4.6.2.tgz"
   integrity sha512-0KpjqXRVvrYyCsX1swR/XTK0va6VQkQM6MNo7PqW77ByjAhoARA8EfrP1N4+KlKj8YS0ZUCtRT/YUuhyYDujIQ==
 
-lodash.snakecase@4.1.1:
+lodash.snakecase@4.1.1, lodash.snakecase@^4.1.1:
   version "4.1.1"
   resolved "https://registry.npmjs.org/lodash.snakecase/-/lodash.snakecase-4.1.1.tgz"
-  integrity sha512-QZ1d4xoBHYUeuouhEq3lk3Uq7ldgyFXGBhg04+oRLnIz8o9T65Eh+8YdroUwn846zchkA9yDsDl5CVVaV2nqYw==
-
-lodash.snakecase@^4.1.1:
-  version "4.1.1"
-  resolved "https://registry.yarnpkg.com/lodash.snakecase/-/lodash.snakecase-4.1.1.tgz#39d714a35357147837aefd64b5dcbb16becd8f8d"
   integrity sha512-QZ1d4xoBHYUeuouhEq3lk3Uq7ldgyFXGBhg04+oRLnIz8o9T65Eh+8YdroUwn846zchkA9yDsDl5CVVaV2nqYw==
 
 lodash@^4.17.21:
@@ -2223,7 +2232,7 @@ pretty-ms@^7.0.1:
   dependencies:
     parse-ms "^2.1.0"
 
-prisma@latest:
+prisma@^5.15.0:
   version "5.15.0"
   resolved "https://registry.npmjs.org/prisma/-/prisma-5.15.0.tgz"
   integrity sha512-JA81ACQSCi3a7NUOgonOIkdx8PAVkO+HbUOxmd00Yb8DgIIEpr2V9+Qe/j6MLxIgWtE/OtVQ54rVjfYRbZsCfw==
@@ -2696,11 +2705,6 @@ tr46@~0.0.3:
   resolved "https://registry.npmjs.org/tr46/-/tr46-0.0.3.tgz"
   integrity sha512-N3WMsuqV66lT30CrXNbEjx4GEwlow3v6rr4mCcv6prnfwhS01rkgyFdjPNBYd9br7LpXV1+Emh01fHnq2Gdgrw==
 
-ts-mixer@^6.0.3:
-  version "6.0.3"
-  resolved "https://registry.npmjs.org/ts-mixer/-/ts-mixer-6.0.3.tgz"
-  integrity sha512-k43M7uCG1AkTyxgnmI5MPwKoUvS/bRvLvUb7+Pgpdlmok8AoqmUaZxUUw8zKM5B1lqZrt41GjYgnvAi0fppqgQ==
-
 ts-mixer@^6.0.4:
   version "6.0.4"
   resolved "https://registry.npmjs.org/ts-mixer/-/ts-mixer-6.0.4.tgz"
@@ -2739,15 +2743,20 @@ tsconfig-paths@^4.1.2:
     minimist "^1.2.6"
     strip-bom "^3.0.0"
 
-tslib@2.6.2, tslib@^2.3.1, tslib@^2.6.1, tslib@^2.6.2:
-  version "2.6.2"
-  resolved "https://registry.npmjs.org/tslib/-/tslib-2.6.2.tgz"
-  integrity sha512-AEYxH93jGFPn/a2iVAwW87VuUIkR1FVUKB77NwMF7nBTDkDrrT/Hpt/IrCJ0QXhW27jTBDcf5ZY7w6RiqTMw2Q==
-
 tslib@^1.8.1:
   version "1.14.1"
   resolved "https://registry.npmjs.org/tslib/-/tslib-1.14.1.tgz"
   integrity sha512-Xni35NKzjgMrwevysHTCArtLDpPvye8zV/0E4EyYn43P7/7qvQwPh9BGkHewbMulVntbigmcT7rdX3BNo9wRJg==
+
+tslib@^2.3.1, tslib@^2.6.1, tslib@^2.6.2:
+  version "2.6.2"
+  resolved "https://registry.npmjs.org/tslib/-/tslib-2.6.2.tgz"
+  integrity sha512-AEYxH93jGFPn/a2iVAwW87VuUIkR1FVUKB77NwMF7nBTDkDrrT/Hpt/IrCJ0QXhW27jTBDcf5ZY7w6RiqTMw2Q==
+
+tslib@^2.6.3:
+  version "2.8.1"
+  resolved "https://registry.yarnpkg.com/tslib/-/tslib-2.8.1.tgz#612efe4ed235d567e8aba5f2a5fab70280ade83f"
+  integrity sha512-oJFu94HQb+KVduSUQL7wnpmqnfmLsOA/nAh6b6EH0wCEoK0/mPeXU6c3wKDV83MkOuHPRHtSXKKU99IBazS/2w==
 
 tsutils@^3.21.0:
   version "3.21.0"
@@ -2796,10 +2805,10 @@ undici-types@~5.26.4:
   resolved "https://registry.npmjs.org/undici-types/-/undici-types-5.26.5.tgz"
   integrity sha512-JlCMO+ehdEIKqlFxk6IfVoAUVmgz7cU7zD/h9XZ0qzeosSHmUJVOzSQvvYSYWXkFXC+IfLKSIffhv0sVZup6pA==
 
-undici@6.13.0:
-  version "6.13.0"
-  resolved "https://registry.npmjs.org/undici/-/undici-6.13.0.tgz"
-  integrity sha512-Q2rtqmZWrbP8nePMq7mOJIN98M0fYvSgV89vwl/BQRT4mDOeY2GXZngfGpcBBhtky3woM7G24wZV3Q304Bv6cw==
+undici@6.21.1:
+  version "6.21.1"
+  resolved "https://registry.yarnpkg.com/undici/-/undici-6.21.1.tgz#336025a14162e6837e44ad7b819b35b6c6af0e05"
+  integrity sha512-q/1rj5D0/zayJB2FraXdaWxbhWiNKDvu8naDT2dl1yTlvJp4BLtOcp2a5BvgGNQpYYJzau7tf1WgKv3b+7mqpQ==
 
 unpipe@1.0.0, unpipe@~1.0.0:
   version "1.0.0"
@@ -2873,10 +2882,10 @@ wrappy@1:
   resolved "https://registry.npmjs.org/wrappy/-/wrappy-1.0.2.tgz"
   integrity sha512-l4Sp/DRseor9wL6EvV2+TuQn63dMkPjZ/sp9XkghTEbV9KlPS1xUsZ3u7/IQO4wxtcFB4bgpQPRcR3QCvezPcQ==
 
-ws@^8.16.0:
-  version "8.17.0"
-  resolved "https://registry.npmjs.org/ws/-/ws-8.17.0.tgz"
-  integrity sha512-uJq6108EgZMAl20KagGkzCKfMEjxmKvZHG7Tlq0Z6nOky7YF7aq4mOx6xK8TJ/i1LeK4Qus7INktacctDgY8Ow==
+ws@^8.17.0:
+  version "8.18.2"
+  resolved "https://registry.yarnpkg.com/ws/-/ws-8.18.2.tgz#42738b2be57ced85f46154320aabb51ab003705a"
+  integrity sha512-DMricUmwGZUVr++AEAe2uiVM7UoO9MAVZMDu05UQOaUII0lp+zOzLLU4Xqh/JvTqklB1T4uELaaPBKyjE1r4fQ==
 
 ws@~8.11.0:
   version "8.11.0"
