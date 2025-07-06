@@ -4,7 +4,7 @@ import { constants, text } from "../../providers/config";
 import { format } from "../../utils/string";
 import pms from "pretty-ms";
 import { randRange, sampleArray } from "../../utils/utils";
-import { getCooldownTimeRemaining, isOnCooldown, setCooldown } from "../../utils/cooldownManager";
+import { getCooldownTimeRemaining, isOnCooldown, setCooldown } from "../../utils/MysticUtils/cooldownManager";
 import { PrefixCommand } from "../../structures/prefixCommand";
 
 export const command = new PrefixCommand("crime", "Try your chances at doing crime!")

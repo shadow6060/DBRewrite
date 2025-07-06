@@ -1,4 +1,4 @@
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, ComponentType, Message, Interaction } from "discord.js";
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, ComponentType, Message, Interaction, TextChannel } from "discord.js";
 import { PrefixCommand } from "../../structures/prefixCommand"; // Ensure this file exists
 import { prefixCommandRegistry } from "../../providers/commandManager"; // Ensure this file exists
 
@@ -16,6 +16,12 @@ const groupCommandsByCategory = (commands: PrefixCommand[]) => {
 
 export const command = new PrefixCommand("help", "Displays a list of available commands")
 	.setPrefixExecutor(async (message: Message) => {
+		// Ensure message.channel is a TextChannel before calling .send()
+		if (!(message.channel instanceof TextChannel)) {
+			await message.reply("This command can only be used in a text channel.");
+			return;
+		}
+
 		const availableCommands = (
 			await Promise.all(
 				prefixCommandRegistry.map(async (cmd: PrefixCommand | null) => {
@@ -116,6 +122,13 @@ export const command = new PrefixCommand("help", "Displays a list of available c
 		};
 
 		let currentPage = 0;
+
+		// Ensure message.channel is a TextChannel before calling .send()
+		if (!(message.channel instanceof TextChannel)) {
+			await message.reply("This command can only be used in a text channel.");
+			return;
+		}
+
 		const helpMessage = await message.channel.send({
 			embeds: [generateCategoryEmbed("Miscellaneous")],
 			components: (await createCategoryButtons(currentPage)).map(row => row.toJSON()),
@@ -157,6 +170,11 @@ export const command = new PrefixCommand("help", "Displays a list of available c
 		});
 
 		collector.on("end", async () => {
+			// Ensure message.channel is a TextChannel before calling .edit()
+			if (!(message.channel instanceof TextChannel)) {
+				return;
+			}
+
 			await helpMessage.edit({
 				components: [
 					new ActionRowBuilder<ButtonBuilder>().addComponents(

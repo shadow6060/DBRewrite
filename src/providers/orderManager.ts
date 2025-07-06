@@ -95,6 +95,13 @@ const updateOrderStatusWithDelay = async (
 	try {
 		await new Promise((resolve) => setTimeout(resolve, delay));
 
+		// Re-fetch to check current status
+		const latestOrder = await db.orders.findUnique({ where: { id: order.id } });
+		if (!latestOrder || latestOrder.status === OrderStatus.Cancelled) {
+			return;
+		}
+
+		// ✅ Actually update the status now
 		await db.orders.update({
 			where: { id: order.id },
 			data: { status: newStatus },
@@ -118,7 +125,6 @@ const updateOrderStatusWithDelay = async (
 
 const deliverOrder = async (order: any, user: any) => {
 	try {
-		// Include the related drink image
 		const orderWithImage = await db.orders.findUnique({
 			where: { id: order.id },
 			include: { drinkImage: true },
