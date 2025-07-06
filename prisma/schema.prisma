@@ -158,18 +158,17 @@ model UserQuestProgress {
 
 
 enum OrderStatus {
-  Unprepared
-  Preparing
-  Brewing
-  Fermenting
-  PendingDelivery
-  Delivering
-  Delivered
-  Cancelled
+ Unprepared       // Newly created (maybe not used in automated flow)
+  //CodeOnly         // Manual-assigned code but not started yet
+  Preparing        // Starting to process
+  Brewing         // Midway
+  PendingDelivery   // Ready to deliver
+  Delivering       // (Optional) If you want to track active delivery
+  Delivered       // Completed
+  Cancelled        // User-cancelled
+  Failed          // Something went wrong
+  Claimed           // Manual-only: claimed by a worker
   Deleted
-  Failed 
-  Claimed
-  
 }
 
 model WorkerStats {
@@ -185,6 +184,13 @@ model WorkerStats {
   preparations          Int      @default(0)
   deliveries            Int      @default(0)
   deliveryMessage       String?
+}
+
+model WorkerAssignment {
+  userId     String   @id
+  workerId   String
+  assignedAt DateTime @default(now())
+  expiresAt  DateTime
 }
 
 model ServerConfig {
