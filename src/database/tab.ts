@@ -94,3 +94,16 @@ export async function hasPaidTab(userId: string, guildId: string) {
 	});
 	return !!tab?.lastPaidAt;
 }
+
+// ✅ NEW: Recalculates and updates block status manually
+export async function reevaluateTabBlock(userId: string, guildId: string) {
+	const tab = await getOrCreateTab(userId, guildId);
+	const shouldBlock = tab.amount >= tab.maxLimit;
+
+	await prisma.tab.update({
+		where: { userId_guildId: { userId, guildId } },
+		data: { isBlocked: shouldBlock },
+	});
+
+	return shouldBlock;
+}

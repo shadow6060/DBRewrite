@@ -9,6 +9,7 @@ import { config } from "../../providers/config";
 
 export const command = new ExtendedCommand({ name: "botinfo", description: "Displays information about the bot.", local: true })
     .addPermission(permissions.developer)
+    .setCategory("🔐 Devs")
     .setExecutor(async (interaction: CommandInteraction) => {
         // Get the number of guilds (servers) the bot is in
         const guildsSize = client.guilds.cache.size.toString();

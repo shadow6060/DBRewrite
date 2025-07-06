@@ -11,7 +11,6 @@ export const activeOrderStatus = [
 	OrderStatus.Unprepared,
 	OrderStatus.Preparing,
 	OrderStatus.Brewing,
-	OrderStatus.Fermenting,
 	OrderStatus.PendingDelivery,
 	OrderStatus.Delivering,
 	OrderStatus.Claimed,

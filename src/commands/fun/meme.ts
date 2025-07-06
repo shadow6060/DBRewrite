@@ -4,27 +4,38 @@ import got from "got";
 import { EmbedBuilder } from "discord.js";
 import { Command } from "../../structures/Command";
 
+interface MemeResponse {
+  url: string;
+  postLink: string;
+  title: string;
+  ups: number;
+  subreddit: string;
+}
+
 export const command = new Command("memes", "memes!")
+  .setCategory("🎉fun")
   .setExecutor(async int => {
-    got('https://www.reddit.com/r/memes/random/.json')
-      .then((response: { body: string; }) => {
-        const [list] = JSON.parse(response.body);
-        const [post] = list.data.children;
+    try {
+      const response = await got('https://meme-api.com/gimme').json<MemeResponse>();
 
-        const permalink = post.data.permalink;
-        const memeUrl = `https://reddit.com${permalink}`;
-        const memeImage = post.data.url;
-        const memeTitle = post.data.title;
-        const memeUpvotes = post.data.ups;
-        const memeNumComments = post.data.num_comments;
+      const memeImage = response.url;
+      const memeTitle = response.title;
+      const memeUrl = response.postLink;
+      const memeUpvotes = response.ups;
+      const subreddit = response.subreddit;
 
-        int.reply({
-          embeds: [
-            new EmbedBuilder()
-              .setImage(memeImage)
-              .setDescription(`${int.user.tag} Has summoned a meme!`)
-              .setFooter({ text: `${memeUrl} | Upvotes: ${memeUpvotes}` }),
-          ],
-        });
+      await int.reply({
+        embeds: [
+          new EmbedBuilder()
+            .setTitle(memeTitle)
+            .setURL(memeUrl)
+            .setImage(memeImage)
+            .setDescription(`${int.user.tag} found this in r/${subreddit}`)
+            .setFooter({ text: `👍 ${memeUpvotes} upvotes` }),
+        ],
       });
+    } catch (err) {
+      console.error("Failed to fetch meme:", err);
+      await int.reply("😢 Sorry, couldn't grab a meme right now.");
+    }
   });

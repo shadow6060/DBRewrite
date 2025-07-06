@@ -6,6 +6,7 @@ import { format } from "../../utils/string";
 import Client from "nekos.life";
 
 export const command = new Command("meow", "Cute kittens.")
+	.setCategory("🎉fun")
 	.setExecutor(async int => {
 		const nekos = new Client();
 		const yeeeee = await nekos.meow();

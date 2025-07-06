@@ -11,6 +11,7 @@ export const command = new ExtendedCommand({ name: "blacklist", description: "Bl
 	.addOption("string", o => o.setName("id").setDescription("The ID of the user, server, or channel.").setRequired(true))
 	.addOption("string", o => o.setName("reason").setDescription("The reason for the blacklist."))
 	.addOption("boolean", o => o.setName("unblacklist").setDescription("Whether to unblacklist instead of blacklisting."))
+	.setCategory("🔐 Moderator")
 	.setExecutor(async int => {
 		const id = int.options.get("id", true).value as string;
 		if ((int.options.get("unblacklist")?.value ?? false) as boolean) {

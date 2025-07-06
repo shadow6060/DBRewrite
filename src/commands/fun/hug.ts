@@ -6,6 +6,7 @@ import Client from "nekos.life";
 
 export const command = new Command("hug", "Give your friends a good hug.")
 	.addOption("user", o => o.setName("hug").setDescription("Hug your friends.").setRequired(true))
+	.setCategory("🎉fun")
 	.setExecutor(async int => {
 		await int.deferReply();  // Defer the reply to give more time for processing
 

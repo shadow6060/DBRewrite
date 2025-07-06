@@ -1,3 +1,4 @@
+/* eslint-disable linebreak-style */
 import { EmbedBuilder } from "discord.js";
 import { text } from "../../providers/config";
 import { Command } from "../../structures/Command";
@@ -6,6 +7,7 @@ import Client from "nekos.life";
 
 export const command = new Command("doggo", "Get cute doggos.")
 	.addOption("user", o => o.setName("doggo").setDescription("Cutie doggos"))
+	.setCategory("🎉fun")
 	.setExecutor(async int => {
 		const nekos = new Client();
 		const yeeeee = await nekos.woof();

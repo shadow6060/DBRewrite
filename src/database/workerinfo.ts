@@ -19,4 +19,4 @@ export async function getWorkerInfos(): Promise<WorkerInfo[]> {
 	return workerInfos
 		.filter(workerInfo => workerInfo.deliveries > 0 || workerInfo.preparations > 0)
 		.sort((a, b) => (b.deliveries + b.preparations) - (a.deliveries + a.preparations));
-}
+} 

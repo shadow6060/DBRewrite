@@ -1,8 +1,9 @@
 /* eslint-disable indent */
-import { Snowflake } from "discord.js";
+import { MessageFlags, Snowflake } from "discord.js";
 import { LifetimeMap } from "../../structures/LifetimeMap";
 import { ExtendedCommand } from "../../structures/extendedCommand";
 import { config } from "../../providers/config";
+import { permissions } from "../../providers/permissions";
 
 export const pinMap = new LifetimeMap<Snowflake, string>(15 * 60 * 1000);
 
@@ -16,10 +17,12 @@ export const command = new ExtendedCommand({
             .setDescription("Generate a new pin.")
             .setRequired(false)
     )
+    .addPermission(permissions.developer)
+    .setCategory("Floof")
     .setExecutor(async (int) => {
         if (pinMap.has(int.user.id) && !int.options.getBoolean("refresh")) {
             await int.reply({
-                ephemeral: true,
+                flags: MessageFlags.Ephemeral,
                 content:
                     "A pin's already been generated. If you've lost it, include the refresh option. Otherwise, wait for the current pin to expire.",
             });
@@ -33,7 +36,7 @@ export const command = new ExtendedCommand({
                 pin = Math.random().toString(36).substring(2, 8);
             pinMap.set(int.user.id, pin);
             await int.reply({
-                ephemeral: true,
+                flags: MessageFlags.Ephemeral,
                 content: `Your pin was generated successfully! Head to ${config.dashboardUrl}/login and enter the following pin: \`${pin}\`. It will expire in 15 minutes.`,
             });
         }

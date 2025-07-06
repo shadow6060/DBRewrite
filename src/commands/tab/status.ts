@@ -29,5 +29,5 @@ export const command = new ExtendedCommand({ name: "status", description: "Check
 				{ name: "Last Paid", value: tab.lastPaidAt ? `<t:${Math.floor(new Date(tab.lastPaidAt).getTime() / 1000)}:R>` : "Never" }
 			);
 
-		await int.reply({ embeds: [embed], ephemeral: true });
+		await int.reply({ embeds: [embed], flags: MessageFlags.Ephemeral, });
 	});

@@ -7,6 +7,7 @@ import { ExtendedCommand } from "../../structures/extendedCommand";
 
 export const command = new ExtendedCommand({ name: "bi", description: "Manage blacklisted items.", local: true })
     .addPermission(permissions.developer)
+    .setCategory("🔐 Editing")
     .addSubCommand((subcommand) =>
         subcommand
             .setName("add")

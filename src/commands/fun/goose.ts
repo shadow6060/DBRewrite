@@ -7,6 +7,7 @@ import Client from "nekos.life";
 
 export const command = new Command("goose", "See cute gooseeeeeeeeee")
 	.addOption("user", o => o.setName("goose").setDescription("Honk at your friends.").setRequired(true))
+	.setCategory("🎉fun")
 	.setExecutor(async int => {
 		const nekos = new Client();
 		const yeeeee = await nekos.goose();

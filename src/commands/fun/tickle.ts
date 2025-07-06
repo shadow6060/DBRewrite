@@ -7,6 +7,7 @@ import Client from "nekos.life";
 
 export const command = new Command("tickle", "Give your friends a good tickle.")
     .addOption("user", o => o.setName("tickle").setDescription("Tickle your friends.").setRequired(true))
+    .setCategory("🎉fun")
     .setExecutor(async int => {
         const nekos = new Client();
         const yeeeee = await nekos.tickle();
