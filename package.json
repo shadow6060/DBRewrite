@@ -1,6 +1,6 @@
 {
 	"name": "dbrewrite",
-	"version": "1.3.9",
+	"version": "1.4.0",
 	"description": "",
 	"main": "index.js",
 	"scripts": {
@@ -71,3 +71,4 @@
 		"zod": "^3.14.3"
 	}
 }
+
