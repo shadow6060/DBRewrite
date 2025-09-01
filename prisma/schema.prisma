@@ -78,7 +78,11 @@ model Orders {
   flags          Int         @default(0)
   deleteReason   String?
   imageUrl       String?     // <-- Add this new field for direct image URL
+  // New field to track how the order was paid
+  paymentType PaymentType? // Enum (see below)
+  price        Float?
 }
+
 
 model BlacklistItem {
   id        String   @id @default(cuid())
@@ -159,7 +163,6 @@ model UserQuestProgress {
 
 enum OrderStatus {
  Unprepared       // Newly created (maybe not used in automated flow)
-  //CodeOnly         // Manual-assigned code but not started yet
   Preparing        // Starting to process
   Brewing         // Midway
   PendingDelivery   // Ready to deliver
@@ -169,6 +172,11 @@ enum OrderStatus {
   Failed          // Something went wrong
   Claimed           // Manual-only: claimed by a worker
   Deleted
+}
+
+enum PaymentType {
+  BALANCE
+  TAB
 }
 
 model WorkerStats {
