@@ -109,20 +109,41 @@ All gracefully handle `DiscordAPIError` 10062 (a.k.a. "Interaction not found").
 
 ---
 
-## 💾 Flow Summary
+### 7. `cleanupActiveMenu.ts`
+
+**What it does:**
+Cleans up old active menus for a user, preventing clutter or “ghost menus” from sticking around in the channel.
+
+**Key Features:**
+
+- Checks if the user has an active menu stored in `activeMenus`.
+- Attempts to delete the corresponding message from the channel.
+- Gracefully ignores errors (because sometimes Discord just… doesn’t cooperate).
+- Always ensures the `activeMenus` entry is removed, even if the message couldn’t be deleted.
+
+**Function to know:**
+
+```ts
+cleanupActiveMenu(userId, channel?)
+```
+
+---
+
+## 💾 Flow Summary (Extended)
 
 1. **User triggers drink menu command** → `handleCategorySelection` displays category menu.
 2. **User selects a category** → `handleDrinkPages` displays drinks in pages.
 3. **User navigates, selects a drink** → Confirmation buttons appear.
 4. **User confirms or tabs order** → `orderEmbeds` sends order to staff channel.
-5. **Profit. 🍹**
+5. **Collector ends, user cancels, or interaction expires** → `cleanupActiveMenu` removes old menu messages and clears `activeMenus`.
+6. **Profit. 🍹**
 
 ---
 
 ## 💡 Tips
 
 - The `activeMenus` map helps keep track of messages to clean up and avoid clutter.
-- Page navigation cooldown (`5s`) ensures a smooth experience without spam.
+- Page navigation cooldown (`1s`) ensures a smooth experience without spam.
 - Ephemeral messages are used for confirmations to keep chat clean.
 - Manual mode switches between auto-prepared orders vs staff alerts.
 

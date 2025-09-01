@@ -7,14 +7,13 @@ import {
 	ComponentType,
 	MessageFlags,
 } from "discord.js";
-
+import { PaymentType } from "@prisma/client";
 import { db } from "../../database/database";
 import { isManualMode } from "../../utils/MysticUtils/settings";
 import { getUserBalance, updateBalance } from "../../database/userInfo";
 import { addToTab, isTabBlocked } from "../../database/tab";
-import { OrderStatus } from "@prisma/client";
-import { mainChannels, mainRoles } from "../../providers/discord";
 import { dismissEphemeral } from "../../utils/MysticUtils/ephemeralUtils";
+import { cleanupActiveMenu } from "./cleanupActiveMenu";
 
 import {
 	createDrinkSelectMenu,
@@ -28,7 +27,7 @@ import { activeMenus } from "../DrinkMenu/state";
 import { createAndSendOrderEmbed } from "../../components/DrinkMenu/orderEmbeds";
 
 const ITEMS_PER_PAGE = 4;
-const NAV_BUTTON_COOLDOWN_MS = 5000;
+const NAV_BUTTON_COOLDOWN_MS = 2000; // ✅ Changed from 5000 to 2000
 
 export async function handleDrinkPages(
 	selectInteraction: StringSelectMenuInteraction | ButtonInteraction,
@@ -84,9 +83,8 @@ export async function handleDrinkPages(
 
 	collector?.on("collect", async i => {
 		if (i.isButton() && buttonCooldown.has(i.user.id)) {
-			try {
-				await i.deferUpdate();
-			} catch {/*noop*/ }
+			// ✅ Defer to suppress "Unknown interaction"
+			await safeDeferUpdate(i);
 			return;
 		}
 
@@ -104,7 +102,7 @@ export async function handleDrinkPages(
 			} else if (i.customId === "menu_back") {
 				collector.stop();
 				await safeDeferUpdate(i);
-				await i.message.delete().catch(() => {/*noop*/ });
+				await i.message.delete().catch(() => { /* empty */ });
 				activeMenus.delete(userId);
 
 				const categoryMenu = createCategorySelectMenu(categories);
@@ -115,8 +113,8 @@ export async function handleDrinkPages(
 					const oldMessageId = activeMenus.get(userId);
 					try {
 						const oldMsg = await i.channel.messages.fetch(oldMessageId!);
-						await oldMsg.delete().catch(() => {/*noop*/ });
-					} catch {/*noop*/ }
+						await oldMsg.delete().catch(() => { /* empty */ });
+					} catch { /* empty */ }
 					activeMenus.delete(userId);
 				}
 
@@ -134,7 +132,7 @@ export async function handleDrinkPages(
 				}).catch(() => null);
 
 				if (!catInt || !catInt.isStringSelectMenu()) {
-					await categoryMessage.delete().catch(() => {/*noop*/ });
+					await categoryMessage.delete().catch(() => { /* empty */ });
 					activeMenus.delete(userId);
 					return;
 				}
@@ -153,77 +151,77 @@ export async function handleDrinkPages(
 				components: [confirmRow],
 			});
 
-			const buttonInt = await i.channel?.awaitMessageComponent({
+			const confirmCollector = i.channel?.createMessageComponentCollector({
 				componentType: ComponentType.Button,
-				time: 15000,
 				filter: btnInt => btnInt.user.id === userId,
-			}).catch(() => null);
+				time: 30000,
+			});
 
-			if (!buttonInt || buttonInt.customId === "cancel_order") {
-				await i.editReply({ content: "❌ Order canceled.", components: [] });
-				setTimeout(async () => {
-					await i.message.delete().catch(() => {/*noop*/ });
+			confirmCollector?.on("collect", async buttonInt => {
+				if (buttonInt.customId === "cancel_order") {
+					await safeDeferUpdate(buttonInt);
+					await buttonInt.message.delete().catch(() => { /* empty */ });
 					activeMenus.delete(userId);
-				}, 7000);
-				return;
-			}
+					confirmCollector.stop();
+					return;
+				}
 
-			if (buttonInt.customId === "confirm_order" || buttonInt.customId === "put_on_tab") {
-				await safeDeferUpdate(buttonInt);
+				if (buttonInt.customId === "confirm_order" || buttonInt.customId === "put_on_tab") {
+					await safeDeferUpdate(buttonInt);
 
-				if (buttonInt.customId === "confirm_order") {
-					if (drink.price) {
-						const { balance } = await getUserBalance(i.user.id);
-						if (balance < drink.price) {
+					if (buttonInt.customId === "confirm_order") {
+						if (drink.price) {
+							const { balance } = await getUserBalance(i.user.id);
+							if (balance < drink.price) {
+								await safeFollowUp(buttonInt, {
+									content: `❌ Insufficient funds. You only have $${balance}.`,
+									flags: MessageFlags.Ephemeral,
+								});
+								return;
+							}
+							await updateBalance(i.user.id, balance - drink.price);
+						}
+					} else {
+						const blocked = await isTabBlocked(i.user.id, i.guildId!);
+						if (blocked) {
 							await safeFollowUp(buttonInt, {
-								content: `❌ Insufficient funds. You only have $${balance}.`,
+								content: "❌ Your tab is blocked.",
 								flags: MessageFlags.Ephemeral,
 							});
 							return;
 						}
-						await updateBalance(i.user.id, balance - drink.price);
+						await addToTab(i.user.id, i.guildId!, drink.price!);
+						await dismissEphemeral(buttonInt);
 					}
-				} else {
-					const blocked = await isTabBlocked(i.user.id, i.guildId!);
-					if (blocked) {
-						await safeFollowUp(buttonInt, {
-							content: "❌ Your tab is blocked.",
-							flags: MessageFlags.Ephemeral,
-						});
-						await buttonInt.message.delete().catch(() => {/*noop*/ });
-						activeMenus.delete(userId);
-						return;
-					}
-					await addToTab(i.user.id, i.guildId!, drink.price!);
-					await dismissEphemeral(buttonInt);
+
+					const manualModeToUse = await isManualMode();
+
+					await createAndSendOrderEmbed({
+						interaction: buttonInt,
+						drink,
+						manualMode: manualModeToUse,
+						paymentType: buttonInt.customId === "put_on_tab" ? PaymentType.TAB : PaymentType.BALANCE,
+					});
+
+					await safeFollowUp(buttonInt, {
+						content:
+							buttonInt.customId === "put_on_tab"
+								? "✅ Order placed on your tab!"
+								: `✅ Order placed successfully!${drink.price ? `\n💸 You have $${(await getUserBalance(i.user.id)).balance} left.` : ""}`,
+						flags: MessageFlags.Ephemeral,
+					});
+
+					await buttonInt.message.delete().catch(() => { /* empty */ });
+					activeMenus.delete(userId);
+					confirmCollector.stop();
 				}
-
-				// ✅ Manual mode check only
-				const manualModeToUse = await isManualMode();
-
-				await createAndSendOrderEmbed({
-					interaction: buttonInt,
-					drink,
-					manualMode: manualModeToUse,
-				});
-
-				await safeFollowUp(buttonInt, {
-					content:
-						buttonInt.customId === "put_on_tab"
-							? "✅ Order placed on your tab!"
-							: `✅ Order placed successfully!${drink.price ? `\n💸 You have $${(await getUserBalance(i.user.id)).balance} left.` : ""}`,
-					flags: MessageFlags.Ephemeral,
-				});
-
-				await buttonInt.message.delete().catch(() => {/*noop*/ });
-				activeMenus.delete(userId);
-				return;
-			}
+			});
 		}
 	});
 
 	collector?.on("end", async () => {
-		await selectInteraction.message.delete().catch(() => {/*noop*/ });
-		activeMenus.delete(userId);
+		await cleanupActiveMenu(userId, selectInteraction.channel as TextChannel);
 	});
 }
+
+export { activeMenus };

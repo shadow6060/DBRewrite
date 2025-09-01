@@ -3,11 +3,13 @@ import { EmbedBuilder, TextChannel } from "discord.js";
 import { db } from "../../database/database";
 import { generateOrderId } from "../../database/orders";
 import { mainChannels, mainRoles } from "../../providers/discord";
+import { PaymentType } from "@prisma/client";
 
 export async function createAndSendOrderEmbed({
 	interaction,
 	drink,
 	manualMode,
+	paymentType,
 }: {
 	interaction: any;
 	drink: {
@@ -18,6 +20,7 @@ export async function createAndSendOrderEmbed({
 		price: number | null;
 	};
 	manualMode?: boolean;
+	paymentType: PaymentType;
 }) {
 	const order = await db.orders.create({
 		data: {
@@ -28,8 +31,11 @@ export async function createAndSendOrderEmbed({
 			guild: interaction.guildId!,
 			status: manualMode ? OrderStatus.Unprepared : OrderStatus.Preparing,
 			drinkImageId: drink.id,
+			price: drink.price ?? 0,
+			paymentType: paymentType,
 		},
 	});
+
 
 	const embed = new EmbedBuilder()
 		.setTitle(manualMode ? "📥 New Manual Order" : "📥 New Auto Order")

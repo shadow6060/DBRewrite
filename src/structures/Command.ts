@@ -16,8 +16,7 @@ export type CommandOptionType = Extract<
 	: never;
 
 export type CommandOptionArgs<T extends CommandOptionType> = Parameters<
-	SlashCommandBuilder[`add${Capitalize<T>}Option`]
->;
+	SlashCommandBuilder[`add${Capitalize<T>}Option`] >;
 
 export class Command {
 	[x: string]: any;
