@@ -1,10 +1,14 @@
 /* eslint-disable indent */
-import { CommandInteraction, CommandInteractionOptionResolver } from "discord.js";
+import { ChatInputCommandInteraction } from "discord.js";
 import { ExtendedCommand } from "../../structures/extendedCommand";
 import { db } from "../../database/database";
 import { permissions } from "../../providers/permissions";
 
-export const command = new ExtendedCommand({ name: "dadd", description: "Manage drink images.", local: true })
+export const command = new ExtendedCommand({
+    name: "dadd",
+    description: "Manage drink images.",
+    local: true,
+})
     .addPermission(permissions.developer)
     .setCategory("🔐 Editing")
     .addSubCommand(subcommand =>
@@ -72,19 +76,19 @@ export const command = new ExtendedCommand({ name: "dadd", description: "Manage 
                     .setRequired(true)
             )
     )
-    .setExecutor(async (interaction: CommandInteraction) => {
+    .setExecutor(async (interaction: ChatInputCommandInteraction) => {
         try {
-            const subCommand = (interaction.options as CommandInteractionOptionResolver).getSubcommand(true);
+            const subCommand = interaction.options.getSubcommand(true);
 
             switch (subCommand) {
                 case "add": {
-                    const name = (interaction.options as CommandInteractionOptionResolver).getString("name", true).toLowerCase();
-                    const url = (interaction.options as CommandInteractionOptionResolver).getString("url", true);
-                    const category = (interaction.options as CommandInteractionOptionResolver).getString("category", true).toLowerCase();
-                    const price = (interaction.options as CommandInteractionOptionResolver).getInteger("price") || null;
+                    const name = interaction.options.getString("name", true).toLowerCase();
+                    const url = interaction.options.getString("url", true);
+                    const category = interaction.options.getString("category", true).toLowerCase();
+                    const price = interaction.options.getInteger("price") ?? null;
 
                     const existingImage = await db.drinkImage.findFirst({
-                        where: { drinkName: name, url: url, category: category },
+                        where: { drinkName: name, url, category },
                     });
 
                     if (existingImage) {
@@ -93,7 +97,7 @@ export const command = new ExtendedCommand({ name: "dadd", description: "Manage 
                     }
 
                     await db.drinkImage.create({
-                        data: { drinkName: name, url: url, category: category, price: price },
+                        data: { drinkName: name, url, category, price },
                     });
 
                     await interaction.reply(`✅ Added a new image for **${name}** in category **${category}**.`);
@@ -101,7 +105,7 @@ export const command = new ExtendedCommand({ name: "dadd", description: "Manage 
                 }
 
                 case "remove": {
-                    const name = (interaction.options as CommandInteractionOptionResolver).getString("name", true).toLowerCase();
+                    const name = interaction.options.getString("name", true).toLowerCase();
 
                     const existingImage = await db.drinkImage.findFirst({
                         where: { drinkName: name },
@@ -112,22 +116,20 @@ export const command = new ExtendedCommand({ name: "dadd", description: "Manage 
                         return;
                     }
 
-                    await db.drinkImage.delete({
-                        where: { id: existingImage.id },
-                    });
+                    await db.drinkImage.delete({ where: { id: existingImage.id } });
 
                     await interaction.reply(`🗑️ Removed the image for **${name}**.`);
                     break;
                 }
 
                 case "edit": {
-                    const name = (interaction.options as CommandInteractionOptionResolver).getString("name", true).toLowerCase();
-                    const newUrl = (interaction.options as CommandInteractionOptionResolver).getString("new_url", true);
-                    const category = (interaction.options as CommandInteractionOptionResolver).getString("category", true).toLowerCase();
-                    const price = (interaction.options as CommandInteractionOptionResolver).getInteger("price") || null;
+                    const name = interaction.options.getString("name", true).toLowerCase();
+                    const newUrl = interaction.options.getString("new_url", true);
+                    const category = interaction.options.getString("category", true).toLowerCase();
+                    const price = interaction.options.getInteger("price") ?? null;
 
                     const existingImage = await db.drinkImage.findFirst({
-                        where: { drinkName: name, category: category },
+                        where: { drinkName: name, category },
                     });
 
                     if (!existingImage) {
@@ -137,7 +139,7 @@ export const command = new ExtendedCommand({ name: "dadd", description: "Manage 
 
                     await db.drinkImage.update({
                         where: { id: existingImage.id },
-                        data: { url: newUrl, price: price },
+                        data: { url: newUrl, price },
                     });
 
                     await interaction.reply(`✅ Updated the image URL and price for **${name}** in category **${category}**.`);
@@ -145,7 +147,7 @@ export const command = new ExtendedCommand({ name: "dadd", description: "Manage 
                 }
 
                 case "preview": {
-                    const name = (interaction.options as CommandInteractionOptionResolver).getString("name", true).toLowerCase();
+                    const name = interaction.options.getString("name", true).toLowerCase();
 
                     const image = await db.drinkImage.findFirst({
                         where: { drinkName: name },
@@ -174,12 +176,7 @@ export const command = new ExtendedCommand({ name: "dadd", description: "Manage 
 
                 case "show": {
                     const drinks = await db.drinkImage.findMany({
-                        select: {
-                            id: true,
-                            drinkName: true,
-                            category: true,
-                            price: true,
-                        },
+                        select: { id: true, drinkName: true, category: true, price: true },
                     });
 
                     if (drinks.length === 0) {
@@ -192,7 +189,7 @@ export const command = new ExtendedCommand({ name: "dadd", description: "Manage 
                         description: "Here are all the available drinks with their IDs, names, categories, and prices:",
                         color: 0x00bfff,
                         fields: drinks.map(drink => ({
-                            name: `${drink.drinkName}`,
+                            name: drink.drinkName,
                             value: `ID: ${drink.id} | Category: ${drink.category} | Price: ${drink.price ? `$${drink.price / 100}` : "Not set"}`,
                             inline: true,
                         })),
@@ -204,16 +201,14 @@ export const command = new ExtendedCommand({ name: "dadd", description: "Manage 
                 }
 
                 case "batchadd": {
-                    const batchInput = (interaction.options as CommandInteractionOptionResolver).getString("batch", true);
+                    const batchInput = interaction.options.getString("batch", true);
                     const lines = batchInput.split(",").map(line => line.trim()).filter(Boolean);
-                    const results = [];
 
-                    for (const line of lines) {
+                    const results = await Promise.all(lines.map(async line => {
                         const [nameRaw, urlRaw, categoryRaw, priceRaw] = line.split("|").map(p => p?.trim());
 
                         if (!nameRaw || !urlRaw || !categoryRaw) {
-                            results.push(`❌ Invalid: \`${line}\``);
-                            continue;
+                            return `❌ Invalid: \`${line}\``;
                         }
 
                         const name = nameRaw.toLowerCase();
@@ -223,15 +218,12 @@ export const command = new ExtendedCommand({ name: "dadd", description: "Manage 
 
                         const exists = await db.drinkImage.findFirst({ where: { drinkName: name } });
                         if (exists) {
-                            results.push(`⚠️ Skipped existing: **${name}**`);
-                            continue;
+                            return `⚠️ Skipped existing: **${name}**`;
                         }
 
-                        await db.drinkImage.create({
-                            data: { drinkName: name, url, category, price },
-                        });
-                        results.push(`✅ Added: **${name}**`);
-                    }
+                        await db.drinkImage.create({ data: { drinkName: name, url, category, price } });
+                        return `✅ Added: **${name}**`;
+                    }));
 
                     await interaction.reply(results.join("\n"));
                     break;
