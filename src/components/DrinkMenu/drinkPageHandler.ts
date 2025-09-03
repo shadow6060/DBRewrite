@@ -1,12 +1,5 @@
-import type {
-	ButtonInteraction,
-	StringSelectMenuInteraction,
-	TextChannel,
-} from "discord.js";
-import {
-	ComponentType,
-	MessageFlags,
-} from "discord.js";
+import type { ButtonInteraction, StringSelectMenuInteraction, TextChannel } from "discord.js";
+import { ComponentType, MessageFlags } from "discord.js";
 import { PaymentType } from "@prisma/client";
 import { db } from "../../database/database";
 import { isManualMode } from "../../utils/MysticUtils/settings";
@@ -20,14 +13,17 @@ import {
 	createNavigationButtons,
 	createConfirmationButtons,
 	createCategorySelectMenu,
-} from "../../components/DrinkMenuComp";
-import { safeDeferUpdate, safeFollowUp, setCooldown } from "../../components/DrinkMenu/drinkMenuUtils";
-import { activeMenus } from "../DrinkMenu/state";
+	safeDeferUpdate,
+	safeFollowUp,
+	safeUpdate,
+	setCooldown,
+} from "../../components/DrinkMenu/index";
 
+import { activeMenus } from "./state";
 import { createAndSendOrderEmbed } from "../../components/DrinkMenu/orderEmbeds";
 
 const ITEMS_PER_PAGE = 4;
-const NAV_BUTTON_COOLDOWN_MS = 2000; // ✅ Changed from 5000 to 2000
+const NAV_BUTTON_COOLDOWN_MS = 2000;
 
 export async function handleDrinkPages(
 	selectInteraction: StringSelectMenuInteraction | ButtonInteraction,
@@ -39,22 +35,17 @@ export async function handleDrinkPages(
 	const allDrinks = await db.drinkImage.findMany();
 	const drinks = allDrinks.filter(d => d.category === category);
 	const totalPages = Math.max(1, Math.ceil(drinks.length / ITEMS_PER_PAGE));
-
 	const buttonCooldown = new Set<string>();
 
 	const sendDrinkPage = async (interaction: StringSelectMenuInteraction | ButtonInteraction) => {
-		if (interaction.deferred || interaction.replied) return;
+		if (!interaction.isRepliable()) return;
 
 		const pageDrinks = drinks
 			.slice(currentPage * ITEMS_PER_PAGE, (currentPage + 1) * ITEMS_PER_PAGE)
-			.map(d => ({
-				id: d.id,
-				drinkName: d.drinkName,
-				price: d.price ?? undefined,
-			}));
+			.map(d => ({ id: d.id, drinkName: d.drinkName, price: d.price ?? undefined }));
 
 		if (pageDrinks.length === 0) {
-			await interaction.update({
+			await safeUpdate(interaction, {
 				content: "No drinks available in this category.",
 				components: [],
 			});
@@ -64,15 +55,15 @@ export async function handleDrinkPages(
 		const drinkRow = createDrinkSelectMenu(pageDrinks);
 		const navRow = createNavigationButtons(currentPage, totalPages);
 
-		await interaction.update({
+		const msg = await safeUpdate(interaction, {
 			content: `🍹 Category: **${category}** — Page ${currentPage + 1}/${totalPages}`,
 			components: [drinkRow, navRow],
 		});
-		activeMenus.set(userId, interaction.message.id);
+
+		if (msg) activeMenus.set(userId, msg.id);
 	};
 
 	setCooldown(buttonCooldown, userId, NAV_BUTTON_COOLDOWN_MS);
-
 	await sendDrinkPage(selectInteraction);
 
 	const collector = selectInteraction.channel?.createMessageComponentCollector({
@@ -83,14 +74,11 @@ export async function handleDrinkPages(
 
 	collector?.on("collect", async i => {
 		if (i.isButton() && buttonCooldown.has(i.user.id)) {
-			// ✅ Defer to suppress "Unknown interaction"
 			await safeDeferUpdate(i);
 			return;
 		}
 
-		if (i.isButton()) {
-			setCooldown(buttonCooldown, i.user.id, NAV_BUTTON_COOLDOWN_MS);
-		}
+		if (i.isButton()) setCooldown(buttonCooldown, i.user.id, NAV_BUTTON_COOLDOWN_MS);
 
 		if (i.isButton()) {
 			if (i.customId === "prev_page") {
@@ -102,19 +90,18 @@ export async function handleDrinkPages(
 			} else if (i.customId === "menu_back") {
 				collector.stop();
 				await safeDeferUpdate(i);
-				await i.message.delete().catch(() => { /* empty */ });
+				await i.message.delete().catch(() => { /* ignored intentionally */ });
 				activeMenus.delete(userId);
 
 				const categoryMenu = createCategorySelectMenu(categories);
-
 				if (!i.channel || !("send" in i.channel)) return;
 
 				if (activeMenus.has(userId)) {
 					const oldMessageId = activeMenus.get(userId);
 					try {
 						const oldMsg = await i.channel.messages.fetch(oldMessageId!);
-						await oldMsg.delete().catch(() => { /* empty */ });
-					} catch { /* empty */ }
+						await oldMsg.delete().catch(() => { /* ignored intentionally */ });
+					} catch { /* ignored intentionally */ }
 					activeMenus.delete(userId);
 				}
 
@@ -132,7 +119,7 @@ export async function handleDrinkPages(
 				}).catch(() => null);
 
 				if (!catInt || !catInt.isStringSelectMenu()) {
-					await categoryMessage.delete().catch(() => { /* empty */ });
+					await categoryMessage.delete().catch(() => { /* ignored intentionally */ });
 					activeMenus.delete(userId);
 					return;
 				}
@@ -145,11 +132,14 @@ export async function handleDrinkPages(
 			if (!drink) return;
 
 			const confirmRow = createConfirmationButtons(!!drink.price);
+			if (!i.isRepliable()) return;
 
-			await i.update({
+			const msg = await safeUpdate(i, {
 				content: `**${drink.drinkName}** selected. ${drink.price ? `Price: $${drink.price}` : ""}`,
 				components: [confirmRow],
 			});
+
+			if (!msg) return;
 
 			const confirmCollector = i.channel?.createMessageComponentCollector({
 				componentType: ComponentType.Button,
@@ -160,7 +150,7 @@ export async function handleDrinkPages(
 			confirmCollector?.on("collect", async buttonInt => {
 				if (buttonInt.customId === "cancel_order") {
 					await safeDeferUpdate(buttonInt);
-					await buttonInt.message.delete().catch(() => { /* empty */ });
+					await buttonInt.message.delete().catch(() => { /* ignored intentionally */ });
 					activeMenus.delete(userId);
 					confirmCollector.stop();
 					return;
@@ -169,19 +159,17 @@ export async function handleDrinkPages(
 				if (buttonInt.customId === "confirm_order" || buttonInt.customId === "put_on_tab") {
 					await safeDeferUpdate(buttonInt);
 
-					if (buttonInt.customId === "confirm_order") {
-						if (drink.price) {
-							const { balance } = await getUserBalance(i.user.id);
-							if (balance < drink.price) {
-								await safeFollowUp(buttonInt, {
-									content: `❌ Insufficient funds. You only have $${balance}.`,
-									flags: MessageFlags.Ephemeral,
-								});
-								return;
-							}
-							await updateBalance(i.user.id, balance - drink.price);
+					if (buttonInt.customId === "confirm_order" && drink.price) {
+						const { balance } = await getUserBalance(i.user.id);
+						if (balance < drink.price) {
+							await safeFollowUp(buttonInt, {
+								content: `❌ Insufficient funds. You only have $${balance}.`,
+								flags: MessageFlags.Ephemeral,
+							});
+							return;
 						}
-					} else {
+						await updateBalance(i.user.id, balance - drink.price);
+					} else if (buttonInt.customId === "put_on_tab") {
 						const blocked = await isTabBlocked(i.user.id, i.guildId!);
 						if (blocked) {
 							await safeFollowUp(buttonInt, {
@@ -195,7 +183,6 @@ export async function handleDrinkPages(
 					}
 
 					const manualModeToUse = await isManualMode();
-
 					await createAndSendOrderEmbed({
 						interaction: buttonInt,
 						drink,
@@ -211,7 +198,7 @@ export async function handleDrinkPages(
 						flags: MessageFlags.Ephemeral,
 					});
 
-					await buttonInt.message.delete().catch(() => { /* empty */ });
+					await buttonInt.message.delete().catch(() => { /* ignored intentionally */ });
 					activeMenus.delete(userId);
 					confirmCollector.stop();
 				}

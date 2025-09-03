@@ -1,9 +1,11 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 import type { Interaction, StringSelectMenuInteraction, TextChannel } from "discord.js";
 import { ComponentType } from "discord.js";
-import { createCategorySelectMenu } from "../../components/DrinkMenuComp";
-import { activeMenus } from "../DrinkMenu/state"; // will define in command later
+import { createCategorySelectMenu, safeReply } from ".";
+import { activeMenus } from "../DrinkMenu/state";
 import { handleDrinkPages } from "../DrinkMenu/drinkPageHandler";
+import { safeUpdate,
+} from "../../components/DrinkMenu/index";
 
 export async function handleCategorySelection(
 	i: Interaction,
@@ -14,18 +16,20 @@ export async function handleCategorySelection(
 
 	const categoryMenu = createCategorySelectMenu(categories);
 
-	let categoryMessage;
+	let categoryMessage = null;
 	if (i.isButton() || i.isStringSelectMenu()) {
-		categoryMessage = await i.update({
+		categoryMessage = await safeUpdate(i, {
 			content: "📋 Select a drink category:",
 			components: [categoryMenu],
 		});
 	} else if (i.isCommand()) {
-		categoryMessage = await i.reply({
+		categoryMessage = await safeReply(i, {
 			content: "📋 Select a drink category:",
 			components: [categoryMenu],
 		});
 	} else return;
+
+	if (!categoryMessage) return; // interaction expired
 
 	activeMenus.set(userId, categoryMessage.id);
 
